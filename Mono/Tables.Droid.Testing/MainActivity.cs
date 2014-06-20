@@ -20,13 +20,17 @@ namespace Tables.Droid.Testing
             base.OnCreate(bundle);
 
             listView = new ListView(this);
+
             SetContentView(listView);
         }
 
         protected override void OnPostCreate(Bundle savedInstanceState)
         {
             base.OnPostCreate(savedInstanceState);
-            Adapter = new TableAdapter(listView,TestData.CreateTestData());
+
+            var data = TestData.CreateTestData();
+
+            Adapter = new TableAdapter(listView,data);
         }
     }
 }
