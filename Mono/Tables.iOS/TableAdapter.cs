@@ -194,6 +194,41 @@ namespace Tables.iOS
                     tableView.ReloadRows(new NSIndexPath[]{ indexPath }, UITableViewRowAnimation.Fade);
                     ChangedValue(name,value,obj);
                 break;
+                
+                case TableRowType.Text:
+                case TableRowType.Blurb:
+                    var tvc = FirstAvailableViewController;
+                    if (tvc != null)
+                    {
+                        string str = value as string;
+                        var dname = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
+                        tvc.PresentViewController(new UINavigationController(new TableTextEditor(dname,str,delegate(string changedString)
+                        {
+                            td.SetValue(changedString, indexPath.Row, indexPath.Section);
+                            ReloadData();
+                        })), true, null);
+                    }
+                break;
+                case TableRowType.Date:
+                case TableRowType.Time:
+                case TableRowType.DateTime:
+                    var dvc = FirstAvailableViewController;
+                    if (dvc != null)
+                    {
+                        DateTime str = (DateTime)value;
+                        var dname = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
+                        UIDatePickerMode mode = UIDatePickerMode.DateAndTime;
+                        if (rowType == TableRowType.Date)
+                            mode = UIDatePickerMode.Date;
+                        else if (rowType == TableRowType.Time)
+                            mode = UIDatePickerMode.Time;
+                        dvc.PresentViewController(new UINavigationController(new TableTimeEditor(dname,str,mode,delegate(DateTime changedDate)
+                        {
+                            td.SetValue(changedDate, indexPath.Row, indexPath.Section);
+                            ReloadData();
+                        })), true, null);
+                    }
+                break;
             }
         }
 
@@ -201,6 +236,31 @@ namespace Tables.iOS
         {
             if (RowChanged != null)
                 RowChanged.RowChanged(this, rowName, oldValue, newValue);
+        }
+
+        private UIViewController FirstAvailableViewController
+        {
+            get
+            {
+                return TableAdapter.TraverseResponderChainForViewController(tv) as UIViewController;
+            }
+        }
+
+        static private UIResponder TraverseResponderChainForViewController(UIView v)
+        {
+            UIResponder responder = v.NextResponder;
+            if (responder is UIViewController)
+            {
+                return responder;
+            }
+            else if (responder is UIView)
+            {
+                return TraverseResponderChainForViewController(responder as UIView);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
