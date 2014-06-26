@@ -6,11 +6,12 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Support.V4.App;
 
 namespace Tables.Droid.Testing
 {
     [Activity(Label = "Tables.Droid.Testing", MainLauncher = true)]
-    public class MainActivity : Activity
+    public class MainActivity : FragmentActivity
     {
         TableAdapter Adapter;
         ListView listView;

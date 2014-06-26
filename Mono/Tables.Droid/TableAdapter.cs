@@ -4,6 +4,8 @@ using Android.Widget;
 using Android.Views;
 using Android.Content;
 using Android.Util;
+using Android.Support.V4.App;
+using Android.App;
 
 namespace Tables.Droid
 {
@@ -24,6 +26,9 @@ namespace Tables.Droid
         public ITableAdapterRowSelector RowSelector {get;set;}
         public ITableAdapterRowConfigurator RowConfigurator {get;set;}
         public ITableAdapterRowChanged RowChanged {get;set;}
+
+        public string PositiveButtonTitle = "OK";
+        public string NeutralButtonTitle = "Cancel";
 
         public ListView ListView
         {
@@ -139,6 +144,55 @@ namespace Tables.Droid
                     td.SetValue(obj, row, section);
                     ReloadData();
                     ChangedValue(name,value,obj);
+                break;
+
+                case TableRowType.Blurb:
+                case TableRowType.Text:
+
+                    string str = value as string;
+                    var dname = td.DisplayName(RowConfigurator, row, section);
+                    var act = tv.Context as Activity;
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(act);
+                    builder.SetTitle(dname);
+                    EditText input = new EditText(act);
+                    input.InputType = Android.Text.InputTypes.ClassText;
+                    input.Text = str;
+                    input.Gravity = GravityFlags.Center;
+                    builder.SetView(input);
+                    builder.SetPositiveButton(PositiveButtonTitle, delegate(object o, DialogClickEventArgs e)
+                    {
+                        var s = input.Text;
+                        td.SetValue(s, row, section);
+                        ReloadData();
+                    });
+                    builder.SetNeutralButton(NeutralButtonTitle, delegate(object o, DialogClickEventArgs e)
+                    {
+
+                    });
+                    builder.Show();
+
+                break;
+
+                case TableRowType.Date:
+                case TableRowType.Time:
+                case TableRowType.DateTime:
+
+                    if (tv.Context is FragmentActivity)
+                    {
+                        var fr = tv.Context as FragmentActivity;
+                        var frag = fr.SupportFragmentManager;
+
+                        DateTime v = (DateTime)value;
+
+                        DialogFragment newFragment = new TableTimeEditor(v,rowType,delegate(DateTime changedDate)
+                        {
+                            td.SetValue(changedDate, row, section);
+                            ReloadData();
+                        });
+
+                        newFragment.Show(frag, "datePicker");
+                    }
                 break;
             }
         }
