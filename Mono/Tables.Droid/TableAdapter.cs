@@ -159,6 +159,11 @@ namespace Tables.Droid
                     input.InputType = Android.Text.InputTypes.ClassText;
                     input.Text = str;
                     input.Gravity = GravityFlags.Center;
+                    input.SetPadding(10, 0, 10, 0);
+                    if (rowType == TableRowType.Blurb)
+                    {
+                        input.SetSingleLine(false);
+                    }
                     builder.SetView(input);
                     builder.SetPositiveButton(PositiveButtonTitle, delegate(object o, DialogClickEventArgs e)
                     {
