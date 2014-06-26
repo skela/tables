@@ -43,9 +43,11 @@ namespace Tables.iOS.Testing
         {
             base.ViewDidLoad();
 
+            var data = TestData.CreateTestData();
+
             UITableView tv = new UITableView(this.View.Bounds);
             tv.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
-            Adapter = new TableAdapter(tv,TestData.CreateTestData());
+            Adapter = new TableAdapter(tv,data);
             View.AddSubview(tv);
         }
 
