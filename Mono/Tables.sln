@@ -97,6 +97,6 @@ Global
 		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Tables.Droid.Testing\Tables.Droid.Testing.csproj
+		StartupItem = Tables.iOS.Testing\Tables.iOS.Testing.csproj
 	EndGlobalSection
 EndGlobal

@@ -36,6 +36,15 @@
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -48,6 +57,15 @@
     <Compile Include="TableAdapter.cs" />
     <Compile Include="TableAdapterCell.cs" />
     <Compile Include="TableTimeEditor.cs" />
+    <Compile Include="..\Tables\TableSource.cs">
+      <Link>Tables\TableSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Tables\TableUtils.cs">
+      <Link>Tables\TableUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Tables\Tables.cs">
+      <Link>Tables\Tables.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -55,6 +73,8 @@
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
   </ItemGroup>
-  <Import Project="..\Tables\Tables.projitems" Label="Shared" Condition="Exists('..\Tables\Tables.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Tables\" />
+  </ItemGroup>
 </Project>
