@@ -87,6 +87,7 @@ namespace Tables.iOS
                 var name = td.DisplayName(RowConfigurator,indexPath.Row, indexPath.Section);
                 var value = td.GetValue(indexPath.Row, indexPath.Section);
                 string text = value as string;
+				if (text == null) text = "";
                 float contentMargin = 10;
                 float contentWidth = tableView.Bounds.Width;
 
