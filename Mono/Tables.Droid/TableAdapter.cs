@@ -155,21 +155,27 @@ namespace Tables.Droid
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(act);
                     builder.SetTitle(dname);
+
                     EditText input = new EditText(act);
-                    input.InputType = Android.Text.InputTypes.ClassText;
                     input.Text = str;
+                    input.InputType = Android.Text.InputTypes.ClassText;
                     input.Gravity = GravityFlags.Center;
-                    input.SetPadding(10, 0, 10, 0);
-                    if (rowType == TableRowType.Blurb)
-                    {
+                    if (rowType == TableRowType.Blurb)                   
                         input.SetSingleLine(false);
-                    }
-                    builder.SetView(input);
+
+                    LinearLayout layout = new LinearLayout(act);
+                    layout.Orientation = Orientation.Vertical;
+                    LinearLayout.LayoutParams parameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FillParent, LinearLayout.LayoutParams.WrapContent);
+                    parameters.SetMargins(20, 0, 20, 0);         
+                    layout.AddView(input,parameters);
+
+                    builder.SetView(layout);
                     builder.SetPositiveButton(PositiveButtonTitle, delegate(object o, DialogClickEventArgs e)
                     {
                         var s = input.Text;
                         td.SetValue(s, row, section);
                         ReloadData();
+                        ChangedValue(name,value,s);
                     });
                     builder.SetNeutralButton(NeutralButtonTitle, delegate(object o, DialogClickEventArgs e)
                     {
@@ -194,6 +200,7 @@ namespace Tables.Droid
                         {
                             td.SetValue(changedDate, row, section);
                             ReloadData();
+                            ChangedValue(name,value,changedDate);
                         });
 
                         newFragment.Show(frag, "datePicker");
