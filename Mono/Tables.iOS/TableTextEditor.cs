@@ -5,7 +5,7 @@ namespace Tables.iOS
 {
     public delegate void TextChangedDelegate(string changedString);
 
-    public class TableTextEditor : UIViewController
+	public class TableTextEditor : TableEditor
     {
         private string value;
         private UITextView text;
@@ -42,14 +42,14 @@ namespace Tables.iOS
 
         private void ClickedCancel(object obj,EventArgs e)
         {
-            DismissViewController(true, null);
+			CloseViewController ();
         }
 
         private void ClickedDone(object obj,EventArgs e)
         {
             if (textChanged != null)
-                textChanged(text.Text);
-            DismissViewController(true, null);
+                textChanged(text.Text);            
+			CloseViewController ();
         }
     }
 }

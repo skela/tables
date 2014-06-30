@@ -203,11 +203,15 @@ namespace Tables.iOS
                     {
                         string str = value as string;
                         var dname = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
-                        tvc.PresentViewController(new UINavigationController(new TableTextEditor(dname,str,delegate(string changedString)
-                        {
-                            td.SetValue(changedString, indexPath.Row, indexPath.Section);
-                            ReloadData();
-                        })), true, null);
+						var textEditor = new TableTextEditor(dname,str,delegate(string changedString)
+						{
+							td.SetValue(changedString, indexPath.Row, indexPath.Section);
+							ReloadData();
+						});
+						if (tvc.NavigationController == null)
+							tvc.PresentViewController (new UINavigationController (textEditor), true, null);
+						else
+							tvc.NavigationController.PushViewController (textEditor, true);
                     }
                 break;
                 case TableRowType.Date:
@@ -223,11 +227,16 @@ namespace Tables.iOS
                             mode = UIDatePickerMode.Date;
                         else if (rowType == TableRowType.Time)
                             mode = UIDatePickerMode.Time;
-                        dvc.PresentViewController(new UINavigationController(new TableTimeEditor(dname,str,mode,delegate(DateTime changedDate)
-                        {
-                            td.SetValue(changedDate, indexPath.Row, indexPath.Section);
-                            ReloadData();
-                        })), true, null);
+
+						var dateEditor = new TableTimeEditor (dname, str, mode, delegate(DateTime changedDate)
+						{
+							td.SetValue (changedDate, indexPath.Row, indexPath.Section);
+							ReloadData ();
+						});
+						if (dvc.NavigationController == null)
+							dvc.PresentViewController(new UINavigationController(dateEditor), true, null);
+						else
+							dvc.NavigationController.PushViewController (dateEditor, true);							
                     }
                 break;
             }

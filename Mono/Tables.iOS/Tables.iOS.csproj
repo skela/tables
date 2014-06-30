@@ -9,6 +9,8 @@
     <RootNamespace>Tables.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>Tables.iOS</AssemblyName>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,6 +44,7 @@
     <Compile Include="TableAdapter.cs" />
     <Compile Include="TableTextEditor.cs" />
     <Compile Include="TableTimeEditor.cs" />
+    <Compile Include="TableEditor.cs" />
   </ItemGroup>
   <Import Project="..\Tables\Tables.projitems" Label="Shared" Condition="Exists('..\Tables\Tables.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
