@@ -1,5 +1,7 @@
 ﻿using System;
 using MonoTouch.UIKit;
+using System.Drawing;
+using MonoTouch.Foundation;
 
 namespace Tables.iOS
 {
@@ -8,15 +10,46 @@ namespace Tables.iOS
 	public class TableTextEditor : TableEditor
     {
         private string value;
-        private UITextView text;
+		private UITextView textView;
+		private UITextField textField;
         private TextChangedDelegate textChanged;
+		private TableRowType rowType;
+		private UITextAutocapitalizationType capitalizationType=UITextAutocapitalizationType.Sentences;
+		private UITextAutocorrectionType correctionType;
+		private UIKeyboardType keyboardType;
 
-        public TableTextEditor(string title,string value,TextChangedDelegate delg)
+		public TableTextEditor(TableRowType rowType,string title,string value,TextChangedDelegate delg)
         {
             this.Title = title;
             this.value = value;
             this.textChanged = delg;
+			this.rowType = rowType;
         }
+
+		public void Configure (TableAdapterRowConfig config)
+		{
+			if (config!=null)
+			{
+				if (config.KeyboardType != Tables.KeyboardType.Ignore)
+					KeyboardType = TableEditor.ConvertKeyboardType(config.KeyboardType);
+				if (config.CapitalizationType != Tables.CapitalizationType.Ignore)
+					CapitalizationType = TableEditor.ConvertCapitatilizationType(config.CapitalizationType);
+				if (config.CorrectionType != Tables.CorrectionType.Ignore)
+					CorrectionType = TableEditor.ConvertCorrectionType(config.CorrectionType);
+			}
+		}
+
+		IUITextInputTraits text
+		{
+			get
+			{
+				if (textView != null)
+					return textView;
+				if (textField != null)
+					return textField;
+				return null;
+			}
+		}
 
         public override void ViewDidLoad()
         {
@@ -27,18 +60,61 @@ namespace Tables.iOS
                 NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Cancel, ClickedCancel);
                 NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Done, ClickedDone);
             }
-            text = new UITextView(View.Bounds);
-            text.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
-            text.Text = value;
-            View.AddSubview(text);
+
+			if (rowType == TableRowType.Blurb)
+			{
+				textView = new UITextView (View.Bounds);
+				textView.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+				textView.Text = value;
+				textView.AutocapitalizationType = capitalizationType;
+				textView.AutocorrectionType = correctionType;
+				textView.KeyboardType = keyboardType;
+				View.AddSubview (textView);
+			}
+			else if (rowType == TableRowType.Text)
+			{
+				View.BackgroundColor = UIColor.White;
+				textField = new UITextField (new RectangleF (10, 10, View.Bounds.Size.Width - 20, 44));
+				textField.BorderStyle = UITextBorderStyle.Line;
+				textField.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+				textField.Text = value;
+				textField.AutocapitalizationType = capitalizationType;
+				textField.AutocorrectionType = correctionType;
+				textField.KeyboardType = keyboardType;
+				textField.ShouldReturn = ClickedReturn;
+				View.AddSubview (textField);
+			}
         }
 
         public override void ViewWillAppear(bool animated)
         {
             base.ViewWillAppear(animated);
 
-            text.BecomeFirstResponder();
+            if (textView != null)
+            {
+                ListenToKeyboardNotifications(true);
+            }
+
+			if (textView != null)
+				textView.BecomeFirstResponder ();
+			else if (textField != null)
+				textField.BecomeFirstResponder ();
         }
+
+        public override void ViewDidDisappear(bool animated)
+        {
+            base.ViewDidDisappear(animated);
+            if (textView != null)
+            {
+                ListenToKeyboardNotifications(false);
+            }
+        }
+
+		bool ClickedReturn (UITextField textField)
+		{
+			ClickedDone (null, null);
+			return true;
+		}
 
         private void ClickedCancel(object obj,EventArgs e)
         {
@@ -47,9 +123,182 @@ namespace Tables.iOS
 
         private void ClickedDone(object obj,EventArgs e)
         {
-            if (textChanged != null)
-                textChanged(text.Text);            
+			if (textChanged != null)
+			{
+				if (textView!=null)
+					textChanged (textView.Text);            
+				else if (textField!=null)
+					textChanged (textField.Text);            
+			}
 			CloseViewController ();
         }
+
+		public UITextAutocapitalizationType CapitalizationType
+		{
+			get
+			{
+				return capitalizationType;
+			}
+			set
+			{
+				capitalizationType = value;
+				if (text != null)
+					text.AutocapitalizationType = capitalizationType;
+			}
+		}
+
+		public UITextAutocorrectionType CorrectionType
+		{
+			get
+			{
+				return correctionType;
+			}
+			set
+			{
+				correctionType = value;
+				if (text != null)
+					text.AutocorrectionType = correctionType;
+			}
+		}
+
+		public UIKeyboardType KeyboardType
+		{
+			get
+			{
+				return keyboardType;
+			}
+			set
+			{
+				keyboardType = value;
+				if (text != null)
+					text.KeyboardType = keyboardType;
+			}
+		}
+
+        #region Keyboard Offset
+
+        public override UIRectEdge EdgesForExtendedLayout
+        {
+            get
+            {
+                return UIRectEdge.None;
+            }
+        }
+
+        public override bool ExtendedLayoutIncludesOpaqueBars
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        NSObject hideObserver;
+        NSObject didHideObserver;
+        NSObject showObserver;
+        NSObject willShowObserver;
+
+        public void ListenToKeyboardNotifications(bool shouldListen)
+        {
+            var c = NSNotificationCenter.DefaultCenter;
+            if (shouldListen)
+            {
+                hideObserver = c.AddObserver (UIKeyboard.WillHideNotification, HandleKeyboardWillHide);
+                didHideObserver = c.AddObserver (UIKeyboard.DidHideNotification, HandleKeyboardDidHide);
+                showObserver = c.AddObserver (UIKeyboard.DidShowNotification, HandleKeyboardDidShow);           
+                willShowObserver = c.AddObserver (UIKeyboard.WillShowNotification, HandleKeyboardWillShow);         
+            }
+            else
+            {
+                if (hideObserver!=null) c.RemoveObserver (hideObserver); hideObserver = null;
+                if (didHideObserver!=null) c.RemoveObserver (didHideObserver); didHideObserver = null;
+                if (showObserver!=null) c.RemoveObserver (showObserver); showObserver = null;
+                if (willShowObserver!=null) c.RemoveObserver (willShowObserver); willShowObserver = null;
+            }
+        }
+
+        NSNotification lastNotification;
+        public float KeyboardHeight
+        {
+            get
+            {
+                return Math.Min (KeyboardSize.Height, KeyboardSize.Width);
+            }
+        }
+        public SizeF KeyboardSize;
+
+        void HandleKeyboardWillShow(NSNotification notification)
+        {
+            lastNotification = notification;
+
+
+            lastNotification = null;
+        }
+
+        void HandleKeyboardDidShow(NSNotification notification)
+        {       
+            lastNotification = notification;
+
+            AdjustTextView();
+
+            lastNotification = null;
+        }
+
+        void HandleKeyboardWillHide(NSNotification notification)
+        {
+            lastNotification = notification;
+
+            ResetTextView();
+
+            lastNotification = null;
+        }
+
+        void HandleKeyboardDidHide(NSNotification notification)
+        {
+            lastNotification = notification;
+
+
+            lastNotification = null;
+        }
+
+        public void AdjustTextView()
+        {
+            if (lastNotification != null)
+            {
+                UIKeyboardEventArgs args = new UIKeyboardEventArgs (lastNotification);
+                RectangleF keyFrame = args.FrameBegin;
+                SizeF kbSize = keyFrame.Size;
+
+                var orientation = UIApplication.SharedApplication.StatusBarOrientation;
+                if (orientation == UIInterfaceOrientation.LandscapeLeft || orientation == UIInterfaceOrientation.LandscapeRight ) 
+                {
+                    SizeF origKeySize = kbSize;
+                    kbSize.Height = origKeySize.Width;
+                    kbSize.Width = origKeySize.Height;
+                }
+
+                KeyboardSize = kbSize;
+                if (textView != null)
+                {
+                    UIEdgeInsets contentInsets = new UIEdgeInsets (0.0f, 0.0f, kbSize.Height, 0.0f);
+                    textView.ContentInset = contentInsets;
+                    textView.ScrollIndicatorInsets = contentInsets;
+                }
+            }
+        }
+
+        public void ResetTextView()
+        {
+            KeyboardSize.Width = 0;
+            KeyboardSize.Height = 0;
+            if (textView != null)
+            {
+                UIEdgeInsets contentInsets = new UIEdgeInsets ();
+                textView.ContentInset = contentInsets;
+                textView.ScrollIndicatorInsets = contentInsets;
+            }
+        }
+
+        #endregion
     }
 }

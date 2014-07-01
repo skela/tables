@@ -13,6 +13,37 @@ namespace Tables
         DateTime
     } 
 
+	public enum KeyboardType
+	{
+		Ignore,
+		Default,
+		ASCIICapable,
+		NumbersAndPunctuation,
+		Url,
+		NumberPad,
+		PhonePad,
+		NamePhonePad,
+		EmailAddress,
+		DecimalPad,
+	}
+
+	public enum CapitalizationType
+	{
+		Ignore,
+		None,
+		Words,
+		Sentences,
+		AllCharacters
+	}
+
+	public enum CorrectionType
+	{
+		Ignore,
+		Default,
+		No,
+		Yes
+	}
+
     public interface ITableAdapterRow
     {
         string TableRowName { get; }

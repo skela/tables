@@ -20,6 +20,9 @@ namespace Tables
         public string TimeFormat = null;
         public string DateTimeFormat = null;
         public bool SimpleCheckbox = false;
+		public KeyboardType KeyboardType = KeyboardType.Ignore;
+		public CorrectionType CorrectionType = CorrectionType.Ignore;
+		public CapitalizationType CapitalizationType = CapitalizationType.Ignore;
     }
 
     public class TestData : ITableAdapterRowConfigurator

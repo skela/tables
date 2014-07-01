@@ -11,7 +11,7 @@ namespace Tables.iOS
         public ITableAdapterRowSelector RowSelector {get;set;}
         public ITableAdapterRowConfigurator RowConfigurator {get;set;}
         public ITableAdapterRowChanged RowChanged {get;set;}
-        private  UITableView tv;
+        private UITableView tv;
         private TableSource td;
 
         public TableAdapter(UITableView table=null,Object data=null,ITableAdapterRowConfigurator configs=null) : base()
@@ -113,7 +113,8 @@ namespace Tables.iOS
             UITableViewCell cell = tableView.DequeueReusableCell(name);
             if (cell == null )
             {
-                cell = new UITableViewCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
+                //cell = new UITableViewCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
+				cell = new UITableViewCell(UITableViewCellStyle.Subtitle,name);
                 if (rowType==TableRowType.Checkbox)
                 {
                     var s = td.RowSetting(RowConfigurator,name);
@@ -177,12 +178,12 @@ namespace Tables.iOS
             if (RowSelector.DidSelectRow(this,name))
                 return;
 
-            TableAdapterRowConfig settings = td.RowSetting(RowConfigurator,name);
-            if (settings != null)
+            TableAdapterRowConfig config = td.RowSetting(RowConfigurator,name);
+			if (config != null)
             {
-                if (settings.Clicked != null)
+				if (config.Clicked != null)
                 {
-                    settings.Clicked(this, null);
+					config.Clicked(this, null);
                     return;
                 }
             }
@@ -203,11 +204,14 @@ namespace Tables.iOS
                     {
                         string str = value as string;
                         var dname = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
-						var textEditor = new TableTextEditor(dname,str,delegate(string changedString)
+						var textEditor = new TableTextEditor (rowType, dname, str, delegate(string changedString)
 						{
-							td.SetValue(changedString, indexPath.Row, indexPath.Section);
-							ReloadData();
-						});
+							td.SetValue (changedString, indexPath.Row, indexPath.Section);
+							ReloadData ();
+						}
+						);
+						textEditor.Configure (config);
+
 						if (tvc.NavigationController == null)
 							tvc.PresentViewController (new UINavigationController (textEditor), true, null);
 						else
