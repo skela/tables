@@ -17,6 +17,7 @@ namespace Tables.iOS
 		private UITextAutocapitalizationType capitalizationType=UITextAutocapitalizationType.Sentences;
 		private UITextAutocorrectionType correctionType;
 		private UIKeyboardType keyboardType;
+		public bool ShouldAdjustTextContentInset;
 
 		public TableTextEditor(TableRowType rowType,string title,string value,TextChangedDelegate delg)
         {
@@ -90,7 +91,7 @@ namespace Tables.iOS
         {
             base.ViewWillAppear(animated);
 
-            if (textView != null)
+			if (textView != null && ShouldAdjustTextContentInset)
             {
                 ListenToKeyboardNotifications(true);
             }
@@ -193,6 +194,14 @@ namespace Tables.iOS
             }
         }
 
+        public override bool AutomaticallyAdjustsScrollViewInsets
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         NSObject hideObserver;
         NSObject didHideObserver;
         NSObject showObserver;
@@ -282,7 +291,7 @@ namespace Tables.iOS
                 {
                     UIEdgeInsets contentInsets = new UIEdgeInsets (0.0f, 0.0f, kbSize.Height, 0.0f);
                     textView.ContentInset = contentInsets;
-                    textView.ScrollIndicatorInsets = contentInsets;
+					textView.ScrollIndicatorInsets = contentInsets;
                 }
             }
         }

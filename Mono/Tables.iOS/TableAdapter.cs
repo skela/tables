@@ -13,6 +13,7 @@ namespace Tables.iOS
         public ITableAdapterRowChanged RowChanged {get;set;}
         private UITableView tv;
         private TableSource td;
+		public bool ShouldAdjustTextContentInset=true;
 
         public TableAdapter(UITableView table=null,Object data=null,ITableAdapterRowConfigurator configs=null) : base()
         {
@@ -78,29 +79,40 @@ namespace Tables.iOS
         static UIFont titleFont = UIFont.SystemFontOfSize(16);
         static UIFont detailFont = UIFont.FromName ("Helvetica", 14);
 
+		public float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			var rowType = td.RowType(RowConfigurator,indexPath.Row,indexPath.Section);
+			if (rowType == TableRowType.Blurb)
+			{
+				var name = td.DisplayName(RowConfigurator,indexPath.Row, indexPath.Section);
+				var value = td.GetValue(indexPath.Row, indexPath.Section);
+				string text = value as string;
+				if (text == null) text = "";
+				float contentMargin = 10;
+				float contentWidth = tableView.Bounds.Width;
+
+				SizeF constraint = new SizeF(contentWidth - (contentMargin * 2), 20000.0f);
+				SizeF size = tv.StringSize (text, detailFont, constraint, UILineBreakMode.WordWrap);
+				SizeF sizeT = tv.StringSize(name, titleFont);
+
+				float height = Math.Max(size.Height,44.0f) + sizeT.Height;
+
+				return height + (contentMargin * 4);
+			}
+			return 44;
+		}
+
         [Export("tableView:heightForRowAtIndexPath:")]
         public float HeightForRow(UITableView tableView, NSIndexPath indexPath)
         {
-            var rowType = td.RowType(RowConfigurator,indexPath.Row,indexPath.Section);
-            if (rowType == TableRowType.Blurb)
-            {
-                var name = td.DisplayName(RowConfigurator,indexPath.Row, indexPath.Section);
-                var value = td.GetValue(indexPath.Row, indexPath.Section);
-                string text = value as string;
-				if (text == null) text = "";
-                float contentMargin = 10;
-                float contentWidth = tableView.Bounds.Width;
-
-                SizeF constraint = new SizeF(contentWidth - (contentMargin * 2), 20000.0f);
-                SizeF size = tv.StringSize (text, detailFont, constraint, UILineBreakMode.WordWrap);
-                SizeF sizeT = tv.StringSize(name, titleFont);
-
-                float height = Math.Max(size.Height,44.0f) + sizeT.Height;
-
-                return height + (contentMargin * 4);
-            }
-            return 44;
+			return GetHeightForRow (tableView, indexPath);
         }
+
+		[Export("tableView:estimatedHeightForRowAtIndexPath:")]
+		public float EstimatedHeightForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			return GetHeightForRow (tableView, indexPath);
+		}
 
         [Export ("tableView:cellForRowAtIndexPath:")]
         public UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
@@ -130,6 +142,8 @@ namespace Tables.iOS
                     cell.TextLabel.Font = titleFont;
                     cell.DetailTextLabel.Lines = 0;
                     cell.DetailTextLabel.Font = detailFont;
+					cell.DetailTextLabel.ClipsToBounds = true;
+					cell.ClipsToBounds = true;
                 }
             }
 
@@ -210,6 +224,7 @@ namespace Tables.iOS
 							ReloadData ();
 						}
 						);
+						textEditor.ShouldAdjustTextContentInset = ShouldAdjustTextContentInset;
 						textEditor.Configure (config);
 
 						if (tvc.NavigationController == null)
