@@ -45,6 +45,7 @@
     <Compile Include="TableTextEditor.cs" />
     <Compile Include="TableTimeEditor.cs" />
     <Compile Include="TableEditor.cs" />
+    <Compile Include="TableItemsAdapter.cs" />
   </ItemGroup>
   <Import Project="..\Tables\Tables.projitems" Label="Shared" Condition="Exists('..\Tables\Tables.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

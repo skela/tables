@@ -33,4 +33,15 @@ namespace Tables
     {
         bool DidSelectRow(ITableAdapter adapter,string rowName);
     }
+		
+	public interface TableAdapterItemSelector
+	{
+		void DidSelectItem(Object item);
+	}
+
+	public interface TableAdapterItemInformer
+	{
+		string ItemText(Object item);
+		string ItemDetails(Object item);
+	}
 }

@@ -66,7 +66,7 @@ namespace Tables.iOS
         [Export ("numberOfSectionsInTableView:")]
         public int NumberOfSections (UITableView tableView)
         {
-            return 1;
+			return td.NumberOfSections();
         }
 
         [Export ("tableView:numberOfRowsInSection:")]
