@@ -66,6 +66,7 @@
     <Compile Include="..\Tables\Tables.cs">
       <Link>Tables\Tables.cs</Link>
     </Compile>
+    <Compile Include="TableItemsAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
