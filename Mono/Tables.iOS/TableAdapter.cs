@@ -149,8 +149,8 @@ namespace Tables.iOS
 						tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 						tf.Font = detailFont;
 						tf.TextAlignment = UITextAlignment.Right;
-						tf.ValueChanged += TextChanged;
 						tf.WeakDelegate = this;
+
 						var inp = new TableAdapterInlineTextInputAccessoryView (c, tableView.Frame.Width);
 						inp.PreviousButton.TouchUpInside += ClickedPrevious;
 						inp.NextButton.TouchUpInside += ClickedNext;
@@ -391,9 +391,8 @@ namespace Tables.iOS
 			UIApplication.SharedApplication.KeyWindow.EndEditing(true);
 		}
 
-		void TextChanged (object sender, EventArgs e)
-		{
-			UITextField tf = sender as UITextField;
+		void TextFieldChanged(UITextField tf)
+		{		
 			NSIndexPath indexPath = (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath;
 			td.SetValue (tf.Text, indexPath.Row, indexPath.Section);
 		}
@@ -406,6 +405,15 @@ namespace Tables.iOS
 			tv.SelectRow (nextIndexPath, true, UITableViewScrollPosition.Top);
 			RowSelected (tv, nextIndexPath);
 			return true;
+		}
+
+		[Export ("textField:shouldChangeCharactersInRange:replacementString:")]
+		public bool TextFieldShouldChangeCharactersInRange (UITextField tf,NSRange range,string replacement)
+		{
+			var text = tf.Text;
+			tf.Text = text.Substring (0, range.Location) + replacement + text.Substring (range.Location + range.Length);
+			TextFieldChanged (tf);
+			return false;
 		}
 
 		#endregion

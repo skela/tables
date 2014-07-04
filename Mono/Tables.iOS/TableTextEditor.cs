@@ -70,6 +70,7 @@ namespace Tables.iOS
 				textView.AutocapitalizationType = capitalizationType;
 				textView.AutocorrectionType = correctionType;
 				textView.KeyboardType = keyboardType;
+				textView.Font = UIFont.SystemFontOfSize (14);
 				View.AddSubview (textView);
 			}
 			else if (rowType == TableRowType.Text)
