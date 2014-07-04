@@ -115,6 +115,27 @@ namespace Tables.iOS
 			return GetHeightForRow (tableView, indexPath);
 		}
 
+		public class TableAdapterCell : UITableViewCell
+		{
+			public TableAdapterCell (UITableViewCellStyle style, string ident) : base(style,ident)
+			{
+
+			}
+
+			public override void LayoutSubviews ()
+			{
+				base.LayoutSubviews ();
+
+				if (AccessoryView is UITextField)
+				{
+					TextLabel.SizeToFit ();
+					float w = Bounds.Width;
+					float x = TextLabel.Frame.X + TextLabel.Frame.Width + 10;
+					AccessoryView.Frame = new RectangleF (x, 0, w - x - 10, 44);
+				}
+			}
+		}
+
         [Export ("tableView:cellForRowAtIndexPath:")]
         public UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
         {
@@ -123,11 +144,11 @@ namespace Tables.iOS
             var rowType = td.RowType(RowConfigurator,indexPath.Row,indexPath.Section);
             var value = td.GetValue(indexPath.Row, indexPath.Section);
 
-            UITableViewCell cell = tableView.DequeueReusableCell(name);
+			TableAdapterCell cell = tableView.DequeueReusableCell(name) as TableAdapterCell;
             if (cell == null )
             {
                 //cell = new UITableViewCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
-				cell = new UITableViewCell(UITableViewCellStyle.Subtitle,name);
+				cell = new TableAdapterCell(UITableViewCellStyle.Subtitle,name);
                 if (rowType==TableRowType.Checkbox)
                 {
                     var c = td.RowSetting(RowConfigurator,name);
