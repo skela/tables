@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tables
 {
@@ -24,7 +25,22 @@ namespace Tables
 		public KeyboardType KeyboardType = KeyboardType.Ignore;
 		public CorrectionType CorrectionType = CorrectionType.Ignore;
 		public CapitalizationType CapitalizationType = CapitalizationType.Ignore;
+		public List<Object>SingleChoiceOptions = null;
     }
+
+	public class TableAdapterRowConfigs : ITableAdapterRowConfigurator
+	{
+		public Dictionary<string,TableAdapterRowConfig> Configs = new Dictionary<string,TableAdapterRowConfig> ();
+
+		public TableAdapterRowConfig ConfigForRow(string rowName)
+		{
+			if (Configs.ContainsKey (rowName))
+			{
+				return Configs [rowName];
+			}
+			return null;
+		}
+	}
 
     public class TestData : ITableAdapterRowConfigurator
     {

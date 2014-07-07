@@ -240,6 +240,17 @@ namespace Tables.Droid
                     c.Blurb.Visibility = ViewStates.Visible;
                     c.Blurb.Text = value as string;
                 break;
+
+                case TableRowType.SingleChoiceList:
+                    c.Detail.Text = "";
+                    string choiceString = null;
+                    if (value!=null)
+                        choiceString = value.ToString ();
+                    c.Switch.Visibility = ViewStates.Gone;
+                    c.Blurb.Visibility = ViewStates.Visible;
+                    c.Blurb.Text = choiceString;
+                break;
+
                 case TableRowType.Checkbox:
                     c.Detail.Text = "";
                     c.Blurb.Text = "";

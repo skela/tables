@@ -3,6 +3,7 @@ using System.Drawing;
 
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using System.Collections.Generic;
 
 namespace Tables.iOS
 {
@@ -148,56 +149,67 @@ namespace Tables.iOS
 			TableAdapterCell cell = tableView.DequeueReusableCell(name) as TableAdapterCell;
             if (cell == null )
             {
-                //cell = new UITableViewCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
-				cell = new TableAdapterCell(UITableViewCellStyle.Subtitle,name);
+				cell = new TableAdapterCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
+				cell.Accessory = UITableViewCellAccessory.None;
+				//cell = new TableAdapterCell(UITableViewCellStyle.Subtitle,name);
 
-                if (rowType==TableRowType.Checkbox)
-                {
-                    var c = td.RowSetting(RowConfigurator,name);
-                    if (c == null || !c.SimpleCheckbox)
-                    {
-                        var sw = new UISwitch();
-                        sw.UserInteractionEnabled = false;
-                        cell.AccessoryView = sw;
-                    }
-                }
-				if (rowType == TableRowType.Text)
+				switch (rowType)
 				{
-					var c = td.RowSetting(RowConfigurator,name);
-					if (c != null && c.InlineTextEditing)
+					case TableRowType.Checkbox:
 					{
-						var tf = new UITextField (new RectangleF (0, 0, 160, 44));
-						tf.UserInteractionEnabled = true;
-						tf.BorderStyle = UITextBorderStyle.None;
-						tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-						tf.Font = detailFont;
-						tf.TextColor = DetailTextColor;
-						tf.TextAlignment = UITextAlignment.Right;
-						tf.WeakDelegate = this;
+						var c = td.RowSetting(RowConfigurator,name);
+						if (c == null || !c.SimpleCheckbox)
+						{
+							var sw = new UISwitch();
+							sw.UserInteractionEnabled = false;
+							cell.AccessoryView = sw;
+						}
+					} break;
+					
+					case TableRowType.Text:
+					{
+						var c = td.RowSetting(RowConfigurator,name);
+						if (c != null && c.InlineTextEditing)
+						{
+							var tf = new UITextField (new RectangleF (0, 0, 160, 44));
+							tf.UserInteractionEnabled = true;
+							tf.BorderStyle = UITextBorderStyle.None;
+							tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+							tf.Font = detailFont;
+							tf.TextColor = DetailTextColor;
+							tf.TextAlignment = UITextAlignment.Right;
+							tf.WeakDelegate = this;
 
-						var inp = new TableAdapterInlineTextInputAccessoryView (c, tableView.Frame.Width);
-						inp.PreviousButton.TouchUpInside += ClickedPrevious;
-						inp.NextButton.TouchUpInside += ClickedNext;
-						inp.DismissButton.TouchUpInside += ClickedDismiss;
+							var inp = new TableAdapterInlineTextInputAccessoryView (c, tableView.Frame.Width);
+							inp.PreviousButton.TouchUpInside += ClickedPrevious;
+							inp.NextButton.TouchUpInside += ClickedNext;
+							inp.DismissButton.TouchUpInside += ClickedDismiss;
 
-						tf.InputAccessoryView = inp;
-						TableEditor.ConfigureTextControl (c, tf);
-						cell.AccessoryView = tf;
-					}
-					else
+							tf.InputAccessoryView = inp;
+							TableEditor.ConfigureTextControl (c, tf);
+							cell.AccessoryView = tf;
+						}
+						else
+						{
+							cell.DetailTextLabel.TextColor = DetailTextColor;
+						}
+					} break;
+
+					case TableRowType.Blurb:
+					{
+						cell.TextLabel.Font = titleFont;
+						cell.DetailTextLabel.Lines = 0;
+						cell.DetailTextLabel.Font = detailFont;
+						cell.DetailTextLabel.ClipsToBounds = true;
+						cell.DetailTextLabel.TextColor = DetailTextColor;
+						cell.ClipsToBounds = true;
+					} break;
+
+					default:
 					{
 						cell.DetailTextLabel.TextColor = DetailTextColor;
-					}
+					} break;
 				}
-                if (rowType == TableRowType.Blurb)
-                {
-                    cell.TextLabel.Font = titleFont;
-                    cell.DetailTextLabel.Lines = 0;
-                    cell.DetailTextLabel.Font = detailFont;
-					cell.DetailTextLabel.ClipsToBounds = true;
-					cell.DetailTextLabel.TextColor = DetailTextColor;
-					cell.ClipsToBounds = true;
-                }
             }
 
             cell.TextLabel.Text = td.DisplayName(RowConfigurator,indexPath.Row,indexPath.Section);
@@ -226,6 +238,13 @@ namespace Tables.iOS
                     cell.DetailTextLabel.Text = value as string; 
                     cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
                 break;
+				case TableRowType.SingleChoiceList:
+					string choiceString = null;
+					if (value!=null)
+						choiceString = value.ToString ();
+					cell.DetailTextLabel.Text = choiceString;
+					cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+				break;
                 case TableRowType.Checkbox:
                     cell.DetailTextLabel.Text = "";
                     var s = td.RowSetting(RowConfigurator,name);
@@ -308,6 +327,25 @@ namespace Tables.iOS
 						}
                     }
                 break;
+
+				case TableRowType.SingleChoiceList:
+					var sclvc = FirstAvailableViewController;
+					if (sclvc != null)
+					{
+						var dname = td.DisplayName (RowConfigurator, indexPath.Row, indexPath.Section);
+						var singleChoiceEditor = new TableSingleChoiceEditor (rowType, dname, value, config, delegate(Object changedChoice)
+						{
+							td.SetValue (changedChoice, indexPath.Row, indexPath.Section);
+							ReloadData ();
+						});
+
+						if (sclvc.NavigationController == null)
+							sclvc.PresentViewController (new UINavigationController (singleChoiceEditor), true, null);
+						else
+							sclvc.NavigationController.PushViewController (singleChoiceEditor, true);
+					}
+				break;
+
                 case TableRowType.Date:
                 case TableRowType.Time:
                 case TableRowType.DateTime:

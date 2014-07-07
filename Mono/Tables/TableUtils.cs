@@ -10,7 +10,8 @@ namespace Tables
         Checkbox,
         Date,
         Time,
-        DateTime
+        DateTime,
+		SingleChoiceList,
     } 
 
 	public enum KeyboardType
