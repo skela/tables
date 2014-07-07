@@ -15,6 +15,7 @@ namespace Tables.iOS
         private TableSource td;
 
 		public bool ShouldAdjustTextContentInset=true;
+		public UIColor DetailTextColor = UIColor.DarkGray;
 
         public TableAdapter(UITableView table=null,Object data=null,ITableAdapterRowConfigurator configs=null) : base()
         {
@@ -149,6 +150,7 @@ namespace Tables.iOS
             {
                 //cell = new UITableViewCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
 				cell = new TableAdapterCell(UITableViewCellStyle.Subtitle,name);
+
                 if (rowType==TableRowType.Checkbox)
                 {
                     var c = td.RowSetting(RowConfigurator,name);
@@ -164,11 +166,12 @@ namespace Tables.iOS
 					var c = td.RowSetting(RowConfigurator,name);
 					if (c != null && c.InlineTextEditing)
 					{
-						var tf = new UITextField(new RectangleF(0,0,160,44));
+						var tf = new UITextField (new RectangleF (0, 0, 160, 44));
 						tf.UserInteractionEnabled = true;
 						tf.BorderStyle = UITextBorderStyle.None;
 						tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 						tf.Font = detailFont;
+						tf.TextColor = DetailTextColor;
 						tf.TextAlignment = UITextAlignment.Right;
 						tf.WeakDelegate = this;
 
@@ -181,6 +184,10 @@ namespace Tables.iOS
 						TableEditor.ConfigureTextControl (c, tf);
 						cell.AccessoryView = tf;
 					}
+					else
+					{
+						cell.DetailTextLabel.TextColor = DetailTextColor;
+					}
 				}
                 if (rowType == TableRowType.Blurb)
                 {
@@ -188,6 +195,7 @@ namespace Tables.iOS
                     cell.DetailTextLabel.Lines = 0;
                     cell.DetailTextLabel.Font = detailFont;
 					cell.DetailTextLabel.ClipsToBounds = true;
+					cell.DetailTextLabel.TextColor = DetailTextColor;
 					cell.ClipsToBounds = true;
                 }
             }
