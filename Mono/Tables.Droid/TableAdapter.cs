@@ -206,6 +206,38 @@ namespace Tables.Droid
                         newFragment.Show(frag, "datePicker");
                     }
                 break;
+
+                case TableRowType.SingleChoiceList:
+
+                    var actSC = tv.Context as Activity;
+                    var dnameSC = td.DisplayName(RowConfigurator, row, section);
+                    var options = settings.SingleChoiceOptions;
+
+                    var singleChoiceAdapter = new TableSingleChoiceEditor(actSC, settings, options, value);
+
+                    int selectedItemIndex = -1;
+                    if (options!=null && value!=null)
+                    {
+                        selectedItemIndex = options.IndexOf (value);
+                    }
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(actSC);
+                    alert.SetTitle(dnameSC);
+                    alert.SetSingleChoiceItems(singleChoiceAdapter,selectedItemIndex,delegate(object sender, DialogClickEventArgs e)
+                    {
+                        if (e!=null)
+                        {
+                            var index = e.Which;
+                            Object theChoice = null;
+                            if (options!=null)
+                                theChoice = options[index];
+                            td.SetValue(theChoice, row, section);
+                            ReloadData();
+                            ChangedValue(name,value,theChoice);
+                        }
+                    });
+                    alert.Show();
+                break;
             }
         }
 

@@ -67,6 +67,7 @@
       <Link>Tables\Tables.cs</Link>
     </Compile>
     <Compile Include="TableItemsAdapter.cs" />
+    <Compile Include="TableSingleChoiceEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
