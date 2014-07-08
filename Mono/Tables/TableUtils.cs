@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Tables
 {
@@ -76,4 +77,14 @@ namespace Tables
 		string ItemText(Object item);
 		string ItemDetails(Object item);
 	}
+
+    public static class TextHelper
+    {
+        public static string ScrambledText(string str)
+        {
+            if (str == null || str.Length==0)
+                return "";
+            return new string('*', str.Length);
+        }
+    }
 }

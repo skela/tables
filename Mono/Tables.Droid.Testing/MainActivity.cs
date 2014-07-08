@@ -13,7 +13,7 @@ namespace Tables.Droid.Testing
     [Activity(Label = "Tables.Droid.Testing", MainLauncher = true)]
     public class MainActivity : FragmentActivity
     {
-        TableAdapter Adapter;
+        public TableAdapter Adapter;
         ListView listView;
 
         protected override void OnCreate(Bundle bundle)

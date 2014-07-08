@@ -217,47 +217,60 @@ namespace Tables.iOS
 
             switch (rowType)
             {
-				case TableRowType.Text:
-					var vs = value as string;
-					var c = td.RowSetting (RowConfigurator, name);
-					if (c != null && c.InlineTextEditing)
-					{
-						var tf = (cell.AccessoryView as UITextField);
-						tf.Enabled = editable;
-						tf.Text = vs;
-						(tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath = indexPath;
-						cell.DetailTextLabel.Text = "";
-					}
-					else
-					{
-						cell.DetailTextLabel.Text = vs;
-						cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
-					}
+                case TableRowType.Text:
+                    {
+                        var vs = value as string;
+                        var c = td.RowSetting(RowConfigurator, name);
+                        if (c != null && c.InlineTextEditing)
+                        {
+                            var tf = (cell.AccessoryView as UITextField);
+                            tf.Enabled = editable;
+                            tf.Text = vs;
+                            tf.SecureTextEntry = c.SecureTextEditing;
+                            (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath = indexPath;
+                            cell.DetailTextLabel.Text = "";
+                        }
+                        else
+                        {
+                            cell.DetailTextLabel.Text = c != null && c.SecureTextEditing ? TextHelper.ScrambledText(vs) : vs;
+                            cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                        }
+                    }
                 break;
                 case TableRowType.Blurb:
-                    cell.DetailTextLabel.Text = value as string; 
-                    cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                    {
+                        var vs = value as string;
+                        var c = td.RowSetting(RowConfigurator, name);
+                        cell.DetailTextLabel.Text = c != null && c.SecureTextEditing ? TextHelper.ScrambledText(vs) : vs;
+                        cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                    }
                 break;
-				case TableRowType.SingleChoiceList:
-					string choiceString = null;
-					if (value!=null)
-						choiceString = value.ToString ();
-					cell.DetailTextLabel.Text = choiceString;
-					cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                case TableRowType.SingleChoiceList:
+                    {
+                        string choiceString = null;
+                        if (value != null)
+                            choiceString = value.ToString();
+                        cell.DetailTextLabel.Text = choiceString;
+                        cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                    }
 				break;
                 case TableRowType.Checkbox:
-                    cell.DetailTextLabel.Text = "";
-                    var s = td.RowSetting(RowConfigurator,name);
-                    if (s!=null && s.SimpleCheckbox)
-                        cell.Accessory = ((bool)value) ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
-                    else
-                        (cell.AccessoryView as UISwitch).On = (bool)value;
+                    {
+                        cell.DetailTextLabel.Text = "";
+                        var s = td.RowSetting(RowConfigurator, name);
+                        if (s != null && s.SimpleCheckbox)
+                            cell.Accessory = ((bool)value) ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
+                        else
+                            (cell.AccessoryView as UISwitch).On = (bool)value;
+                    }
                 break;
                 case TableRowType.DateTime:
                 case TableRowType.Date:
                 case TableRowType.Time:
-                    cell.DetailTextLabel.Text = td.DisplayDate(RowConfigurator, indexPath.Row, indexPath.Section, (DateTime)value, rowType);
-                    cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                    {
+                        cell.DetailTextLabel.Text = td.DisplayDate(RowConfigurator, indexPath.Row, indexPath.Section, (DateTime)value, rowType);
+                        cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                    }
                 break;
             }
 

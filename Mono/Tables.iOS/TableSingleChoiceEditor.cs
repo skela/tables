@@ -10,21 +10,21 @@ namespace Tables.iOS
 
 	public class TableSingleChoiceEditor : TableEditor, IUIPickerViewDataSource
     {
-		private SingleChoiceChangedDelegate choiceChanged;
-		private TableRowType rowType;
+		private SingleChoiceChangedDelegate choiceChanged;		
 		private UIPickerView picker;
 		private List<Object> options;
 		private Object chosenOption;
-		private TableAdapterRowConfig config;
+		//private TableAdapterRowConfig config;
+        //private TableRowType rowType;
 
 		public TableSingleChoiceEditor(TableRowType rowType,string title,Object chosenOption,TableAdapterRowConfig config,SingleChoiceChangedDelegate delg)
         {
             this.Title = title;
-			this.choiceChanged = delg;
-			this.rowType = rowType;
+			this.choiceChanged = delg;			
 			this.chosenOption = chosenOption;
-			this.config = config;
 			this.options = config != null ? config.SingleChoiceOptions : null;
+            //this.config = config;
+            //this.rowType = rowType;
         }
 
         public override void ViewDidLoad()
@@ -39,11 +39,17 @@ namespace Tables.iOS
                 NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Done, ClickedDone);
             }
 
-			picker = new UIPickerView (View.Bounds);
-			picker.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+			picker = new UIPickerView ();
+            picker.AutoresizingMask = UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleWidth;			
 			picker.WeakDelegate = this;
 			picker.DataSource = this;
 			View.AddSubview (picker);
+        }
+
+        public override void ViewWillLayoutSubviews()
+        {
+            base.ViewWillLayoutSubviews();
+            picker.Center = View.Center;
         }
 
         public override void ViewDidAppear(bool animated)

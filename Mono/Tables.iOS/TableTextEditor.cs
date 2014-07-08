@@ -18,6 +18,7 @@ namespace Tables.iOS
 		private UITextAutocorrectionType correctionType;
 		private UIKeyboardType keyboardType;
 		public bool ShouldAdjustTextContentInset;
+        private bool secureTextEntry=false;
 
 		public TableTextEditor(TableRowType rowType,string title,string value,TextChangedDelegate delg)
         {
@@ -37,6 +38,7 @@ namespace Tables.iOS
 					CapitalizationType = TableEditor.ConvertCapitatilizationType(config.CapitalizationType);
 				if (config.CorrectionType != Tables.CorrectionType.Ignore)
 					CorrectionType = TableEditor.ConvertCorrectionType(config.CorrectionType);
+                SecureTextEntry = config.SecureTextEditing;
 			}
 		}
 
@@ -66,6 +68,7 @@ namespace Tables.iOS
 			{
 				textView = new UITextView (View.Bounds);
 				textView.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+                textView.SecureTextEntry = SecureTextEntry;
 				textView.Text = value;
 				textView.AutocapitalizationType = capitalizationType;
 				textView.AutocorrectionType = correctionType;
@@ -80,6 +83,7 @@ namespace Tables.iOS
 				textField.BorderStyle = UITextBorderStyle.Line;
 				textField.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 				textField.Text = value;
+                textField.SecureTextEntry = SecureTextEntry;
 				textField.AutocapitalizationType = capitalizationType;
 				textField.AutocorrectionType = correctionType;
 				textField.KeyboardType = keyboardType;
@@ -162,6 +166,20 @@ namespace Tables.iOS
 					text.AutocorrectionType = correctionType;
 			}
 		}
+
+        public bool SecureTextEntry
+        {
+            get
+            {
+                return secureTextEntry;
+            }
+            set
+            {
+                secureTextEntry = value;
+                if (text != null)
+                    text.SecureTextEntry = secureTextEntry;
+            }
+        }
 
 		public UIKeyboardType KeyboardType
 		{
