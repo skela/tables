@@ -61,8 +61,8 @@ namespace Tables.Droid.Testing
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050000
-			public const int myButton = 2131034112;
+			// aapt resource value: 0x7f060000
+			public const int myButton = 2131099648;
 			
 			static Id()
 			{
@@ -108,6 +108,25 @@ namespace Tables.Droid.Testing
 			}
 			
 			private String()
+			{
+			}
+		}
+		
+		public partial class Style
+		{
+			
+			// aapt resource value: 0x7f050000
+			public const int AlertDialog = 2131034112;
+			
+			// aapt resource value: 0x7f050001
+			public const int Theme_Tables = 2131034113;
+			
+			static Style()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Style()
 			{
 			}
 		}

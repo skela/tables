@@ -10,7 +10,7 @@ using Android.Support.V4.App;
 
 namespace Tables.Droid.Testing
 {
-    [Activity(Label = "Tables.Droid.Testing", MainLauncher = true)]
+    [Activity(Label = "Tables.Droid.Testing", MainLauncher = true,Theme = "@style/Theme.Tables")]
     public class MainActivity : FragmentActivity
     {
         public TableAdapter Adapter;
