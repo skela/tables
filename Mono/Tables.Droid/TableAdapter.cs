@@ -114,7 +114,10 @@ namespace Tables.Droid
 
         void ClickedItem(object sender, AdapterView.ItemClickEventArgs e)
         {
-            RowSelected(e.Position, 0);           
+            if (tv == null)
+                return;
+            if (e.Position-tv.HeaderViewsCount>=0)
+                RowSelected(e.Position-tv.HeaderViewsCount, 0);
         }
 
         public virtual void RowSelected (int row,int section)
