@@ -13,6 +13,14 @@ namespace Tables.iOS
 			HidesBottomBarWhenPushed = true;
 		}
 
+		public override bool ExtendedLayoutIncludesOpaqueBars
+		{
+			get
+			{
+				return true;
+			}
+		}
+
 		public bool IsModal
 		{
 			get

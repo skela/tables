@@ -39,18 +39,24 @@ namespace Tables.iOS
                 NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Done, ClickedDone);
             }
 
-			picker = new UIPickerView ();
-            picker.AutoresizingMask = UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleWidth;			
+			picker = new UIPickerView (View.Bounds);
+            picker.AutoresizingMask = UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleWidth;
 			picker.WeakDelegate = this;
 			picker.DataSource = this;
 			View.AddSubview (picker);
         }
-
+			
         public override void ViewWillLayoutSubviews()
         {
             base.ViewWillLayoutSubviews();
             picker.Center = View.Center;
         }
+
+		public override void ViewWillAppear (bool animated)
+		{
+			base.ViewWillAppear (animated);
+			picker.Center = View.Center;
+		}
 
         public override void ViewDidAppear(bool animated)
         {
