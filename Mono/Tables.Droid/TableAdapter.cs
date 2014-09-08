@@ -6,6 +6,8 @@ using Android.Content;
 using Android.Util;
 using Android.Support.V4.App;
 using Android.App;
+using Android.Text;
+using Android.Text.Method;
 
 namespace Tables.Droid
 {
@@ -112,7 +114,10 @@ namespace Tables.Droid
 
         void ClickedItem(object sender, AdapterView.ItemClickEventArgs e)
         {
-            RowSelected(e.Position, 0);           
+            if (tv == null)
+                return;
+            if (e.Position-tv.HeaderViewsCount>=0)
+                RowSelected(e.Position-tv.HeaderViewsCount, 0);
         }
 
         public virtual void RowSelected (int row,int section)
@@ -140,15 +145,17 @@ namespace Tables.Droid
             switch (rowType)
             {
                 case TableRowType.Checkbox:
+                {
                     var obj = !(bool)value;
                     td.SetValue(obj, row, section);
                     ReloadData();
-                    ChangedValue(name,value,obj);
+                    ChangedValue(name, value, obj);
+                }
                 break;
 
                 case TableRowType.Blurb:
                 case TableRowType.Text:
-
+                {
                     string str = value as string;
                     var dname = td.DisplayName(RowConfigurator, row, section);
                     var act = tv.Context as Activity;
@@ -156,18 +163,31 @@ namespace Tables.Droid
                     AlertDialog.Builder builder = new AlertDialog.Builder(act);
                     builder.SetTitle(dname);
 
-                    EditText input = new EditText(act);
-                    input.Text = str;
-                    input.InputType = Android.Text.InputTypes.ClassText;
+                    EditText input = new EditText(act);                    
+                    input.InputType = TableEditor.ConvertKeyboardType(KeyboardType.Default);
                     input.Gravity = GravityFlags.Center;
-                    if (rowType == TableRowType.Blurb)                   
+
+                    if (settings != null)
+                    {                        
+                        var inputTypes = TableEditor.ConvertKeyboardType(settings.KeyboardType);
+                        if (settings.SecureTextEditing)                        
+                            inputTypes |= InputTypes.TextVariationPassword;                                                    
+                        input.InputType = inputTypes;                        
+                        if (settings.SecureTextEditing)
+                            input.TransformationMethod = PasswordTransformationMethod.Instance;
+                    }
+
+                    input.Text = str;
+                    input.SetSelection(str == null ? 0 : str.Length);
+
+                    if (rowType == TableRowType.Blurb)
                         input.SetSingleLine(false);
 
                     LinearLayout layout = new LinearLayout(act);
                     layout.Orientation = Orientation.Vertical;
                     LinearLayout.LayoutParams parameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FillParent, LinearLayout.LayoutParams.WrapContent);
                     parameters.SetMargins(20, 0, 20, 0);         
-                    layout.AddView(input,parameters);
+                    layout.AddView(input, parameters);
 
                     builder.SetView(layout);
                     builder.SetPositiveButton(PositiveButtonTitle, delegate(object o, DialogClickEventArgs e)
@@ -175,20 +195,20 @@ namespace Tables.Droid
                         var s = input.Text;
                         td.SetValue(s, row, section);
                         ReloadData();
-                        ChangedValue(name,value,s);
+                        ChangedValue(name, value, s);
                     });
                     builder.SetNeutralButton(NeutralButtonTitle, delegate(object o, DialogClickEventArgs e)
                     {
 
                     });
                     builder.Show();
-
+                }
                 break;
 
                 case TableRowType.Date:
                 case TableRowType.Time:
                 case TableRowType.DateTime:
-
+                {
                     if (tv.Context is FragmentActivity)
                     {
                         var fr = tv.Context as FragmentActivity;
@@ -196,15 +216,51 @@ namespace Tables.Droid
 
                         DateTime v = (DateTime)value;
 
-                        DialogFragment newFragment = new TableTimeEditor(v,rowType,delegate(DateTime changedDate)
+                        DialogFragment newFragment = new TableTimeEditor(v, rowType, delegate(DateTime changedDate)
                         {
                             td.SetValue(changedDate, row, section);
                             ReloadData();
-                            ChangedValue(name,value,changedDate);
+                            ChangedValue(name, value, changedDate);
                         });
 
                         newFragment.Show(frag, "datePicker");
                     }
+                }
+                break;
+
+                case TableRowType.SingleChoiceList:
+                {
+                    var actSC = tv.Context as Activity;
+                    var dnameSC = td.DisplayName(RowConfigurator, row, section);
+                    var options = settings.SingleChoiceOptions;
+
+                    var singleChoiceAdapter = new TableSingleChoiceEditor(actSC, settings, options, value);
+
+                    int selectedItemIndex = -1;
+                    if (options != null && value != null)
+                    {
+                        selectedItemIndex = options.IndexOf(value);
+                    }
+
+                    //ContextThemeWrapper wrapper = new ContextThemeWrapper(actSC, Android.Resource.Style.ThemeDialog);
+                    //AlertDialog.Builder alert = new AlertDialog.Builder(wrapper);
+                    AlertDialog.Builder alert = new AlertDialog.Builder(actSC);
+                    alert.SetTitle(dnameSC);
+                    alert.SetSingleChoiceItems(singleChoiceAdapter, selectedItemIndex, delegate(object sender, DialogClickEventArgs e)
+                    {
+                        if (e != null)
+                        {
+                            var index = e.Which;
+                            Object theChoice = null;
+                            if (options != null)
+                                theChoice = options[index];
+                            td.SetValue(theChoice, row, section);
+                            ReloadData();
+                            ChangedValue(name, value, theChoice);
+                        }
+                    });
+                    alert.Show();
+                }
                 break;
             }
         }
@@ -229,49 +285,79 @@ namespace Tables.Droid
             switch (rowType)
             {
                 case TableRowType.Text:
-                    c.Blurb.Text = "";
-                    c.Detail.Text = value as string;
-                    c.Switch.Visibility = ViewStates.Gone;
-                    c.Blurb.Visibility = ViewStates.Gone;
-                break;
-                case TableRowType.Blurb:
-                    c.Detail.Text = "";
-                    c.Switch.Visibility = ViewStates.Gone;
-                    c.Blurb.Visibility = ViewStates.Visible;
-                    c.Blurb.Text = value as string;
-                break;
-                case TableRowType.Checkbox:
-                    c.Detail.Text = "";
-                    c.Blurb.Text = "";
-                    var s = td.RowSetting(RowConfigurator,name);
-                    if (s != null && s.SimpleCheckbox)
                     {
+                        var s = td.RowSetting(RowConfigurator, name);
+                        c.Blurb.Text = "";
+                        if (s!=null && s.SecureTextEditing)
+                            c.Detail.Text = TextHelper.ScrambledText(value as string);
+                        else
+                            c.Detail.Text = value as string;
                         c.Switch.Visibility = ViewStates.Gone;
                         c.Blurb.Visibility = ViewStates.Gone;
-                        c.Detail.Text = (bool)value?"\u2713":"";
+
                     }
-                    else
+                break;
+                case TableRowType.Blurb:
                     {
-                        c.Switch.Visibility = ViewStates.Visible;
-                        c.Blurb.Visibility = ViewStates.Gone;
-                        c.Switch.Checked = (bool)value;
+                        var s = td.RowSetting(RowConfigurator, name);
+                        c.Detail.Text = "";
+                        c.Switch.Visibility = ViewStates.Gone;
+                        c.Blurb.Visibility = ViewStates.Visible;
+                        if (s!=null && s.SecureTextEditing)
+                            c.Blurb.Text = TextHelper.ScrambledText(value as string);
+                        else
+                            c.Blurb.Text = value as string;
+                    }
+                break;
+
+                case TableRowType.SingleChoiceList:
+                    {
+                        c.Detail.Text = "";
+                        string choiceString = null;
+                        if (value != null)
+                            choiceString = value.ToString();
+                        c.Switch.Visibility = ViewStates.Gone;
+                        c.Blurb.Visibility = ViewStates.Visible;
+                        c.Blurb.Text = choiceString;
+                    }
+                break;
+
+                case TableRowType.Checkbox:
+                    {
+                        c.Detail.Text = "";
+                        c.Blurb.Text = "";
+                        var s = td.RowSetting(RowConfigurator, name);
+                        if (s != null && s.SimpleCheckbox)
+                        {
+                            c.Switch.Visibility = ViewStates.Gone;
+                            c.Blurb.Visibility = ViewStates.Gone;
+                            c.Detail.Text = (bool)value ? "\u2713" : "";
+                        }
+                        else
+                        {
+                            c.Switch.Visibility = ViewStates.Visible;
+                            c.Blurb.Visibility = ViewStates.Gone;
+                            c.Switch.Checked = (bool)value;
+                        }
                     }
                 break;
                 case TableRowType.DateTime:
                 case TableRowType.Date:
                 case TableRowType.Time:
-                    c.Switch.Visibility = ViewStates.Gone;
-                    if (td.DefaultStringRowType == TableRowType.Blurb)
                     {
-                        c.Blurb.Visibility = ViewStates.Visible;
-                        c.Detail.Text = "";
-                        c.Blurb.Text = td.DisplayDate(RowConfigurator, row, section, (DateTime)value, rowType);
-                    }
-                    else
-                    {
-                        c.Blurb.Visibility = ViewStates.Gone;
-                        c.Blurb.Text = "";
-                        c.Detail.Text = td.DisplayDate(RowConfigurator, row, section, (DateTime)value, rowType);
+                        c.Switch.Visibility = ViewStates.Gone;
+                        if (td.DefaultStringRowType == TableRowType.Blurb)
+                        {
+                            c.Blurb.Visibility = ViewStates.Visible;
+                            c.Detail.Text = "";
+                            c.Blurb.Text = td.DisplayDate(RowConfigurator, row, section, (DateTime)value, rowType);
+                        }
+                        else
+                        {
+                            c.Blurb.Visibility = ViewStates.Gone;
+                            c.Blurb.Text = "";
+                            c.Detail.Text = td.DisplayDate(RowConfigurator, row, section, (DateTime)value, rowType);
+                        }
                     }
                 break;
             }

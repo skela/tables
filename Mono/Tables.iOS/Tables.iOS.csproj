@@ -44,7 +44,11 @@
     <Compile Include="TableAdapter.cs" />
     <Compile Include="TableTextEditor.cs" />
     <Compile Include="TableTimeEditor.cs" />
+    <Compile Include="TableEditor.cs" />
+    <Compile Include="TableItemsAdapter.cs" />
+    <Compile Include="TableSingleChoiceEditor.cs" />
   </ItemGroup>
   <Import Project="..\Tables\Tables.projitems" Label="Shared" Condition="Exists('..\Tables\Tables.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.MonoTouch.CSharp.targets" />
 </Project>

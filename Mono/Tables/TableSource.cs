@@ -2,7 +2,14 @@
 
 namespace Tables
 {
-    public class TableSource
+	public interface ITableSource
+	{
+		Object GetValue(int row, int section);
+		int RowsInSection(int section);
+		int NumberOfSections();
+	}
+
+	public class TableSource : ITableSource
     {
         private Object data;
         public TableRowType DefaultStringRowType;
@@ -20,6 +27,11 @@ namespace Tables
                 return data;
             }
         }
+
+		public int NumberOfSections()
+		{
+			return 1;
+		}
 
         public int RowsInSection(int section)
         {

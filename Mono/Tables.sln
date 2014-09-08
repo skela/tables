@@ -87,16 +87,8 @@ Global
 		{6E036F3F-CB01-453B-B5E3-8C25B75C3181}.Release|iPhone.Build.0 = Release|iPhone
 		{6E036F3F-CB01-453B-B5E3-8C25B75C3181}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{6E036F3F-CB01-453B-B5E3-8C25B75C3181}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.AppStore|iPhone.ActiveCfg = AppStore|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{7A32E3D7-509B-495A-A9DD-06526F071E82}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Tables.iOS.Testing\Tables.iOS.Testing.csproj
+		StartupItem = Tables.Droid.Testing\Tables.Droid.Testing.csproj
 	EndGlobalSection
 EndGlobal

@@ -10,10 +10,10 @@ using Android.Support.V4.App;
 
 namespace Tables.Droid.Testing
 {
-    [Activity(Label = "Tables.Droid.Testing", MainLauncher = true)]
+    [Activity(Label = "Tables.Droid.Testing", MainLauncher = true,Theme = "@style/Theme.Tables")]
     public class MainActivity : FragmentActivity
     {
-        TableAdapter Adapter;
+        public TableAdapter Adapter;
         ListView listView;
 
         protected override void OnCreate(Bundle bundle)

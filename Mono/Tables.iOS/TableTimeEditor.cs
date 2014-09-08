@@ -5,7 +5,7 @@ namespace Tables.iOS
 {
     public delegate void DateChangedDelegate(DateTime changedDate);
 
-    public class TableTimeEditor : UIViewController
+	public class TableTimeEditor : TableEditor
     {
         private DateTime value;
         private UIDatePicker picker;
@@ -46,14 +46,14 @@ namespace Tables.iOS
 
         private void ClickedCancel(object obj,EventArgs e)
         {
-            DismissViewController(true, null);
+			CloseViewController ();            
         }
 
         private void ClickedDone(object obj,EventArgs e)
         {
             if (dateChanged != null)
                 dateChanged(picker.Date);
-            DismissViewController(true, null);
+			CloseViewController ();            
         }
     }
 }
