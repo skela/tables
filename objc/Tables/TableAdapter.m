@@ -1,0 +1,435 @@
+//
+//  TableAdapter.m
+//  tables
+//
+//  Created by Aleksander Slater on 07/09/2014.
+//  Copyright (c) 2014 Davincium. All rights reserved.
+//
+
+#import "TableAdapter.h"
+#import "TableSource.h"
+
+#define TITLE_FONT [UIFont systemFontOfSize:16]
+#define DETAIL_FONT [UIFont fontWithName:@"Helvetica" size:14]
+
+@interface TableAdapter()
+@property(nonatomic,strong) UITableView *tv;
+@property(nonatomic,strong) TableSource *td;
+@end
+
+@implementation TableAdapter
+
+- (id)initWithTable:(UITableView*)table data:(NSObject *)data configs:(id<ITableAdapterRowConfigurator>)configs
+{
+    self = [super init];
+    if (self)
+    {
+        
+        
+        self.shouldAdjustTextContentInset=YES;
+        self.detailTextColor = [UIColor darkGrayColor];
+        
+        self.td = [[TableSource alloc] initWithData:data];
+        self.rowConfigurator = configs;
+        self.data = data;
+        [self setTableView:table];
+    }
+    return self;
+}
+
+- (void)setTableView:(UITableView*)table
+{
+    self.tv.delegate = nil;
+    self.tv.dataSource = nil;
+    self.tv = nil;
+    self.tv = table;
+    self.tv.delegate = self;
+    self.tv.dataSource = self;
+}
+
+- (void)setData:(NSObject *)data
+{
+    self.td = [[TableSource alloc] initWithData:data];
+    [self reloadData];
+}
+
+- (NSObject*)data
+{
+    return self.td.data;
+}
+
+- (void)reloadData
+{
+    [self.tv reloadData];
+}
+
+#pragma mark - UITableView
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return self.td.numberOfSections;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.td rowsInSection:section];
+}
+
+- (CGFloat)getHeightForRow:(UITableView*)tableView atIndexPath:(NSIndexPath*)indexPath
+{
+    TableRowType rowType = [self.td rowType:self.rowConfigurator row:indexPath.row section:indexPath.section];
+    if (rowType == TableRowTypeBlurb)
+    {
+        NSString* name = [self.td displayName:self.rowConfigurator row:indexPath.row section:indexPath.section];
+        NSObject* value = [self.td getValueAtRow:indexPath.row andSection:indexPath.section];
+        NSString *text = (NSString*)value;
+        if (text == nil || ![text isKindOfClass:[NSString class]])
+            text = @"";
+        CGFloat contentMargin = 10;
+        CGFloat contentWidth = tableView.bounds.size.width;
+        CGSize constraint = CGSizeMake(contentWidth - (contentMargin * 2), 20000.0f);
+        
+        CGSize size = [TableHelper stringSize:text font:DETAIL_FONT constraint:constraint lineBreakMode:UILineBreakModeWordWrap];
+        CGSize sizeT = [TableHelper stringSize:name font:TITLE_FONT];
+        CGFloat height = MAX(size.height,44.0f) + sizeT.height;
+        return height + (contentMargin * 4);
+    }
+    return 44;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self getHeightForRow:tableView atIndexPath:indexPath];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [self getHeightForRow:tableView atIndexPath:indexPath];
+}
+
+
+- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *name = [self.td rowName:indexPath.row andSection:indexPath.section];
+    BOOL editable = [self.td rowEditable:self.rowConfigurator row:indexPath.row section:indexPath.section];
+    TableRowType rowType = [self.td rowType:self.rowConfigurator row:indexPath.row section:indexPath.section];
+    NSObject *value = [self.td getValueAtRow:indexPath.row andSection:indexPath.section];
+    TableAdapterCell *cell = (TableAdapterCell*)[tableView dequeueReusableCellWithIdentifier:name];
+        if (cell == nil )
+        {
+            cell = [[TableAdapterCell alloc] initWithStyle:(rowType==TableRowTypeBlurb?UITableViewCellStyleSubtitle:UITableViewCellStyleValue1 andIdentifier:name];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            //cell = new TableAdapterCell(UITableViewCellStyle.Subtitle,name);
+            switch (rowType)
+            {
+                case TableRowType.Checkbox:
+                {
+                    var c = td.RowSetting(RowConfigurator,name);
+                    if (c == null || !c.SimpleCheckbox)
+                    {
+                        var sw = new UISwitch();
+                        sw.UserInteractionEnabled = false;
+                        cell.AccessoryView = sw;
+                    }
+                } break;
+                case TableRowType.Text:
+                {
+                    var c = td.RowSetting(RowConfigurator,name);
+                    if (c != null && c.InlineTextEditing)
+                    {
+                        var tf = new UITextField (new RectangleF (0, 0, 160, 44));
+                        tf.UserInteractionEnabled = true;
+                        tf.BorderStyle = UITextBorderStyle.None;
+                        tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+                        tf.Font = detailFont;
+                        tf.TextColor = DetailTextColor;
+                        tf.TextAlignment = UITextAlignment.Right;
+                        tf.WeakDelegate = this;
+                        var inp = new TableAdapterInlineTextInputAccessoryView (c, tableView.Frame.Width);
+                        inp.PreviousButton.TouchUpInside += ClickedPrevious;
+                        inp.NextButton.TouchUpInside += ClickedNext;
+                        inp.DismissButton.TouchUpInside += ClickedDismiss;
+                        tf.InputAccessoryView = inp;
+                        TableEditor.ConfigureTextControl (c, tf);
+                        cell.AccessoryView = tf;
+                    }
+                    else
+                    {
+                        cell.DetailTextLabel.TextColor = DetailTextColor;
+                    }
+                } break;
+                case TableRowType.Blurb:
+                {
+                    cell.TextLabel.Font = titleFont;
+                    cell.DetailTextLabel.Lines = 0;
+                    cell.DetailTextLabel.Font = detailFont;
+                    cell.DetailTextLabel.ClipsToBounds = true;
+                    cell.DetailTextLabel.TextColor = DetailTextColor;
+                    cell.ClipsToBounds = true;
+                } break;
+                default:
+                {
+                    cell.DetailTextLabel.TextColor = DetailTextColor;
+                } break;
+            }
+        }
+        cell.TextLabel.Text = td.DisplayName(RowConfigurator,indexPath.Row,indexPath.Section);
+        cell.SelectionStyle = editable ? UITableViewCellSelectionStyle.Default : UITableViewCellSelectionStyle.None;
+        switch (rowType)
+        {
+            case TableRowType.Text:
+            {
+                var vs = value as string;
+                var c = td.RowSetting(RowConfigurator, name);
+                if (c != null && c.InlineTextEditing)
+                {
+                    var tf = (cell.AccessoryView as UITextField);
+                    tf.Enabled = editable;
+                    tf.Text = vs;
+                    tf.SecureTextEntry = c.SecureTextEditing;
+                    (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath = indexPath;
+                    cell.DetailTextLabel.Text = "";
+                }
+                else
+                {
+                    cell.DetailTextLabel.Text = c != null && c.SecureTextEditing ? TextHelper.ScrambledText(vs) : vs;
+                    cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+                }
+            }
+                break;
+            case TableRowType.Blurb:
+            {
+                var vs = value as string;
+                var c = td.RowSetting(RowConfigurator, name);
+                cell.DetailTextLabel.Text = c != null && c.SecureTextEditing ? TextHelper.ScrambledText(vs) : vs;
+                cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+            }
+                break;
+            case TableRowType.SingleChoiceList:
+            {
+                string choiceString = null;
+                if (value != null)
+                    choiceString = value.ToString();
+                cell.DetailTextLabel.Text = choiceString;
+                cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+            }
+                break;
+            case TableRowType.Checkbox:
+            {
+                cell.DetailTextLabel.Text = "";
+                var s = td.RowSetting(RowConfigurator, name);
+                if (s != null && s.SimpleCheckbox)
+                    cell.Accessory = ((bool)value) ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
+                else
+                    (cell.AccessoryView as UISwitch).On = (bool)value;
+            }
+                break;
+            case TableRowType.DateTime:
+            case TableRowType.Date:
+            case TableRowType.Time:
+            {
+                cell.DetailTextLabel.Text = td.DisplayDate(RowConfigurator, indexPath.Row, indexPath.Section, (DateTime)value, rowType);
+                cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+            }
+                break;
+        }
+        return cell;
+    }
+    [Export ("tableView:didSelectRowAtIndexPath:")]
+    public void RowSelected (UITableView tableView, NSIndexPath indexPath)
+    {
+        var name = td.GetName(indexPath.Row,indexPath.Section);
+        var value = td.GetValue(indexPath.Row,indexPath.Section);
+        if (!td.Editable(RowConfigurator,indexPath.Row,indexPath.Section))
+            return;
+        var rowType = td.RowType(RowConfigurator,indexPath.Row,indexPath.Section);
+        if (RowSelector != null)
+            if (RowSelector.DidSelectRow(this,name))
+                return;
+        TableAdapterRowConfig config = td.RowSetting(RowConfigurator,name);
+        if (config != null)
+        {
+            if (config.Clicked != null)
+            {
+                config.Clicked(this, null);
+                return;
+            }
+        }
+        switch (rowType)
+        {
+            case TableRowType.Checkbox:
+                var obj = !(bool)value;
+                td.SetValue(obj, indexPath.Row, indexPath.Section);
+                tableView.ReloadRows(new NSIndexPath[]{ indexPath }, UITableViewRowAnimation.Fade);
+                ChangedValue(name,value,obj);
+                break;
+            case TableRowType.Text:
+            case TableRowType.Blurb:
+                var tvc = FirstAvailableViewController;
+                if (tvc != null)
+                {
+                    string str = value as string;
+                    if (config != null && config.InlineTextEditing && rowType==TableRowType.Text)
+                    {
+                        var cell = tableView.CellAt (indexPath);
+                        var tf = (cell.AccessoryView as UITextField);
+                        tf.BecomeFirstResponder ();
+                    }
+                    else
+                    {
+                        var dname = td.DisplayName (RowConfigurator, indexPath.Row, indexPath.Section);
+                        var textEditor = new TableTextEditor (rowType, dname, str, delegate(string changedString)
+                        {
+                            td.SetValue (changedString, indexPath.Row, indexPath.Section);
+                            ReloadData ();
+                        });
+                        textEditor.ShouldAdjustTextContentInset = ShouldAdjustTextContentInset;
+                        textEditor.Configure (config);
+                        if (tvc.NavigationController == null)
+                            tvc.PresentViewController (new UINavigationController (textEditor), true, null);
+                        else
+                            tvc.NavigationController.PushViewController (textEditor, true);
+                    }
+                }
+                break;
+            case TableRowType.SingleChoiceList:
+                var sclvc = FirstAvailableViewController;
+                if (sclvc != null)
+                {
+                    var dname = td.DisplayName (RowConfigurator, indexPath.Row, indexPath.Section);
+                    var singleChoiceEditor = new TableSingleChoiceEditor (rowType, dname, value, config, delegate(Object changedChoice)
+                    {
+                        td.SetValue (changedChoice, indexPath.Row, indexPath.Section);
+                        ReloadData ();
+                    });
+                    if (sclvc.NavigationController == null)
+                        sclvc.PresentViewController (new UINavigationController (singleChoiceEditor), true, null);
+                    else
+                        sclvc.NavigationController.PushViewController (singleChoiceEditor, true);
+                }
+                break;
+            case TableRowType.Date:
+            case TableRowType.Time:
+            case TableRowType.DateTime:
+                var dvc = FirstAvailableViewController;
+                if (dvc != null)
+                {
+                    DateTime str = (DateTime)value;
+                    var dname = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
+                    UIDatePickerMode mode = UIDatePickerMode.DateAndTime;
+                    if (rowType == TableRowType.Date)
+                        mode = UIDatePickerMode.Date;
+                    else if (rowType == TableRowType.Time)
+                        mode = UIDatePickerMode.Time;
+                    var dateEditor = new TableTimeEditor (dname, str, mode, delegate(DateTime changedDate)
+                    {
+                        td.SetValue (changedDate, indexPath.Row, indexPath.Section);
+                        ReloadData ();
+                    });
+                    if (dvc.NavigationController == null)
+                        dvc.PresentViewController(new UINavigationController(dateEditor), true, null);
+                    else
+                        dvc.NavigationController.PushViewController (dateEditor, true);	
+                }
+                break;
+        }
+    }
+    private void ChangedValue(string rowName,object oldValue,object newValue)
+    {
+        if (RowChanged != null)
+            RowChanged.RowChanged(this, rowName, oldValue, newValue);
+    }
+    private UIViewController FirstAvailableViewController
+    {
+        get
+        {
+            return TableAdapter.TraverseResponderChainForViewController(tv) as UIViewController;
+        }
+    }
+    static private UIResponder TraverseResponderChainForViewController(UIView v)
+    {
+        UIResponder responder = v.NextResponder;
+        if (responder is UIViewController)
+        {
+            return responder;
+        }
+        else if (responder is UIView)
+        {
+            return TraverseResponderChainForViewController(responder as UIView);
+        }
+        else
+        {
+            return null;
+        }
+    }
+#region Inline Text Editing
+    NSIndexPath NextIndexPath(NSIndexPath indexPath)
+    {
+        int numOfSections = NumberOfSections(tv);	
+        int nextSection = ((indexPath.Section + 1) % numOfSections);
+        if ((indexPath.Row + 1) == RowsInSection(tv,indexPath.Section))
+        {
+            return NSIndexPath.FromRowSection(0,nextSection);
+        }
+        else
+        {
+            return NSIndexPath.FromRowSection((indexPath.Row + 1),indexPath.Section);
+        }
+    }
+    NSIndexPath PreviousIndexPath(NSIndexPath indexPath)
+    {
+        int numOfSections = NumberOfSections(tv);	
+        int nextSection = ((indexPath.Section - 1) % numOfSections);
+        if ((indexPath.Row - 1) < 0)
+        {
+            return NSIndexPath.FromRowSection(0,nextSection);
+        }
+        else
+        {
+            return NSIndexPath.FromRowSection((indexPath.Row - 1),indexPath.Section);
+        }
+    }
+    void ClickedPrevious (object sender, EventArgs e)
+    {
+        NSIndexPath indexPath = ((sender as UIView).Superview as TableAdapterInlineTextInputAccessoryView).IndexPath;
+        NSIndexPath nextIndexPath = PreviousIndexPath (indexPath);
+        tv.SelectRow (nextIndexPath, true, UITableViewScrollPosition.Top);
+        RowSelected (tv, nextIndexPath);
+    }
+    void ClickedNext (object sender, EventArgs e)
+    {
+        NSIndexPath indexPath = ((sender as UIView).Superview as TableAdapterInlineTextInputAccessoryView).IndexPath;
+        NSIndexPath nextIndexPath = NextIndexPath (indexPath);
+        tv.SelectRow (nextIndexPath, true, UITableViewScrollPosition.Top);
+        RowSelected (tv, nextIndexPath);
+    }
+    void ClickedDismiss (object sender, EventArgs e)
+    {
+        UIApplication.SharedApplication.KeyWindow.EndEditing(true);
+    }
+    void TextFieldChanged(UITextField tf)
+    {	
+        NSIndexPath indexPath = (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath;
+        td.SetValue (tf.Text, indexPath.Row, indexPath.Section);
+    }
+    [Export ("textFieldShouldReturn:")]
+    public bool TextFieldShouldReturn (UITextField tf)
+    {
+        NSIndexPath indexPath = (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath;
+        NSIndexPath nextIndexPath = NextIndexPath (indexPath);
+        tv.SelectRow (nextIndexPath, true, UITableViewScrollPosition.Top);
+        RowSelected (tv, nextIndexPath);
+        return true;
+    }
+    [Export ("textField:shouldChangeCharactersInRange:replacementString:")]
+    public bool TextFieldShouldChangeCharactersInRange (UITextField tf,NSRange range,string replacement)
+    {
+        var text = tf.Text;
+        tf.Text = text.Substring (0, range.Location) + replacement + text.Substring (range.Location + range.Length);
+        TextFieldChanged (tf);
+        return false;
+    }
+#endregion
+}
+
+@end
