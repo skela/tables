@@ -298,7 +298,7 @@ namespace Tables.iOS
                 SizeF kbSize = keyFrame.Size;
 
                 var orientation = UIApplication.SharedApplication.StatusBarOrientation;
-                if (orientation == UIInterfaceOrientation.LandscapeLeft || orientation == UIInterfaceOrientation.LandscapeRight ) 
+				if (TableEditor.OperatingSystemVersion < 8 && orientation == UIInterfaceOrientation.LandscapeLeft || orientation == UIInterfaceOrientation.LandscapeRight ) 
                 {
                     SizeF origKeySize = kbSize;
                     kbSize.Height = origKeySize.Width;

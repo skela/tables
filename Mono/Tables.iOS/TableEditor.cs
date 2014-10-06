@@ -3,6 +3,7 @@ using MonoTouch.UIKit;
 using Tables;
 using System.Drawing;
 using MonoTouch.Foundation;
+using System.Collections.Generic;
 
 namespace Tables.iOS
 {
@@ -105,6 +106,38 @@ namespace Tables.iOS
 					control.AutocapitalizationType = TableEditor.ConvertCapitatilizationType(config.CapitalizationType);
 				if (config.CorrectionType != Tables.CorrectionType.Ignore)
 					control.AutocorrectionType = TableEditor.ConvertCorrectionType(config.CorrectionType);
+			}
+		}
+
+		public static float OperatingSystemVersion
+		{
+			get
+			{
+				string ver = UIDevice.CurrentDevice.SystemVersion;
+				float verF = 4.0f;
+				if (float.TryParse (ver, out verF))
+				{
+					return verF;
+				}
+
+				var ls = ver.Split ('.');
+				List<float> lf = new List<float> ();
+				foreach (string s in ls)
+					lf.Add (float.Parse (s));
+
+				if (lf.Count > 2)
+				{
+					verF = lf [0] + lf [1] * 0.1f + lf [2] * 0.01f;
+				}
+				else if (lf.Count > 1)
+				{
+					verF = lf [0] + lf [1] * 0.1f;
+				}
+				else if (lf.Count > 0)
+				{
+					verF = lf [0];
+				}
+				return verF;
 			}
 		}
     }
