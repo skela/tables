@@ -67,7 +67,7 @@ namespace Tables.iOS
 
 		public override int RowsInSection (UITableView tableview, int section)
 		{
-			return Sections [section].Items == null ? 0 : Sections [section].Items.Length;
+			return Sections [section].Items == null ? 0 : Sections [section].Items.Count;
 		}
 
 		public override string TitleForHeader (UITableView tableView, int section)
@@ -145,9 +145,17 @@ namespace Tables.iOS
 			}
 			else
 			{
-				cell.TextLabel.Text = item.Text;
-				cell.DetailTextLabel.Text = item.Detail;
+				if (item.AttributedText != null && item.AttributedText is NSAttributedString)
+					cell.TextLabel.AttributedText = item.AttributedText as NSAttributedString;
+				else
+					cell.TextLabel.Text = item.Text;
+				if (item.AttributedDetail != null && item.AttributedDetail is NSAttributedString)
+					cell.DetailTextLabel.AttributedText = item.AttributedDetail as NSAttributedString;
+				else
+					cell.DetailTextLabel.Text = item.Detail;
+				cell.ImageView.Image = item.ImageName != null ? UIImage.FromBundle (item.ImageName) : null;
 				cell.Accessory = CanSelectRow (tableView, indexPath) ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
+
 			}
 			return cell;
 		}

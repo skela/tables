@@ -117,7 +117,7 @@ namespace Tables
 
     public class TableSection
     {
-        public TableItem[] Items;
+        public List<TableItem> Items;
         public string Name;
         public object Object;
 
@@ -127,6 +127,17 @@ namespace Tables
 		public TableSection(string name)
 		{
 			Name = name;
+		}
+
+		public TableItem[] ItemArray
+		{
+			set
+			{
+				if (value != null)
+					Items = new List<TableItem> (value);
+				else
+					Items = null;
+			}
 		}
     }
 
@@ -142,9 +153,10 @@ namespace Tables
         public bool Checked;
         public int Badge;
 
+		public object AttributedText;
+		public object AttributedDetail;
         public string ImageName;
         public int ImageResource;
-
         public string CellIdentString;
         public int CellIdentInt;
 
