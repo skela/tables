@@ -47,6 +47,7 @@
     <Compile Include="TableEditor.cs" />
     <Compile Include="TableItemsAdapter.cs" />
     <Compile Include="TableSingleChoiceEditor.cs" />
+    <Compile Include="TableSectionsViewController.cs" />
   </ItemGroup>
   <Import Project="..\Tables\Tables.projitems" Label="Shared" Condition="Exists('..\Tables\Tables.projitems')" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

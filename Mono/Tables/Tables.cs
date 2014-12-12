@@ -114,4 +114,48 @@ namespace Tables
             return configs.ConfigForRow(rowName);
         }
     }
+
+    public class TableSection
+    {
+        public TableItem[] Items;
+        public string Name;
+        public object Object;
+
+        public string CellIdentString;
+        public int CellIdentInt;
+
+		public TableSection(string name)
+		{
+			Name = name;
+		}
+    }
+
+    public class TableItem
+    {
+        public string Text;
+        public string Detail;
+        public string Key;
+        public EventHandler Selector;
+        public EventHandler DeleteSelector;
+		public string DeleteTitle;
+        public object Object;
+        public bool Checked;
+        public int Badge;
+
+        public string ImageName;
+        public int ImageResource;
+
+        public string CellIdentString;
+        public int CellIdentInt;
+
+		public TableItem()
+		{
+
+		}
+
+		public TableItem(string text)
+		{
+			Text = text;
+		}
+    }
 }
