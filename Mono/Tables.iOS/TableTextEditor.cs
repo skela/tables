@@ -293,22 +293,19 @@ namespace Tables.iOS
         {
             if (lastNotification != null)
             {
-                UIKeyboardEventArgs args = new UIKeyboardEventArgs (lastNotification);
-                RectangleF keyFrame = args.FrameBegin;
-                SizeF kbSize = keyFrame.Size;
+                var args = new UIKeyboardEventArgs (lastNotification);
+                var keyFrame = args.FrameBegin;
+                var kbSize = keyFrame.Size;
 
-                var orientation = UIApplication.SharedApplication.StatusBarOrientation;
-				if (TableEditor.OperatingSystemVersion < 8 && orientation == UIInterfaceOrientation.LandscapeLeft || orientation == UIInterfaceOrientation.LandscapeRight ) 
-                {
-                    SizeF origKeySize = kbSize;
-                    kbSize.Height = origKeySize.Width;
-                    kbSize.Width = origKeySize.Height;
-                }
+				var num1 = kbSize.Width;
+				var num2 = kbSize.Height;
+				kbSize.Width = Math.Max (num1, num2);
+				kbSize.Height = Math.Min (num1, num2);
 
                 KeyboardSize = kbSize;
                 if (textView != null)
                 {
-                    UIEdgeInsets contentInsets = new UIEdgeInsets (0.0f, 0.0f, kbSize.Height, 0.0f);
+                    var contentInsets = new UIEdgeInsets (0.0f, 0.0f, kbSize.Height, 0.0f);
                     textView.ContentInset = contentInsets;
 					textView.ScrollIndicatorInsets = contentInsets;
                 }
@@ -321,7 +318,7 @@ namespace Tables.iOS
             KeyboardSize.Height = 0;
             if (textView != null)
             {
-                UIEdgeInsets contentInsets = new UIEdgeInsets ();
+                var contentInsets = new UIEdgeInsets ();
                 textView.ContentInset = contentInsets;
                 textView.ScrollIndicatorInsets = contentInsets;
             }
