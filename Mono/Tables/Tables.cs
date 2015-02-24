@@ -120,6 +120,7 @@ namespace Tables
         public List<TableItem> Items;
         public string Name;
         public object Object;
+		public string Footer;
 
         public string CellIdentString;
         public int CellIdentInt;

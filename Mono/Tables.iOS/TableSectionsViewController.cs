@@ -88,7 +88,7 @@ namespace Tables.iOS
 			var item = ItemAtIndexPath (indexPath);
 			if (item.DeleteTitle != null)
 				return item.DeleteTitle;
-			return base.TitleForDeleteConfirmation (tableView, indexPath);
+			return "Delete";
 		}
 
 		public virtual bool CanSelectRow(UITableView tableView,NSIndexPath indexPath)
