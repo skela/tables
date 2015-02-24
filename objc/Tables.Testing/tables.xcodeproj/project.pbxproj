@@ -25,6 +25,12 @@
 		C6262A7019BC7904004C04D0 /* TableEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A6F19BC7904004C04D0 /* TableEditor.m */; };
 		C6262A7319BC7D9A004C04D0 /* TableAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A7219BC7D9A004C04D0 /* TableAdapter.m */; };
 		C6262A7619BD3F30004C04D0 /* TableAdapterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A7519BD3F30004C04D0 /* TableAdapterCell.m */; };
+		C6262A8319BDB601004C04D0 /* TableTextEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A8219BDB601004C04D0 /* TableTextEditor.m */; };
+		C6262A8619BDD1AE004C04D0 /* TableSingleChoiceEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A8519BDD1AE004C04D0 /* TableSingleChoiceEditor.m */; };
+		C6262A8919BDD877004C04D0 /* TableTimeEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A8819BDD877004C04D0 /* TableTimeEditor.m */; };
+		C6262A8C19BDEE85004C04D0 /* TablePropertyScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = C6262A8B19BDEE85004C04D0 /* TablePropertyScanner.m */; };
+		C6FC8AEF1A9C60E800F6E4C4 /* MenuTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C6FC8AEE1A9C60E800F6E4C4 /* MenuTableViewController.m */; };
+		C6FC8AF21A9C614600F6E4C4 /* Menu.m in Sources */ = {isa = PBXBuildFile; fileRef = C6FC8AF11A9C614600F6E4C4 /* Menu.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +72,18 @@
 		C6262A7219BC7D9A004C04D0 /* TableAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableAdapter.m; sourceTree = "<group>"; };
 		C6262A7419BD3F30004C04D0 /* TableAdapterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableAdapterCell.h; sourceTree = "<group>"; };
 		C6262A7519BD3F30004C04D0 /* TableAdapterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableAdapterCell.m; sourceTree = "<group>"; };
+		C6262A8119BDB601004C04D0 /* TableTextEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableTextEditor.h; sourceTree = "<group>"; };
+		C6262A8219BDB601004C04D0 /* TableTextEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableTextEditor.m; sourceTree = "<group>"; };
+		C6262A8419BDD1AE004C04D0 /* TableSingleChoiceEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableSingleChoiceEditor.h; sourceTree = "<group>"; };
+		C6262A8519BDD1AE004C04D0 /* TableSingleChoiceEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableSingleChoiceEditor.m; sourceTree = "<group>"; };
+		C6262A8719BDD877004C04D0 /* TableTimeEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableTimeEditor.h; sourceTree = "<group>"; };
+		C6262A8819BDD877004C04D0 /* TableTimeEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableTimeEditor.m; sourceTree = "<group>"; };
+		C6262A8A19BDEE85004C04D0 /* TablePropertyScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TablePropertyScanner.h; sourceTree = "<group>"; };
+		C6262A8B19BDEE85004C04D0 /* TablePropertyScanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TablePropertyScanner.m; sourceTree = "<group>"; };
+		C6FC8AED1A9C60E800F6E4C4 /* MenuTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuTableViewController.h; sourceTree = "<group>"; };
+		C6FC8AEE1A9C60E800F6E4C4 /* MenuTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuTableViewController.m; sourceTree = "<group>"; };
+		C6FC8AF01A9C614600F6E4C4 /* Menu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Menu.h; sourceTree = "<group>"; };
+		C6FC8AF11A9C614600F6E4C4 /* Menu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Menu.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,10 +192,22 @@
 				C6262A6C19BC5473004C04D0 /* TableSource.m */,
 				C6262A6E19BC7904004C04D0 /* TableEditor.h */,
 				C6262A6F19BC7904004C04D0 /* TableEditor.m */,
+				C6262A8119BDB601004C04D0 /* TableTextEditor.h */,
+				C6262A8219BDB601004C04D0 /* TableTextEditor.m */,
+				C6262A8419BDD1AE004C04D0 /* TableSingleChoiceEditor.h */,
+				C6262A8519BDD1AE004C04D0 /* TableSingleChoiceEditor.m */,
+				C6262A8719BDD877004C04D0 /* TableTimeEditor.h */,
+				C6262A8819BDD877004C04D0 /* TableTimeEditor.m */,
 				C6262A7119BC7D9A004C04D0 /* TableAdapter.h */,
 				C6262A7219BC7D9A004C04D0 /* TableAdapter.m */,
 				C6262A7419BD3F30004C04D0 /* TableAdapterCell.h */,
 				C6262A7519BD3F30004C04D0 /* TableAdapterCell.m */,
+				C6262A8A19BDEE85004C04D0 /* TablePropertyScanner.h */,
+				C6262A8B19BDEE85004C04D0 /* TablePropertyScanner.m */,
+				C6FC8AED1A9C60E800F6E4C4 /* MenuTableViewController.h */,
+				C6FC8AEE1A9C60E800F6E4C4 /* MenuTableViewController.m */,
+				C6FC8AF01A9C614600F6E4C4 /* Menu.h */,
+				C6FC8AF11A9C614600F6E4C4 /* Menu.m */,
 			);
 			name = Tables;
 			path = ../../Tables;
@@ -278,11 +308,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6262A8919BDD877004C04D0 /* TableTimeEditor.m in Sources */,
+				C6262A8619BDD1AE004C04D0 /* TableSingleChoiceEditor.m in Sources */,
 				C6262A7319BC7D9A004C04D0 /* TableAdapter.m in Sources */,
 				C6262A6A19BC39EF004C04D0 /* TableUtils.m in Sources */,
+				C6262A8319BDB601004C04D0 /* TableTextEditor.m in Sources */,
 				C6262A6719BC373D004C04D0 /* Tables.m in Sources */,
 				C6262A6D19BC5473004C04D0 /* TableSource.m in Sources */,
 				C6262A7019BC7904004C04D0 /* TableEditor.m in Sources */,
+				C6FC8AF21A9C614600F6E4C4 /* Menu.m in Sources */,
+				C6FC8AEF1A9C60E800F6E4C4 /* MenuTableViewController.m in Sources */,
+				C6262A8C19BDEE85004C04D0 /* TablePropertyScanner.m in Sources */,
 				C6262A4119BC3423004C04D0 /* AppDelegate.m in Sources */,
 				C6262A7619BD3F30004C04D0 /* TableAdapterCell.m in Sources */,
 				C6262A3D19BC3423004C04D0 /* main.m in Sources */,

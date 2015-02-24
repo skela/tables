@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "TableAdapter.h"
 #import "TableUtils.h"
 
 typedef enum
@@ -17,7 +18,7 @@ typedef enum
     TestDataItemOptionPizza
 } TestDataItemOption;
 
-@interface TestData : NSObject
+@interface TestData : NSObject <ITableAdapterRowConfigurator>
 @property (nonatomic,strong, readonly) NSString*version;
 @property (nonatomic,strong) NSString*build;
 @property (nonatomic,strong) NSString*name;
@@ -31,5 +32,7 @@ typedef enum
 @property (nonatomic,strong) NSDate*time1;
 @property (nonatomic,strong) NSDate*time2;
 @property (nonatomic,strong) NSDate*time3;
+
 + (TestData*)createTestData;
+
 @end

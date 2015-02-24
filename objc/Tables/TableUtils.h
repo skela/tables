@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef enum
+typedef NS_ENUM(NSUInteger, TableRowType)
 {
     TableRowTypeUnknown,
     TableRowTypeText,
@@ -17,10 +17,10 @@ typedef enum
     TableRowTypeDate,
     TableRowTypeTime,
     TableRowTypeDateTime,
-    TableRowTypeSingleChoiceList,
-} TableRowType;
+    TableRowTypeSingleChoiceList
+};
 
-typedef enum
+typedef NS_ENUM(NSUInteger, KeyboardType)
 {
     KeyboardTypeIgnore,
     KeyboardTypeDefault,
@@ -32,24 +32,24 @@ typedef enum
     KeyboardTypeNamePhonePad,
     KeyboardTypeEmailAddress,
     KeyboardTypeDecimalPad,
-} KeyboardType;
+};
 
-typedef enum
+typedef NS_ENUM(NSUInteger, CapitalizationType)
 {
     CapitalizationTypeIgnore,
     CapitalizationTypeNone,
     CapitalizationTypeWords,
     CapitalizationTypeSentences,
     CapitalizationTypeAllCharacters
-} CapitalizationType;
+};
 
-typedef enum
+typedef NS_ENUM(NSUInteger, CorrectionType)
 {
     CorrectionTypeIgnore,
     CorrectionTypeDefault,
     CorrectionTypeNo,
     CorrectionTypeYes
-} CorrectionType;
+};
 
 @protocol ITableAdapterRow
 - (NSString *)tableRowName;
@@ -104,13 +104,23 @@ typedef enum
 
 @interface TableAdapterRowConfigs : NSObject <ITableAdapterRowConfigurator>
 @property(nonatomic,strong) NSMutableDictionary *configs;
+- (void)add:(NSString*)key config:(NSDictionary*)config;
 @end
 
 @interface TextHelper : NSObject
 + (NSString*)scrambledText:(NSString*)str;
++ (CGSize)stringSize:(NSString*)text font:(UIFont*)font constraint:(CGSize)constraint lineBreakMode:(NSLineBreakMode)lineBreakMode;
++ (CGSize)stringSize:(NSString*)text font:(UIFont*)font;
 @end
 
-@interface TableHelper : NSObject
-+ (CGSize)stringSize:(NSString*)text font:(UIFont*)font constraint:(CGSize)constraint lineBreakMode:(UILineBreakMode)lineBreakMode;
-+ (CGSize)stringSize:(NSString*)text font:(UIFont*)font;
+@interface TableUtils : NSObject
+
++ (BOOL)hasObject:(NSDictionary*)d ofClass:(Class)classe forKey:(NSString*)key;
++ (id)getObject:(NSDictionary*)d ofClass:(Class)classe forKey:(NSString*)key fallback:(id)fallBack;
++ (NSValue*)getValue:(NSDictionary*)d forKey:(NSString*)key fallback:(NSValue*)fallBack;
++ (NSNumber*)getNumber:(NSDictionary*)d forKey:(NSString*)key fallback:(NSNumber*)fallBack;
++ (NSString*)getString:(NSDictionary*)d forKey:(NSString*)key fallback:(NSString*)fallBack;
++ (NSArray*)getArray:(NSDictionary*)d forKey:(NSString*)key fallback:(NSArray*)fallBack;
++ (SEL)getSelector:(NSDictionary*)d forKey:(NSString*)key fallback:(SEL)fallBack;
+
 @end

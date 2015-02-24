@@ -7,7 +7,6 @@
 //
 
 #import "TableEditor.h"
-#import "TableUtils.h"
 
 @interface TableEditor ()
 

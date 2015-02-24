@@ -8,7 +8,9 @@
 
 #import "Tables.h"
 
-
+@interface TestData()
+@property(nonatomic,strong) TableAdapterRowConfigs *configs;
+@end
 
 @implementation TestData
 @synthesize version;
@@ -19,6 +21,21 @@
     if (self)
     {
         version = aVersion;
+        
+        self.configs = [[TableAdapterRowConfigs alloc] init];
+        [self.configs add:@"build" config:@{@"editable":@(NO)}];
+        [self.configs add:@"stuff" config:@{@"rowType":@(TableRowTypeBlurb)}];
+        [self.configs add:@"cool" config:@{@"displayName":@"Is Cool?"}];
+        [self.configs add:@"telephone" config:@{@"keyboardType":@(KeyboardTypePhonePad)}];
+        [self.configs add:@"password" config:@{@"secureTextEditing":@(YES)}];
+        [self.configs add:@"time2" config:@{@"rowType":@(TableRowTypeDate)}];
+        [self.configs add:@"time3" config:@{@"rowType":@(TableRowTypeTime)}];
+        [self.configs add:@"chosen" config:@{@"simpleCheckbox":@(YES)}];
+        
+        NSMutableArray *singleChoiceOptions = [NSMutableArray new];
+        [singleChoiceOptions addObjectsFromArray:@[@(TestDataItemOptionNothing),@(TestDataItemOptionCats),@(TestDataItemOptionPizza)]];
+        
+        [self.configs add:@"singleChoice" config:@{@"rowType":@(TableRowTypeSingleChoiceList),@"displayName":@"Single Choie",@"singleChoiceOptions":singleChoiceOptions}];
     }
     return self;
 }
@@ -39,6 +56,11 @@
     data.time3 = [f dateFromString:@"2013,3,14,13,37,00"];
     data.singleChoice = TestDataItemOptionPizza;
     return data;
+}
+
+- (TableAdapterRowConfig*)configForRow:(NSString*)rowName
+{
+    return [self.configs configForRow:rowName];
 }
 
 @end

@@ -19,16 +19,18 @@
     return self;
 }
 
-- (void)awakeFromNib
+- (void)layoutSubviews
 {
-    // Initialization code
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
+    [super layoutSubviews];
+    
+    if ([self.accessoryView isKindOfClass:[UITextField class]])
+    {
+        [self.textLabel sizeToFit];
+        
+        CGFloat w = self.bounds.size.width;
+        CGFloat x = self.textLabel.frame.origin.x + self.textLabel.frame.size.width + 10;
+        self.accessoryView.frame = CGRectMake (x, 0, w - x - 10, 44);
+    }
 }
 
 @end

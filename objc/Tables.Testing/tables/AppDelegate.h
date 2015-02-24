@@ -10,9 +10,7 @@
 #import "Tables.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-
 @property (strong, nonatomic) UIWindow *window;
-
 @end
 
 @interface TableViewController : UIViewController

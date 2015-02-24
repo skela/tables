@@ -7,14 +7,11 @@
 //
 
 #import "TableSource.h"
-
-#import <objc/runtime.h>
+#import "TablePropertyScanner.h"
 
 @interface TableSource()
-@property(nonatomic,strong) NSObject*data;
-@property(nonatomic,readwrite) TableRowType defaultStringRowType;
-
 @property(nonatomic,strong) NSMutableDictionary*formatters;
+@property(nonatomic,strong) NSMutableArray*properties;
 @end
 
 @implementation TableSource
@@ -25,13 +22,14 @@
     if (self)
     {
         self.formatters = [[NSMutableDictionary alloc] init];
-        
+        self.properties = [[NSMutableArray alloc] init];
         self.data = data;
         self.defaultStringRowType= rowType;
+        
+        [self reloadProperties];
     }
     return self;
 }
-
 
 - (id)initWithData:(NSObject*)data
 {
@@ -41,6 +39,16 @@
         
     }
     return self;
+}
+
+- (void)reloadProperties
+{
+    [self.properties removeAllObjects];
+    NSArray *objectProperties = [TablePropertyScanner propertiesForObject:self.data];
+    for (NSDictionary*d in objectProperties)
+    {
+        [self.properties addObject:[d objectForKey:TablePropertyScannerKey]];
+    }
 }
 
 - (NSDateFormatter*)formatterForFormat:(NSString*)format
@@ -64,27 +72,62 @@
 {
     if (self.data != nil)
     {
-        unsigned int numberOfProperties = 0;
-        objc_property_t * plist = class_copyPropertyList(object_getClass(self.data), &numberOfProperties);
-        free(plist);
-        return numberOfProperties;
+        return self.properties.count;
     }
     return 0;
 }
 
 - (NSObject*)getValueAtRow:(NSInteger)row andSection:(NSInteger)section
 {
+    NSString *key = self.properties[row];
+    NSObject *obj = [self.data valueForKey:key];
+    return obj;
+}
+
+- (NSString*)getValueStringAtRow:(NSInteger)row andSection:(NSInteger)section
+{
+    NSObject *value = [self getValueAtRow:row andSection:section];
+    NSString *text  = @"";
+    if ([value isKindOfClass:[NSString class]])
+        text = (NSString*)value;
+    return text;
+}
+
+- (NSNumber*)getValueNumberAtRow:(NSInteger)row andSection:(NSInteger)section
+{
+    NSObject *value = [self getValueAtRow:row andSection:section];
+    if ([value isKindOfClass:[NSNumber class]])
+        return (NSNumber*)value;
     return nil;
+}
+
+- (NSDate*)getValueDateAtRow:(NSInteger)row andSection:(NSInteger)section
+{
+    NSObject *value = [self getValueAtRow:row andSection:section];
+    if ([value isKindOfClass:[NSDate class]])
+        return (NSDate*)value;
+    return nil;
+}
+
+- (BOOL)getValueBoolAtRow:(NSInteger)row andSection:(NSInteger)section
+{
+    NSNumber *number = [self getValueNumberAtRow:row andSection:section];
+    return [number boolValue];
 }
 
 - (void)setValue:(NSObject*)obj atRow:(NSInteger)row andSection:(NSInteger)section
 {
-    
+    NSString *key = self.properties[row];
+    [self.data setValue:obj forKey:key];
 }
 
 - (NSString*)displayName:(id<ITableAdapterRowConfigurator>)configurator row:(NSInteger)row section:(NSInteger)section
 {
-    return nil;
+    NSString *key = self.properties[row];
+    TableAdapterRowConfig*config = [configurator configForRow:key];
+    if (config!=nil && config.displayName!=nil)
+        return config.displayName;
+    return key;
 }
 
 - (NSString*)displayDate:(id<ITableAdapterRowConfigurator>)configurator row:(NSInteger)row section:(NSInteger)section date:(NSDate*)date rowType:(TableRowType)rowType
@@ -129,7 +172,7 @@
 
 - (NSString*)rowName:(NSInteger)row andSection:(NSInteger)section
 {
-    NSString *propertyName = nil; // TODO: Get Property Name
+    NSString *propertyName = self.properties[row];
     return propertyName;
 }
 
@@ -148,8 +191,8 @@
 
 - (TableRowType)rowType:(id<ITableAdapterRowConfigurator>)configurator row:(NSInteger)row section:(NSInteger)section
 {
-    NSObject *prop = nil; // TODO: Get Property
     NSString *propertyName = [self rowName:row andSection:section];
+    NSObject *prop = [self getValueAtRow:row andSection:section];
     TableAdapterRowConfig*s = [self rowSetting:configurator propertyName:propertyName];
     if (s != nil && s.rowType != TableRowTypeUnknown)
         return s.rowType;
@@ -165,7 +208,7 @@
 
 - (BOOL)rowEditable:(id<ITableAdapterRowConfigurator>)configurator row:(NSInteger)row section:(NSInteger)section
 {
-    NSObject *prop = nil; // TODO: Get Property
+    //NSObject *prop = nil; // TODO: Get Property
     NSString *propertyName = [self rowName:row andSection:section];
     //var editable = prop.CanWrite && prop.SetMethod.IsPublic;
     BOOL editable = YES;

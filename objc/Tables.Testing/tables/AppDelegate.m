@@ -35,4 +35,9 @@
     [self.view addSubview:tv];
 }
 
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
 @end

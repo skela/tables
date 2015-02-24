@@ -17,12 +17,23 @@
 @end
 
 @interface TableSource : NSObject <ITableSource>
+
+@property(nonatomic,strong) NSObject*data;
+@property(nonatomic,readwrite) TableRowType defaultStringRowType;
+
 - (id)initWithData:(NSObject*)data;
 - (id)initWithData:(NSObject*)data defaultStringRowType:(TableRowType)rowType;
 
+- (void)setValue:(NSObject*)obj atRow:(NSInteger)row andSection:(NSInteger)section;
 - (NSObject*)getValueAtRow:(NSInteger)row andSection:(NSInteger)section;
+- (NSString*)getValueStringAtRow:(NSInteger)row andSection:(NSInteger)section;
+- (NSNumber*)getValueNumberAtRow:(NSInteger)row andSection:(NSInteger)section;
+- (NSDate*)getValueDateAtRow:(NSInteger)row andSection:(NSInteger)section;
+- (BOOL)getValueBoolAtRow:(NSInteger)row andSection:(NSInteger)section;
+
 
 - (NSString*)displayName:(id<ITableAdapterRowConfigurator>)configurator row:(NSInteger)row section:(NSInteger)section;
+- (NSString*)displayDate:(id<ITableAdapterRowConfigurator>)configurator row:(NSInteger)row section:(NSInteger)section date:(NSDate*)date rowType:(TableRowType)rowType;
 
 - (NSString*)rowName:(NSInteger)row andSection:(NSInteger)section;
 - (TableAdapterRowConfig*)rowSetting:(id<ITableAdapterRowConfigurator>)configurator propertyName:(NSString*)propertyName;
