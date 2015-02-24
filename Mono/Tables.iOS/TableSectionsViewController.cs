@@ -75,6 +75,11 @@ namespace Tables.iOS
 			return Sections [section].Name;
 		}
 
+		public override string TitleForFooter (UITableView tableView, int section)
+		{
+			return Sections [section].Footer;
+		}
+
 		public override bool CanEditRow (UITableView tableView, NSIndexPath indexPath)
 		{
 			var item = ItemAtIndexPath (indexPath);
