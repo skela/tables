@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>2EC8E05E-E7E1-4A36-8146-3AF6C2CB4E36</string>
+	<key>IDESourceControlProjectName</key>
+	<string>tables</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>C11D9115F6F6FFEC8907F43748538BD18B8F8D9A</key>
+		<string>github.com:skela/tables.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>objc/Tables.Testing/tables.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>C11D9115F6F6FFEC8907F43748538BD18B8F8D9A</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:skela/tables.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>C11D9115F6F6FFEC8907F43748538BD18B8F8D9A</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>C11D9115F6F6FFEC8907F43748538BD18B8F8D9A</string>
+			<key>IDESourceControlWCCName</key>
+			<string>tables</string>
+		</dict>
+	</array>
+</dict>
+</plist>
