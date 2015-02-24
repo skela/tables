@@ -127,6 +127,8 @@ namespace Tables.iOS
 			}
 		}
 
+		public UITableViewCellStyle DefaultCellStyle = UITableViewCellStyle.Value1;
+
 		public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 		{
 			var section = SectionAtIndexPath (indexPath);
@@ -141,7 +143,7 @@ namespace Tables.iOS
 
 			UITableViewCell cell = tableView.DequeueReusableCell (ident);
 			if (cell == null)
-				cell = new UITableViewCell (UITableViewCellStyle.Value1, ident);
+				cell = new UITableViewCell (DefaultCellStyle, ident);
 
 			var tscell = cell as ITableSectionsCell;
 			if (tscell != null)
