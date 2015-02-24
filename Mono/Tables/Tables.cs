@@ -129,6 +129,12 @@ namespace Tables
 			Name = name;
 		}
 
+		public TableSection(string name,TableItem[] items)
+		{
+			Name = name;
+			ItemArray = items;
+		}
+
 		public TableItem[] ItemArray
 		{
 			set
