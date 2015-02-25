@@ -11,6 +11,31 @@
 
 @implementation MenuSection
 
+- (instancetype)init:(NSDictionary*)d
+{
+    self = [super init];
+    if (self)
+    {
+        [self update:d];
+    }
+    return self;
+}
+
+- (instancetype)initWithName:(NSString*)name
+{
+    self = [super init];
+    if (self)
+    {
+        self.name = name;
+    }
+    return self;
+}
+
+- (void)update:(NSDictionary*)d
+{
+    self.cellIdent = [TableUtils getString:d forKey:@"cellIdent" fallback:self.cellIdent];
+}
+
 @end
 
 @implementation MenuItem

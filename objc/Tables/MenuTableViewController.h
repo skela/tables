@@ -10,6 +10,10 @@
 
 #import "Menu.h"
 
+@protocol  MenuCell<NSObject>
+- (void)updateForSection:(MenuSection*)section andItem:(MenuItem*)item;
+@end
+
 @interface MenuTableViewController : UITableViewController
 
 @property(nonatomic,strong) NSArray *sections;

@@ -10,8 +10,14 @@
 
 @interface MenuSection : NSObject
 @property(nonatomic,strong) NSArray *items;
-@property(nonatomic,copy) NSString *name;
+@property(nonatomic,strong) NSString *name;
 @property(nonatomic,strong) NSObject *object;
+@property(nonatomic,strong) NSString *cellIdent;
+
+- (instancetype)init:(NSDictionary*)d;
+- (instancetype)initWithName:(NSString*)name;
+- (void)update:(NSDictionary*)d;
+
 @end
 
 @interface MenuItem : NSObject
@@ -23,9 +29,9 @@
 @property(nonatomic,strong) NSObject *object;
 @property(nonatomic,readwrite) BOOL checked;
 @property(nonatomic,readwrite) NSInteger badge;
+@property(nonatomic,strong) NSString *cellIdent;
 
 - (instancetype)init:(NSDictionary*)d;
 - (void)update:(NSDictionary*)d;
 
 @end
-

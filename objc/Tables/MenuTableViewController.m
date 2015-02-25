@@ -119,14 +119,47 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MenuCell"];
-    if (cell==nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"MenuCell"];
     MenuSection *section = sections[indexPath.section];
     MenuItem *item = section.items[indexPath.row];
-    cell.textLabel.text = [item text];
-    cell.detailTextLabel.text = [item detail];
-    cell.accessoryType = [self tableView:tableView canSelectRowAtIndexPath:indexPath] ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+    
+    NSString *ident = nil;
+    if (item.cellIdent!=nil)
+        ident = item.cellIdent;
+    if (ident==nil && section.cellIdent!=nil)
+        ident = section.cellIdent;
+    if (ident==nil)
+        ident = @"MenuCell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ident];
+    if (cell==nil)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:ident];
+    
+    if ([cell conformsToProtocol:@protocol(MenuCell)])
+    {
+        id<MenuCell> mcell = (id<MenuCell>)cell;
+        [mcell updateForSection:section andItem:item];
+    }
+    else
+    {
+    
+        BOOL titleSetter = [cell respondsToSelector:@selector(setTitle:)];
+        BOOL detailSetter = [cell respondsToSelector:@selector(setDetail:)];
+        
+        if (titleSetter || detailSetter)
+        {
+            if (titleSetter)
+                [cell performSelector:@selector(setTitle:) withObject:[item text]];
+            if (detailSetter)
+                [cell performSelector:@selector(setDetail:) withObject:[item detail]];
+        }
+        else
+        {
+            cell.textLabel.text = [item text];
+            cell.detailTextLabel.text = [item detail];
+        }
+        cell.accessoryType = [self tableView:tableView canSelectRowAtIndexPath:indexPath] ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+    }
+    
     return cell;
 }
 
