@@ -52,6 +52,7 @@
 
 - (void)update:(NSDictionary*)d
 {
+    self.cellIdent = [TableUtils getString:d forKey:@"cellIdent" fallback:self.cellIdent];    
     self.text = [TableUtils getString:d forKey:@"text" fallback:self.text];
     self.detail = [TableUtils getString:d forKey:@"detail" fallback:self.detail];
     self.selector = [TableUtils getString:d forKey:@"selector" fallback:self.selector];
