@@ -1,7 +1,7 @@
-﻿using System;
-using MonoTouch.UIKit;
-using System.Drawing;
-using MonoTouch.Foundation;
+using System;
+using UIKit;
+using CoreGraphics;
+using Foundation;
 using System.Collections.Generic;
 
 namespace Tables.iOS
@@ -81,7 +81,7 @@ namespace Tables.iOS
 				var index = picker.SelectedRowInComponent (0);
 				Object theChoice = null;
 				if (options!=null)
-					theChoice = options[index];
+					theChoice = options[(int)index];
 				choiceChanged (theChoice);
 			}
 			CloseViewController ();
@@ -89,12 +89,12 @@ namespace Tables.iOS
 
 		#region Datasource
 
-		public int GetComponentCount (UIPickerView pickerView)
+		public nint GetComponentCount (UIPickerView pickerView)
 		{
 			return 1;
 		}
 
-		public int GetRowsInComponent (UIPickerView pickerView, int component)
+		public nint GetRowsInComponent (UIPickerView pickerView, nint component)
 		{
 			return options == null ? 0 : options.Count;
 		}

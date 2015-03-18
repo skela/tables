@@ -1,5 +1,6 @@
-﻿using System;
-using MonoTouch.UIKit;
+using System;
+using UIKit;
+using Foundation;
 
 namespace Tables.iOS
 {
@@ -34,7 +35,7 @@ namespace Tables.iOS
             picker = new UIDatePicker(View.Bounds);
             picker.Center = View.Center;
             picker.Mode = mode;
-            picker.Date = value;
+			picker.Date = (NSDate)value;
             View.AddSubview(picker);
         }
 
@@ -52,7 +53,7 @@ namespace Tables.iOS
         private void ClickedDone(object obj,EventArgs e)
         {
             if (dateChanged != null)
-                dateChanged(picker.Date);
+				dateChanged((DateTime)picker.Date);
 			CloseViewController ();            
         }
     }

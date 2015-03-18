@@ -1,8 +1,8 @@
-﻿using System;
-using MonoTouch.UIKit;
+using System;
+using UIKit;
 using Tables;
-using System.Drawing;
-using MonoTouch.Foundation;
+using CoreGraphics;
+using Foundation;
 using System.Collections.Generic;
 
 namespace Tables.iOS
@@ -37,7 +37,7 @@ namespace Tables.iOS
 			if (IsModal)
 				DismissViewController (true, null);
 			else
-				NavigationController.PopViewControllerAnimated (true);
+				NavigationController.PopViewController (true);
 		}
 
 		static public UIKeyboardType ConvertKeyboardType(Tables.KeyboardType kbType)
@@ -149,16 +149,16 @@ namespace Tables.iOS
 		public UIButton DismissButton;
 		public NSIndexPath IndexPath;
 
-		public TableAdapterInlineTextInputAccessoryView (TableAdapterRowConfig config,float width) : base(new RectangleF(0,0,width,40))
+		public TableAdapterInlineTextInputAccessoryView (TableAdapterRowConfig config,float width) : base(new CGRect(0,0,width,40))
 		{
 			AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 
 			BackgroundColor = UIColor.FromRGB (209, 213, 218);
 			var textColor = UIColor.Black;
 
-			NextButton = new UIButton (new RectangleF (0, 0, 40, 40));
-			PreviousButton = new UIButton (new RectangleF (0, 0, 40, 40));
-			DismissButton = new UIButton (new RectangleF (0, 0, 40, 40));
+			NextButton = new UIButton (new CGRect (0, 0, 40, 40));
+			PreviousButton = new UIButton (new CGRect (0, 0, 40, 40));
+			DismissButton = new UIButton (new CGRect (0, 0, 40, 40));
 
 			PreviousButton.SetTitle ("\u25C4", UIControlState.Normal);
 			NextButton.SetTitle ("\u25BA", UIControlState.Normal);
@@ -177,9 +177,9 @@ namespace Tables.iOS
 		{
 			base.LayoutSubviews();
 
-			PreviousButton.Frame = new RectangleF (10, 0, 40, 40);
-			NextButton.Frame = new RectangleF (PreviousButton.Frame.Width+20, 0, 40, 40);
-			DismissButton.Frame = new RectangleF (Frame.Width-10-40, 0, 40, 40);
+			PreviousButton.Frame = new CGRect (10, 0, 40, 40);
+			NextButton.Frame = new CGRect (PreviousButton.Frame.Width+20, 0, 40, 40);
+			DismissButton.Frame = new CGRect (Frame.Width-10-40, 0, 40, 40);
 		}
 	}
 }

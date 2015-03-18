@@ -1,8 +1,8 @@
-﻿using System;
-using System.Drawing;
+using System;
+using CoreGraphics;
 
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
+using Foundation;
+using UIKit;
 using System.Collections.Generic;
 
 namespace Tables.iOS
@@ -92,15 +92,15 @@ namespace Tables.iOS
 				string text = value as string;
 				if (text == null) text = "";
 				float contentMargin = 10;
-				float contentWidth = tableView.Bounds.Width;
+				var contentWidth = tableView.Bounds.Width;
 
-				SizeF constraint = new SizeF(contentWidth - (contentMargin * 2), 20000.0f);
-				SizeF size = tv.StringSize (text, detailFont, constraint, UILineBreakMode.WordWrap);
-				SizeF sizeT = tv.StringSize(name, titleFont);
+				CGSize constraint = new CGSize(contentWidth - (contentMargin * 2), 20000.0f);
+				CGSize size = UIKit.UIStringDrawing.StringSize (text, detailFont, constraint, UILineBreakMode.WordWrap);
+				CGSize sizeT = UIKit.UIStringDrawing.StringSize(name, titleFont);
 
-				float height = Math.Max(size.Height,44.0f) + sizeT.Height;
+				var height = Math.Max(size.Height,44.0f) + sizeT.Height;
 
-				return height + (contentMargin * 4);
+				return (float)(height + (contentMargin * 4));
 			}
 			return 44;
 		}
@@ -131,9 +131,9 @@ namespace Tables.iOS
 				if (AccessoryView is UITextField)
 				{
 					TextLabel.SizeToFit ();
-					float w = Bounds.Width;
-					float x = TextLabel.Frame.X + TextLabel.Frame.Width + 10;
-					AccessoryView.Frame = new RectangleF (x, 0, w - x - 10, 44);
+					var w = Bounds.Width;
+					var x = TextLabel.Frame.X + TextLabel.Frame.Width + 10;
+					AccessoryView.Frame = new CGRect (x, 0, w - x - 10, 44);
 				}
 			}
 		}
@@ -171,7 +171,7 @@ namespace Tables.iOS
 						var c = td.RowSetting(RowConfigurator,name);
 						if (c != null && c.InlineTextEditing)
 						{
-							var tf = new UITextField (new RectangleF (0, 0, 160, 44));
+							var tf = new UITextField (new CGRect (0, 0, 160, 44));
 							tf.UserInteractionEnabled = true;
 							tf.BorderStyle = UITextBorderStyle.None;
 							tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
@@ -180,7 +180,7 @@ namespace Tables.iOS
 							tf.TextAlignment = UITextAlignment.Right;
 							tf.WeakDelegate = this;
 
-							var inp = new TableAdapterInlineTextInputAccessoryView (c, tableView.Frame.Width);
+							var inp = new TableAdapterInlineTextInputAccessoryView (c, (float)tableView.Frame.Width);
 							inp.PreviousButton.TouchUpInside += ClickedPrevious;
 							inp.NextButton.TouchUpInside += ClickedNext;
 							inp.DismissButton.TouchUpInside += ClickedDismiss;
@@ -491,7 +491,7 @@ namespace Tables.iOS
 		public bool TextFieldShouldChangeCharactersInRange (UITextField tf,NSRange range,string replacement)
 		{
 			var text = tf.Text;
-			tf.Text = text.Substring (0, range.Location) + replacement + text.Substring (range.Location + range.Length);
+			tf.Text = text.Substring (0, (int)range.Location) + replacement + text.Substring ((int)(range.Location + range.Length));
 			TextFieldChanged (tf);
 			return false;
 		}

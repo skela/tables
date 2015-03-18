@@ -1,7 +1,7 @@
-﻿using System;
-using MonoTouch.UIKit;
-using System.Drawing;
-using MonoTouch.Foundation;
+using System;
+using UIKit;
+using CoreGraphics;
+using Foundation;
 
 namespace Tables.iOS
 {
@@ -79,7 +79,7 @@ namespace Tables.iOS
 			else if (rowType == TableRowType.Text)
 			{
 				View.BackgroundColor = UIColor.White;
-				textField = new UITextField (new RectangleF (10, 10, View.Bounds.Size.Width - 20, 44));
+				textField = new UITextField (new CGRect (10, 10, View.Bounds.Size.Width - 20, 44));
 				textField.BorderStyle = UITextBorderStyle.Line;
 				textField.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 				textField.Text = value;
@@ -250,10 +250,10 @@ namespace Tables.iOS
         {
             get
             {
-                return Math.Min (KeyboardSize.Height, KeyboardSize.Width);
+				return (float)Math.Min (KeyboardSize.Height, KeyboardSize.Width);
             }
         }
-        public SizeF KeyboardSize;
+        public CGSize KeyboardSize;
 
         void HandleKeyboardWillShow(NSNotification notification)
         {
@@ -299,8 +299,8 @@ namespace Tables.iOS
 
 				var num1 = kbSize.Width;
 				var num2 = kbSize.Height;
-				kbSize.Width = Math.Max (num1, num2);
-				kbSize.Height = Math.Min (num1, num2);
+				kbSize.Width = (float)Math.Max (num1, num2);
+				kbSize.Height = (float)Math.Min (num1, num2);
 
                 KeyboardSize = kbSize;
                 if (textView != null)
