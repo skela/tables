@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
+using UIKit;
+using Foundation;
 
 namespace Tables.iOS
 {
@@ -60,22 +60,22 @@ namespace Tables.iOS
 			TableView.ReloadData ();
 		}
 
-		public override int NumberOfSections (UITableView tableView)
+		public override nint NumberOfSections (UITableView tableView)
 		{
 			return Sections == null ? 0 : Sections.Length;
 		}
 
-		public override int RowsInSection (UITableView tableview, int section)
+		public override nint RowsInSection (UITableView tableview, nint section)
 		{
 			return Sections [section].Items == null ? 0 : Sections [section].Items.Count;
 		}
 
-		public override string TitleForHeader (UITableView tableView, int section)
+		public override string TitleForHeader (UITableView tableView, nint section)
 		{
 			return Sections [section].Name;
 		}
 
-		public override string TitleForFooter (UITableView tableView, int section)
+		public override string TitleForFooter (UITableView tableView, nint section)
 		{
 			return Sections [section].Footer;
 		}
