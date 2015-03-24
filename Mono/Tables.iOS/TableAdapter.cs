@@ -82,7 +82,7 @@ namespace Tables.iOS
         static UIFont titleFont = UIFont.SystemFontOfSize(16);
         static UIFont detailFont = UIFont.FromName ("Helvetica", 14);
 
-		public float GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
+		public nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
 		{
 			var rowType = td.RowType(RowConfigurator,indexPath.Row,indexPath.Section);
 			if (rowType == TableRowType.Blurb)
@@ -91,28 +91,28 @@ namespace Tables.iOS
 				var value = td.GetValue(indexPath.Row, indexPath.Section);
 				string text = value as string;
 				if (text == null) text = "";
-				float contentMargin = 10;
+				nfloat contentMargin = 10;
 				var contentWidth = tableView.Bounds.Width;
 
 				CGSize constraint = new CGSize(contentWidth - (contentMargin * 2), 20000.0f);
 				CGSize size = UIKit.UIStringDrawing.StringSize (text, detailFont, constraint, UILineBreakMode.WordWrap);
 				CGSize sizeT = UIKit.UIStringDrawing.StringSize(name, titleFont);
 
-				var height = Math.Max(size.Height,44.0f) + sizeT.Height;
+				var height = TableEditor.Max(size.Height,44.0f) + sizeT.Height;
 
-				return (float)(height + (contentMargin * 4));
+				return (height + (contentMargin * 4));
 			}
 			return 44;
 		}
 
         [Export("tableView:heightForRowAtIndexPath:")]
-        public float HeightForRow(UITableView tableView, NSIndexPath indexPath)
+        public nfloat HeightForRow(UITableView tableView, NSIndexPath indexPath)
         {
 			return GetHeightForRow (tableView, indexPath);
         }
 
 		[Export("tableView:estimatedHeightForRowAtIndexPath:")]
-		public float EstimatedHeightForRow(UITableView tableView, NSIndexPath indexPath)
+		public nfloat EstimatedHeightForRow(UITableView tableView, NSIndexPath indexPath)
 		{
 			return GetHeightForRow (tableView, indexPath);
 		}

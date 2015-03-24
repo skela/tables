@@ -140,6 +140,12 @@ namespace Tables.iOS
 				return verF;
 			}
 		}
+
+		public static nfloat Max(nfloat val,float val2)
+		{
+			var res = Math.Max ((double)val,(double)val2);
+			return (nfloat)res;
+		}
     }
 
 	public class TableAdapterInlineTextInputAccessoryView : UIView
