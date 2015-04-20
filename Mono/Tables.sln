@@ -88,7 +88,4 @@ Global
 		{6E036F3F-CB01-453B-B5E3-8C25B75C3181}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{6E036F3F-CB01-453B-B5E3-8C25B75C3181}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Tables.Droid.Testing\Tables.Droid.Testing.csproj
-	EndGlobalSection
 EndGlobal

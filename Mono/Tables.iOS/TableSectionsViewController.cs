@@ -127,6 +127,14 @@ namespace Tables.iOS
 			}
 		}
 
+		public override nfloat GetHeightForRow (UITableView tableView, NSIndexPath indexPath)
+		{
+			var item = ItemAtIndexPath (indexPath);
+			if (item.CellHeight > 0)
+				return (nfloat)item.CellHeight;
+			return base.GetHeightForRow (tableView, indexPath);
+		}
+
 		public UITableViewCellStyle DefaultCellStyle = UITableViewCellStyle.Value1;
 
 		public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)

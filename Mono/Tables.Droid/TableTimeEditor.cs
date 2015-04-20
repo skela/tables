@@ -1,15 +1,16 @@
 ﻿using System;
-using Android.App;
-using Android.Support.V4.App;
+
 using Java.Util;
-using Android.OS;
 using Java.Text;
+
+using Android.OS;
+using Android.App;
 using Android.Widget;
 using Android.Content;
 
 namespace Tables.Droid
 {
-    public class TableTimeEditor : DialogFragment
+    public class TableTimeEditor : Android.Support.V4.App.DialogFragment
     {
         public delegate void DateChangedDelegate(DateTime changedDate);
 

@@ -4,7 +4,7 @@ using Android.Widget;
 using Android.Views;
 using Android.Content;
 using Android.Util;
-using Android.Support.V4.App;
+
 using Android.App;
 using Android.Text;
 using Android.Text.Method;
@@ -209,14 +209,14 @@ namespace Tables.Droid
                 case TableRowType.Time:
                 case TableRowType.DateTime:
                 {
-                    if (tv.Context is FragmentActivity)
+                    if (tv.Context is Android.Support.V4.App.FragmentActivity)
                     {
-                        var fr = tv.Context as FragmentActivity;
+                        var fr = tv.Context as Android.Support.V4.App.FragmentActivity;
                         var frag = fr.SupportFragmentManager;
 
                         DateTime v = (DateTime)value;
 
-                        DialogFragment newFragment = new TableTimeEditor(v, rowType, delegate(DateTime changedDate)
+                        var newFragment = new TableTimeEditor(v, rowType, delegate(DateTime changedDate)
                         {
                             td.SetValue(changedDate, row, section);
                             ReloadData();

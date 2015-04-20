@@ -78,7 +78,7 @@ namespace Tables
             configs.Configs.Add("Stuff", new TableAdapterRowConfig(){ RowType = TableRowType.Blurb });
             configs.Configs.Add("Cool", new TableAdapterRowConfig(){ DisplayName = "Is Cool?" });
             configs.Configs.Add("Telephone", new TableAdapterRowConfig(){ KeyboardType=KeyboardType.PhonePad });
-            configs.Configs.Add("Password", new TableAdapterRowConfig(){ SecureTextEditing = true });
+            configs.Configs.Add("Password", new TableAdapterRowConfig(){ SecureTextEditing = true, InlineTextEditing = true });
             configs.Configs.Add("Time2", new TableAdapterRowConfig(){ RowType = TableRowType.Date });
             configs.Configs.Add("Time3", new TableAdapterRowConfig(){ RowType = TableRowType.Time });
             configs.Configs.Add("Chosen", new TableAdapterRowConfig(){ SimpleCheckbox = true });
@@ -99,6 +99,7 @@ namespace Tables
                 Chosen = false, 
                 Build = "2",
                 Telephone = "1337",
+                Password = " ",
                 Stuff = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
                 Cool = true,
                 Time1 = new DateTime(2013,3,14,13,37,00),
@@ -166,6 +167,7 @@ namespace Tables
         public int ImageResource;
         public string CellIdentString;
         public int CellIdentInt;
+		public double CellHeight;
 
 		public TableItem()
 		{
