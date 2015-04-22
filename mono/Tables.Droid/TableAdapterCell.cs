@@ -4,6 +4,7 @@ using Android.Widget;
 using Android.Content;
 using Android.Util;
 using Android.Views;
+using Android.Text;
 
 namespace Tables.Droid
 {
@@ -18,12 +19,16 @@ namespace Tables.Droid
     {
         TextView Blurb { get; }
         CheckBox Switch { get; }
+        EditText Edit { get; }
+        void UpdateTextCell(TableRowType type,string value,TableAdapterRowConfig s,TextChangedDelegate textChanged);
     }
 
     public interface ITableAdapterSingleChoiceCell : ICheckable
     {
         string Text { get; set; }
     }
+
+    public delegate void TextChangedDelegate(string changed);
 
     public static class TableUtils
     {
@@ -32,14 +37,23 @@ namespace Tables.Droid
             int pixels = (int) TypedValue.ApplyDimension(ComplexUnitType.Dip,dpi,ctx.Resources.DisplayMetrics);
             return pixels;
         }
+
+        public static EditText CreateEditableTextField(Context ctx)
+        {
+            var et = new EditText(ctx);
+            et.SetBackgroundColor(Android.Graphics.Color.Transparent);
+            et.SetTextColor(Android.Graphics.Color.White);
+            return et;
+        }
     }
 
-    public class TableAdapterCell : LinearLayout,ITableAdapterCell,ICheckable
+    public class TableAdapterCell : LinearLayout,ITableAdapterCell,ICheckable,ITextWatcher
     {
         public TextView Title { get; private set;}
         public TextView Detail { get; private set;}
         public TextView Blurb { get; private set;}
         public CheckBox Switch { get; private set;}
+        public EditText Edit { get; private set;}
 
         public TableAdapterCell(Context context) : base(context)
         {
@@ -83,6 +97,12 @@ namespace Tables.Droid
             Blurb.Text = "Blurb";
             AddView(Blurb);
 
+            Edit = TableUtils.CreateEditableTextField(context);
+            Edit.Text = "Edit";
+            Edit.Visibility = ViewStates.Gone;
+            Edit.AddTextChangedListener(this);
+            AddView(Edit);
+
             Orientation = Orientation.Vertical;
             int pixels = TableUtils.GetPixelsFromDPI(context, 10);
             SetPadding(pixels, pixels, pixels, pixels);
@@ -111,6 +131,64 @@ namespace Tables.Droid
             {
                 Focusable = !value;
             }
+        }
+
+        TextChangedDelegate textListener;
+
+        public void UpdateTextCell(TableRowType type,string value,TableAdapterRowConfig s,TextChangedDelegate textChanged)
+        {
+            textListener = null;
+            TextView tv = null;
+            if (type==TableRowType.Text)
+            {
+                Blurb.Text = "";
+                tv = Detail;
+                Switch.Visibility = ViewStates.Gone;
+                Blurb.Visibility = ViewStates.Gone;
+            }
+            else if (type==TableRowType.Blurb)
+            {
+                Detail.Text = "";
+                Switch.Visibility = ViewStates.Gone;
+                Blurb.Visibility = ViewStates.Visible;
+                Detail.Visibility = ViewStates.Gone;
+                tv = Blurb;
+            }
+
+            if (tv != null)
+            {
+                var text = s != null && s.SecureTextEditing ? TextHelper.ScrambledText(value) : value;
+                var inline = s != null && s.InlineTextEditing ? true : false;
+                tv.Visibility = inline ? ViewStates.Gone : ViewStates.Visible;
+                Edit.Visibility = !inline ? ViewStates.Gone : ViewStates.Visible;
+                if (inline)
+                {
+                    Edit.InputType = Android.Text.InputTypes.TextVariationPassword | Android.Text.InputTypes.ClassText;
+                    Edit.Text = value;
+                    textListener = textChanged;
+                }
+                else
+                {
+                    tv.Text = text;
+                }
+            }
+        }
+
+        public void AfterTextChanged(IEditable s)
+        {
+            
+        }
+
+        public void BeforeTextChanged(Java.Lang.ICharSequence s, int start, int count, int after)
+        {
+            
+        }
+
+        public void OnTextChanged(Java.Lang.ICharSequence s, int start, int before, int count)
+        {
+            var sh = s.ToString();
+            if (textListener != null)
+                textListener(sh);
         }
     }
 

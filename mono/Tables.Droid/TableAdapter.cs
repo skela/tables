@@ -8,6 +8,8 @@ using Android.Util;
 using Android.App;
 using Android.Text;
 using Android.Text.Method;
+using Android.Support.V4.App;
+using Android.Views.InputMethods;
 
 namespace Tables.Droid
 {
@@ -120,7 +122,7 @@ namespace Tables.Droid
                 RowSelected(e.Position-tv.HeaderViewsCount, 0);
         }
 
-        public virtual void RowSelected (int row,int section)
+        public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
             var name = td.GetName(row,section);
             var value = td.GetValue(row,section);
@@ -156,52 +158,72 @@ namespace Tables.Droid
                 case TableRowType.Blurb:
                 case TableRowType.Text:
                 {
-                    string str = value as string;
-                    var dname = td.DisplayName(RowConfigurator, row, section);
-                    var act = tv.Context as Activity;
+                        if (settings != null && settings.InlineTextEditing)
+                        {
+                            // TODO: Figure out why this doesn't quite work
+                            if (ea != null && ea.View != null)
+                            {
+                                ITableAdapterCell c = ea.View as ITableAdapterCell;
+                                if (c != null)
+                                {
+                                    if (c.Edit.RequestFocus())
+                                    {
+                                        var ctx = tv.Context;
+                                        InputMethodManager inputManager = (InputMethodManager)ctx.GetSystemService(Context.InputMethodService);
+                                        inputManager.ShowSoftInput(c.Edit, 0);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var str = value as string;
+                            var dname = td.DisplayName(RowConfigurator, row, section);
+                            var act = tv.Context as Activity;
+                    
+                            var builder = new AlertDialog.Builder(act);
+                            builder.SetTitle(dname);
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(act);
-                    builder.SetTitle(dname);
+                            var input = new EditText(act);                    
+                            input.InputType = TableEditor.ConvertKeyboardType(KeyboardType.Default);
+                            input.Gravity = GravityFlags.Center;
 
-                    EditText input = new EditText(act);                    
-                    input.InputType = TableEditor.ConvertKeyboardType(KeyboardType.Default);
-                    input.Gravity = GravityFlags.Center;
+                            if (settings != null)
+                            {
+                                var inputTypes = TableEditor.ConvertKeyboardType(settings.KeyboardType);
+                                if (settings.SecureTextEditing)
+                                    inputTypes = Android.Text.InputTypes.TextVariationPassword | inputTypes;
+                                input.InputType = inputTypes;
+                                if (settings.SecureTextEditing)
+                                    input.TransformationMethod = PasswordTransformationMethod.Instance;
+                            }
 
-                    if (settings != null)
-                    {                        
-                        var inputTypes = TableEditor.ConvertKeyboardType(settings.KeyboardType);
-                        if (settings.SecureTextEditing)                        
-                            inputTypes |= InputTypes.TextVariationPassword;                                                    
-                        input.InputType = inputTypes;                        
-                        if (settings.SecureTextEditing)
-                            input.TransformationMethod = PasswordTransformationMethod.Instance;
-                    }
+                            input.Text = str;
+                            input.SetSelection(str == null ? 0 : str.Length);
 
-                    input.Text = str;
-                    input.SetSelection(str == null ? 0 : str.Length);
+                            if (rowType == TableRowType.Blurb)
+                                input.SetSingleLine(false);
 
-                    if (rowType == TableRowType.Blurb)
-                        input.SetSingleLine(false);
+                            var layout = new LinearLayout(act);
+                            layout.Orientation = Orientation.Vertical;
+                            LinearLayout.LayoutParams parameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FillParent, LinearLayout.LayoutParams.WrapContent);
+                            parameters.SetMargins(20, 0, 20, 0);         
+                            layout.AddView(input, parameters);
 
-                    LinearLayout layout = new LinearLayout(act);
-                    layout.Orientation = Orientation.Vertical;
-                    LinearLayout.LayoutParams parameters = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FillParent, LinearLayout.LayoutParams.WrapContent);
-                    parameters.SetMargins(20, 0, 20, 0);         
-                    layout.AddView(input, parameters);
+                            builder.SetView(layout);
+                            builder.SetPositiveButton(PositiveButtonTitle, delegate(object o, DialogClickEventArgs e)
+                            {
+                                var s = input.Text;
+                                td.SetValue(s, row, section);
+                                ReloadData();
+                                ChangedValue(name, value, s);
+                            });
+                            builder.SetNeutralButton(NeutralButtonTitle, delegate(object o, DialogClickEventArgs e)
+                            {
 
-                    builder.SetView(layout);
-                    builder.SetPositiveButton(PositiveButtonTitle, delegate(object o, DialogClickEventArgs e)
-                    {
-                        var s = input.Text;
-                        td.SetValue(s, row, section);
-                        ReloadData();
-                        ChangedValue(name, value, s);
-                    });
-                    builder.SetNeutralButton(NeutralButtonTitle, delegate(object o, DialogClickEventArgs e)
-                    {
-
-                    });
-                    builder.Show();
+                            });
+                            builder.Show();
+                        }
                 }
                 break;
 
@@ -209,9 +231,9 @@ namespace Tables.Droid
                 case TableRowType.Time:
                 case TableRowType.DateTime:
                 {
-                    if (tv.Context is Android.Support.V4.App.FragmentActivity)
+                    if (tv.Context is FragmentActivity)
                     {
-                        var fr = tv.Context as Android.Support.V4.App.FragmentActivity;
+                        var fr = tv.Context as FragmentActivity;
                         var frag = fr.SupportFragmentManager;
 
                         DateTime v = (DateTime)value;
@@ -244,14 +266,14 @@ namespace Tables.Droid
 
                     //ContextThemeWrapper wrapper = new ContextThemeWrapper(actSC, Android.Resource.Style.ThemeDialog);
                     //AlertDialog.Builder alert = new AlertDialog.Builder(wrapper);
-                    AlertDialog.Builder alert = new AlertDialog.Builder(actSC);
+                    var alert = new AlertDialog.Builder(actSC);
                     alert.SetTitle(dnameSC);
                     alert.SetSingleChoiceItems(singleChoiceAdapter, selectedItemIndex, delegate(object sender, DialogClickEventArgs e)
                     {
                         if (e != null)
                         {
                             var index = e.Which;
-                            Object theChoice = null;
+                            object theChoice = null;
                             if (options != null)
                                 theChoice = options[index];
                             td.SetValue(theChoice, row, section);
@@ -267,6 +289,7 @@ namespace Tables.Droid
 
         private void ChangedValue(string rowName,object oldValue,object newValue)
         {
+            Log.Debug("change", string.Format("old '{0}' new '{1}'", oldValue, newValue));
             if (RowChanged != null)
                 RowChanged.RowChanged(this, rowName, oldValue, newValue);
         }
@@ -285,28 +308,15 @@ namespace Tables.Droid
             switch (rowType)
             {
                 case TableRowType.Text:
-                    {
-                        var s = td.RowSetting(RowConfigurator, name);
-                        c.Blurb.Text = "";
-                        if (s!=null && s.SecureTextEditing)
-                            c.Detail.Text = TextHelper.ScrambledText(value as string);
-                        else
-                            c.Detail.Text = value as string;
-                        c.Switch.Visibility = ViewStates.Gone;
-                        c.Blurb.Visibility = ViewStates.Gone;
-
-                    }
-                break;
                 case TableRowType.Blurb:
                     {
                         var s = td.RowSetting(RowConfigurator, name);
-                        c.Detail.Text = "";
-                        c.Switch.Visibility = ViewStates.Gone;
-                        c.Blurb.Visibility = ViewStates.Visible;
-                        if (s!=null && s.SecureTextEditing)
-                            c.Blurb.Text = TextHelper.ScrambledText(value as string);
-                        else
-                            c.Blurb.Text = value as string;
+                        c.UpdateTextCell(rowType,value as string, s,delegate(string changed) 
+                        {
+                            var old = td.GetValue(row,section) as string;
+                            td.SetValue(changed, row, section);
+                            ChangedValue(name, old, changed);
+                        });
                     }
                 break;
 
