@@ -10,7 +10,7 @@ using Android.Content;
 
 namespace Tables.Droid
 {
-    public class TableTimeEditor : Android.Support.V4.App.DialogFragment
+    public class TableTimeEditor : Android.App.DialogFragment
     {
         public delegate void DateChangedDelegate(DateTime changedDate);
 

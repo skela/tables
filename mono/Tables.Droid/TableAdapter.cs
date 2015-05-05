@@ -8,7 +8,6 @@ using Android.Util;
 using Android.App;
 using Android.Text;
 using Android.Text.Method;
-using Android.Support.V4.App;
 using Android.Views.InputMethods;
 
 namespace Tables.Droid
@@ -231,10 +230,10 @@ namespace Tables.Droid
                 case TableRowType.Time:
                 case TableRowType.DateTime:
                 {
-                    if (tv.Context is FragmentActivity)
+                    if (tv.Context is Activity)
                     {
-                        var fr = tv.Context as FragmentActivity;
-                        var frag = fr.SupportFragmentManager;
+                        var fr = tv.Context as Activity;
+                        var frag = fr.FragmentManager;
 
                         DateTime v = (DateTime)value;
 
