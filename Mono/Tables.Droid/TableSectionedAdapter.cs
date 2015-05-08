@@ -16,21 +16,21 @@ namespace Tables.Droid
             Inflator =  (LayoutInflater)context.GetSystemService(Context.LayoutInflaterService);                           
         }
 
-        enum ViewKind : int
+        public enum ViewKind : int
         {
             Header=1,
             Cell=2,
             Footer=3
         }
 
-        struct ViewPosition
+        public struct ViewPosition
         {
-            internal int Row;
-            internal int Section;
-            internal ViewKind Kind;
-            internal int Position;
-            internal int Type;
-            internal int Layout;
+            public int Row;
+            public int Section;
+            public ViewKind Kind;
+            public int Position;
+            public int Type;
+            public int Layout;
         }
 
         int RowCount = 0;
@@ -60,12 +60,12 @@ namespace Tables.Droid
             }
         }
 
-        ViewPosition ViewPositionForPosition (int position)
+        public ViewPosition ViewPositionForPosition (int position)
         {
             return Positions[position];
         }
 
-        ViewKind ViewKindForPosition (int position)
+        public ViewKind ViewKindForPosition (int position)
         {
             return ViewPositionForPosition(position).Kind;
         }
