@@ -9,6 +9,11 @@ namespace Tables
 		int NumberOfSections();
 	}
 
+    public interface ITableSections
+    {
+        int NumberOfSections();
+    }
+
 	public class TableSource : ITableSource
     {
         private Object data;
