@@ -23,6 +23,21 @@ namespace Tables.Droid
         void UpdateTextCell(TableRowType type,string value,TableAdapterRowConfig s,TextChangedDelegate textChanged);
     }
 
+    public interface ITableAdapterHeaderFooter
+    {
+        string Title { set; get; }
+    }
+
+    public interface ITableAdapterHeader : ITableAdapterHeaderFooter
+    {
+        
+    }
+
+    public interface ITableAdapterFooter : ITableAdapterHeaderFooter
+    {
+        
+    }
+
     public interface ITableAdapterSingleChoiceCell : ICheckable
     {
         string Text { get; set; }
@@ -43,6 +58,8 @@ namespace Tables.Droid
             var et = new EditText(ctx);
             et.SetBackgroundColor(Android.Graphics.Color.Transparent);
             et.SetTextColor(Android.Graphics.Color.White);
+            et.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+            et.SetMinimumHeight(TableUtils.GetPixelsFromDPI(ctx,40));
             return et;
         }
     }
@@ -84,6 +101,8 @@ namespace Tables.Droid
 
                 Detail = new TextView(context);
                 Detail.Text = "Detail";
+                Detail.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+                Detail.SetMinimumHeight(TableUtils.GetPixelsFromDPI(context,40));
                 line.AddView(Detail);
 
                 Switch = new CheckBox(context);
@@ -322,6 +341,117 @@ namespace Tables.Droid
             set
             {
                 Focusable = !value;
+            }
+        }
+    }
+
+    public class TableAdapterHeader : LinearLayout,ITableAdapterHeader
+    {
+        public TextView TitleLabel { get; private set;}
+
+        public TableAdapterHeader(Context context) : base(context)
+        {
+            Prepare(context);
+        }
+
+        public TableAdapterHeader (Context context, IAttributeSet attrs) : base (context, attrs)
+        {
+            Prepare (context);
+        }
+
+        private void Prepare(Context context)
+        {
+            LinearLayout line = new LinearLayout(context);
+            {
+                line.SetVerticalGravity(GravityFlags.Center);
+                line.Orientation = Orientation.Horizontal;
+                line.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.FillParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+
+                TitleLabel= new TextView(Context);
+                TitleLabel.Text = "Title";
+                //TitleLabel.SetTextAppearance(context, Android.Resource.Style.TextAppearanceDeviceDefault);
+                TitleLabel.Typeface = Android.Graphics.Typeface.DefaultBold;
+                TitleLabel.Gravity = GravityFlags.Center;
+                TitleLabel.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.FillParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+
+                line.AddView(TitleLabel);
+
+                int pixels = TableUtils.GetPixelsFromDPI(context, 10);
+                line.SetPadding(pixels, pixels, pixels, pixels);
+            }
+            AddView(line);
+
+            Focusable = false;
+            Clickable = false;
+            FocusableInTouchMode = false;
+            Orientation = Orientation.Vertical;
+        }
+
+        public string Title
+        {
+            get
+            {
+                return TitleLabel.Text;
+            }
+            set
+            {                
+                TitleLabel.Text = value;
+            }
+        }
+    }
+
+    public class TableAdapterFooter : LinearLayout,ITableAdapterFooter
+    {
+        public TextView TitleLabel { get; private set;}
+
+        public TableAdapterFooter(Context context) : base(context)
+        {
+            Prepare(context);
+        }
+
+        public TableAdapterFooter (Context context, IAttributeSet attrs) : base (context, attrs)
+        {
+            Prepare (context);
+        }
+
+        private void Prepare(Context context)
+        {
+            LinearLayout line = new LinearLayout(context);
+            {
+                line.SetVerticalGravity(GravityFlags.Center);
+                line.Orientation = Orientation.Horizontal;
+
+                TitleLabel= new TextView(Context);
+                TitleLabel.Text = "Title";
+                TitleLabel.Typeface = Android.Graphics.Typeface.DefaultBold;
+                TitleLabel.TextSize = TitleLabel.TextSize - 1;
+                TitleLabel.Gravity = GravityFlags.Center;
+                line.AddView(TitleLabel);
+
+                View filler = new View(context);
+                filler.LayoutParameters = new LinearLayout.LayoutParams(Android.Widget.LinearLayout.LayoutParams.WrapContent, Android.Widget.LinearLayout.LayoutParams.WrapContent, 1f);
+
+                line.AddView(filler);
+            }
+            AddView(line);
+
+            Focusable = false;
+            Clickable = false;
+            FocusableInTouchMode = false;
+            Orientation = Orientation.Vertical;
+            int pixels = TableUtils.GetPixelsFromDPI(context, 10);
+            SetPadding(pixels, pixels, pixels, pixels);
+        }
+
+        public string Title
+        {
+            get
+            {
+                return TitleLabel.Text;
+            }
+            set
+            {                
+                TitleLabel.Text = value;
             }
         }
     }

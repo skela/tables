@@ -117,6 +117,30 @@ namespace Tables.iOS
 			return GetHeightForRow (tableView, indexPath);
 		}
 
+        public virtual TableAdapterSectionConfig GetSectionConfig(nint section)
+        {
+            if (td != null)
+            {
+                var config = td.SectionConfig((int)section);
+                return config;
+            }
+            return null;
+        }
+
+        [Export("tableView:titleForFooterInSection:")]
+        public string TitleForFooter(UITableView tableView, nint section)
+        {
+            var config = GetSectionConfig(section);
+            return config == null ? null : config.Footer;
+        }
+
+        [Export("tableView:titleForHeaderInSection:")]
+        public virtual string TitleForHeader(UITableView tableView, nint section)
+        {
+            var config = GetSectionConfig(section);
+            return config == null ? null : config.Header;
+        }
+
 		public class TableAdapterCell : UITableViewCell
 		{
 			public TableAdapterCell (UITableViewCellStyle style, string ident) : base(style,ident)
@@ -157,7 +181,7 @@ namespace Tables.iOS
 				{
 					case TableRowType.Checkbox:
 					{
-						var c = td.RowSetting(RowConfigurator,name);
+                        var c = td.RowSetting(RowConfigurator,name,indexPath.Section);
 						if (c == null || !c.SimpleCheckbox)
 						{
 							var sw = new UISwitch();
@@ -168,7 +192,7 @@ namespace Tables.iOS
 					
 					case TableRowType.Text:
 					{
-						var c = td.RowSetting(RowConfigurator,name);
+                        var c = td.RowSetting(RowConfigurator,name,indexPath.Section);
 						if (c != null && c.InlineTextEditing)
 						{
 							var tf = new UITextField (new CGRect (0, 0, 160, 44));
@@ -220,7 +244,7 @@ namespace Tables.iOS
                 case TableRowType.Text:
                     {
                         var vs = value as string;
-                        var c = td.RowSetting(RowConfigurator, name);
+                        var c = td.RowSetting(RowConfigurator, name,indexPath.Section);
                         if (c != null && c.InlineTextEditing)
                         {
                             var tf = (cell.AccessoryView as UITextField);
@@ -240,7 +264,7 @@ namespace Tables.iOS
                 case TableRowType.Blurb:
                     {
                         var vs = value as string;
-                        var c = td.RowSetting(RowConfigurator, name);
+                        var c = td.RowSetting(RowConfigurator, name,indexPath.Section);
                         cell.DetailTextLabel.Text = c != null && c.SecureTextEditing ? TextHelper.ScrambledText(vs) : vs;
                         cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
                     }
@@ -257,7 +281,7 @@ namespace Tables.iOS
                 case TableRowType.Checkbox:
                     {
                         cell.DetailTextLabel.Text = "";
-                        var s = td.RowSetting(RowConfigurator, name);
+                        var s = td.RowSetting(RowConfigurator, name,indexPath.Section);
                         if (s != null && s.SimpleCheckbox)
                             cell.Accessory = ((bool)value) ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
                         else
@@ -290,7 +314,7 @@ namespace Tables.iOS
             if (RowSelector.DidSelectRow(this,name))
                 return;
 
-            TableAdapterRowConfig config = td.RowSetting(RowConfigurator,name);
+            TableAdapterRowConfig config = td.RowSetting(RowConfigurator,name,indexPath.Section);
 			if (config != null)
             {
 				if (config.Clicked != null)

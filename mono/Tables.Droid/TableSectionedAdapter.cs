@@ -84,8 +84,21 @@ namespace Tables.Droid
                 }
                 else
                 {
-                    TableAdapterSimpleCell body = new TableAdapterSimpleCell(parent.Context);
-                    view = body;
+                    if (vp.Kind == ViewKind.Header)
+                    {
+                        var header = new TableAdapterHeader(parent.Context);
+                        view = header;
+                    }
+                    else if (vp.Kind == ViewKind.Footer)
+                    {
+                        var footer = new TableAdapterFooter(parent.Context);
+                        view = footer;
+                    }
+                    else
+                    {
+                        var body = new TableAdapterCell(parent.Context);
+                        view = body;
+                    }
                 }
             }
             else
@@ -166,7 +179,7 @@ namespace Tables.Droid
 
             for(int sec=0; sec<SectionCount; sec++)
             {
-                if (headers > 0)
+                if (headers > 0 && GetTitleForHeader(sec)!=null)
                 {
                     var pos = new ViewPosition();
                     pos.Section = sec;
@@ -193,7 +206,7 @@ namespace Tables.Droid
                     p++;
                 }
 
-                if (footers > 0)
+                if (footers > 0 && GetTitleForFooter(sec)!=null)
                 {
                     var pos = new ViewPosition();
                     pos.Section = sec;

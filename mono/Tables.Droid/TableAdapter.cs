@@ -12,15 +12,24 @@ using Android.Views.InputMethods;
 
 namespace Tables.Droid
 {
-    public class TableAdapter : BaseAdapter,ITableAdapter
+    public class TableAdapter : TableSectionedAdapter,ITableAdapter
     {
-        public TableAdapter(ListView table=null,Object data=null,ITableAdapterRowConfigurator settings=null,ITableAdapterCell aCell=null)
+        public TableAdapter(Context ctx,ListView table=null,Object data=null,ITableAdapterRowConfigurator settings=null,ITableAdapterCell aCell=null) : base(ctx)
         {
             td = new TableSource(null,TableRowType.Blurb);
             cell = aCell;
             ListView = table;
             RowConfigurator = settings;
             Data = data;
+        }
+
+        public TableAdapter(Context ctx,ListView table=null,Object[] datas=null,ITableAdapterRowConfigurator settings=null,ITableAdapterCell aCell=null) : base(ctx)
+        {
+            td = new TableSource(null,TableRowType.Blurb);
+            cell = aCell;
+            ListView = table;
+            RowConfigurator = settings;
+            Datas = datas;
         }
 
         private ITableAdapterCell cell;
@@ -68,57 +77,59 @@ namespace Tables.Droid
             }
         }
 
-        public void ReloadData()
+        public Object[] Datas
         {
-            NotifyDataSetChanged();
+            get
+            {
+                return td.Datas;             
+            }
+            set
+            {
+                td = new TableSource(value,TableRowType.Blurb);
+                ReloadData();
+            }
         }
 
         #region BaseAdapter
 
-        public override Java.Lang.Object GetItem(int position)
+        protected override void UpdateHeader(int section,View view)
         {
-            return position;
-        }
-
-        public override long GetItemId(int position)
-        {
-            return position;
-        }
-
-        public override Android.Views.View GetView(int position, Android.Views.View convertView, Android.Views.ViewGroup parent)
-        {
-            View view = null;
-
-            if (convertView == null) 
+            var header = GetTitleForHeader(section);
+            if (view is ITableAdapterHeader)
             {
-                if (cell == null)
-                {
-                    TableAdapterCell body = new TableAdapterCell(parent.Context);
-                    view = body;
-                }
-                else
-                    view = cell as View;
-            } 
-            else 
-            {
-                view = convertView;
+                var c = view as ITableAdapterHeader;
+                c.Title = header;
             }
+        }
 
+        protected override void UpdateCell(int section,int row,View view)
+        {
             if (view is ITableAdapterCell)
             {
                 ITableAdapterCell c = view as ITableAdapterCell;
-                UpdateView(c,position);
+                UpdateView(c,section,row);
             }
+        }
 
-            return view;
+        protected override void UpdateFooter(int section,View view)
+        {
+            var footer = GetTitleForFooter(section);
+            if (view is ITableAdapterFooter)
+            {
+                var c = view as ITableAdapterFooter;
+                c.Title = footer;
+            }
         }
 
         void ClickedItem(object sender, AdapterView.ItemClickEventArgs e)
         {
             if (tv == null)
                 return;
-            if (e.Position-tv.HeaderViewsCount>=0)
-                RowSelected(e.Position-tv.HeaderViewsCount, 0);
+            var vp = ViewPositionForPosition(e.Position);
+            if (vp.Kind == ViewKind.Cell)
+            {
+                RowSelected(vp.Row, vp.Section);
+            }
         }
 
         public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
@@ -133,7 +144,7 @@ namespace Tables.Droid
             if (RowSelector.DidSelectRow(this,name))
                 return;
 
-            TableAdapterRowConfig settings = td.RowSetting(RowConfigurator,name);
+            TableAdapterRowConfig settings = td.RowSetting(RowConfigurator,name,section);
             if (settings != null)
             {
                 if (settings.Clicked != null)
@@ -160,19 +171,19 @@ namespace Tables.Droid
                         if (settings != null && settings.InlineTextEditing)
                         {
                             // TODO: Figure out why this doesn't quite work
-                            if (ea != null && ea.View != null)
-                            {
-                                ITableAdapterCell c = ea.View as ITableAdapterCell;
-                                if (c != null)
-                                {
-                                    if (c.Edit.RequestFocus())
-                                    {
-                                        var ctx = tv.Context;
-                                        InputMethodManager inputManager = (InputMethodManager)ctx.GetSystemService(Context.InputMethodService);
-                                        inputManager.ShowSoftInput(c.Edit, 0);
-                                    }
-                                }
-                            }
+//                            if (ea != null && ea.View != null)
+//                            {
+//                                ITableAdapterCell c = ea.View as ITableAdapterCell;
+//                                if (c != null)
+//                                {
+//                                    if (c.Edit.RequestFocus())
+//                                    {
+//                                        var ctx = tv.Context;
+//                                        InputMethodManager inputManager = (InputMethodManager)ctx.GetSystemService(Context.InputMethodService);
+//                                        inputManager.ShowSoftInput(c.Edit, 0);
+//                                    }
+//                                }
+//                            }
                         }
                         else
                         {
@@ -293,9 +304,8 @@ namespace Tables.Droid
                 RowChanged.RowChanged(this, rowName, oldValue, newValue);
         }
 
-        public virtual void UpdateView(ITableAdapterCell c,int row)
-        {
-            int section = 0;
+        public virtual void UpdateView(ITableAdapterCell c,int section,int row)
+        {            
             var name = td.GetName(row, section);
             var rowType = td.RowType(RowConfigurator,row,section);
             var value = td.GetValue(row, section);
@@ -309,7 +319,7 @@ namespace Tables.Droid
                 case TableRowType.Text:
                 case TableRowType.Blurb:
                     {
-                        var s = td.RowSetting(RowConfigurator, name);
+                        var s = td.RowSetting(RowConfigurator, name,section);
                         c.UpdateTextCell(rowType,value as string, s,delegate(string changed) 
                         {
                             var old = td.GetValue(row,section) as string;
@@ -335,7 +345,7 @@ namespace Tables.Droid
                     {
                         c.Detail.Text = "";
                         c.Blurb.Text = "";
-                        var s = td.RowSetting(RowConfigurator, name);
+                        var s = td.RowSetting(RowConfigurator, name,section);
                         if (s != null && s.SimpleCheckbox)
                         {
                             c.Switch.Visibility = ViewStates.Gone;
@@ -372,12 +382,39 @@ namespace Tables.Droid
             }
         }
 
-        public override int Count
+        public override int NumberOfSections
         {
             get
             {
-                return td.RowsInSection(0);
+                return td == null ? 1 : td.NumberOfSections();
             }
+        }
+
+        public override int NumberOfRowsForSection(int section)
+        {
+            return td==null?0:td.RowsInSection(section);
+        }
+
+        public virtual TableAdapterSectionConfig GetSectionConfig(int section)
+        {
+            if (td != null)
+            {
+                var config = td.SectionConfig(section);
+                return config;
+            }
+            return null;
+        }
+
+        public override string GetTitleForHeader(int section)
+        {
+            var config = GetSectionConfig(section);
+            return config == null ? null : config.Header;
+        }
+
+        public override string GetTitleForFooter(int section)
+        {
+            var config = GetSectionConfig(section);
+            return config == null ? null : config.Footer;
         }
 
         #endregion       

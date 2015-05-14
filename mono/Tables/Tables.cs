@@ -29,6 +29,17 @@ namespace Tables
 		public List<Object>SingleChoiceOptions = null;
     }
 
+    public class TableAdapterSectionConfig
+    {
+        public string Header {get;set;}
+        public string Footer {get;set;}
+    }
+
+    public interface ITableAdapterSectionConfigurator
+    {
+        TableAdapterSectionConfig ConfigForSection();
+    }
+
 	public class TableAdapterRowConfigs : ITableAdapterRowConfigurator
 	{
 		public Dictionary<string,TableAdapterRowConfig> Configs = new Dictionary<string,TableAdapterRowConfig> ();
@@ -48,6 +59,15 @@ namespace Tables
         Nothing,
         Cats,
         Pizza
+    }
+
+    public class TestData2 : ITableAdapterSectionConfigurator
+    {
+        public string Row1 { get; private set;}
+        public string Row2{ get; private set;}
+
+        private TableAdapterSectionConfig config = new TableAdapterSectionConfig() { Header = "Section 2" };
+        public TableAdapterSectionConfig ConfigForSection() { return config; }
     }
 
     public class TestData : ITableAdapterRowConfigurator
@@ -108,6 +128,12 @@ namespace Tables
                 SingleChoice = ETestDataItemOption.Pizza,
             };
             return data;
+        }
+
+        public static object[] CreateSectionedTestData()
+        {
+            var objs = new object[]{ CreateTestData(), new TestData2() };
+            return objs;
         }
 
         public TableAdapterRowConfig ConfigForRow(string rowName)

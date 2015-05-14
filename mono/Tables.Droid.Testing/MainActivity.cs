@@ -28,9 +28,11 @@ namespace Tables.Droid.Testing
         {
             base.OnPostCreate(savedInstanceState);
 
-            var data = TestData.CreateTestData();
+//            var data = TestData.CreateTestData();
+//            Adapter = new TableAdapter(this,listView,data);
 
-            Adapter = new TableAdapter(listView,data);
+            var sdata = TestData.CreateSectionedTestData();
+            Adapter = new TableAdapter(this,listView,sdata);
         }
     }
 }
