@@ -136,10 +136,43 @@ namespace Tables
             return objs;
         }
 
+        public static TableSection[] CreateSectionsTestData()
+        {
+            var section1 = new TableSection("Section 1")
+            {
+                ItemArray = new TableItem[]
+                {
+                    new TableItem("Test 1")
+                    {
+                        Detail = "This is a test"
+                    }
+                }
+            };
+            var section2 = new TableSection("Section 2")
+            {
+                ItemArray = new TableItem[]
+                {
+                    new TableItem("Test 2")
+                    {
+                        Detail = "This is another test"
+                    }
+                }
+            };
+
+            return new TableSection[] { section1, section2 };
+        }
+
         public TableAdapterRowConfig ConfigForRow(string rowName)
         {
             return configs.ConfigForRow(rowName);
         }
+    }
+
+    public interface ITableSectionAdapter
+    {
+        TableItem ItemWithIndexes(int section, int row);
+        TableItem ItemWithName(string name,string section);
+        TableItem ItemWithKey(string key);
     }
 
     public class TableSection
@@ -173,6 +206,14 @@ namespace Tables
 					Items = null;
 			}
 		}
+
+        public int ItemCount
+        {
+            get
+            {
+                return Items != null ? Items.Count : 0;
+            }
+        }
     }
 
     public class TableItem

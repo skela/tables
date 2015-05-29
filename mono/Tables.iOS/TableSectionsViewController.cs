@@ -24,7 +24,7 @@ namespace Tables.iOS
 		void Update(TableSection section,TableItem item,NSIndexPath indexPath);
 	}
 
-	public class TableSectionsViewController : UITableViewController
+    public class TableSectionsViewController : UITableViewController, ITableSectionAdapter
 	{
 		public virtual TableSection[] Sections { get; set; }
 
@@ -45,6 +45,22 @@ namespace Tables.iOS
 			return null;
 		}
 
+        public virtual TableItem ItemWithIndexes(int section, int row)
+        {
+            return Sections [section].Items [row];
+        }
+
+        public virtual TableItem ItemWithKey(string key)
+        {
+            foreach (var sec in Sections)
+            {               
+                foreach (var item in sec.Items)
+                    if (item.Key!=null && item.Key.Equals(key))
+                        return item;
+            }
+            return null;
+        }
+
 		public virtual TableSection SectionAtIndexPath(NSIndexPath indexPath)
 		{
 			return Sections [indexPath.Section];
@@ -52,7 +68,7 @@ namespace Tables.iOS
 
 		public virtual TableItem ItemAtIndexPath(NSIndexPath indexPath)
 		{
-			return SectionAtIndexPath(indexPath).Items [indexPath.Row];
+            return ItemWithIndexes(indexPath.Section,indexPath.Row);			
 		}
 
 		public virtual void ReloadData()

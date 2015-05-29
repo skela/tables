@@ -12,7 +12,7 @@ namespace Tables.Droid.Testing
     [Activity(Label = "Tables.Droid.Testing", MainLauncher = true,Theme = "@style/Theme.Tables")]
     public class MainActivity : Activity
     {
-        public TableAdapter Adapter;
+        public BaseAdapter Adapter;
         ListView listView;
 
         protected override void OnCreate(Bundle bundle)
@@ -22,17 +22,13 @@ namespace Tables.Droid.Testing
             listView = new ListView(this);
 
             SetContentView(listView);
-        }
 
-        protected override void OnPostCreate(Bundle savedInstanceState)
-        {
-            base.OnPostCreate(savedInstanceState);
+            //            var data = TestData.CreateTestData();
+            //            Adapter = new TableAdapter(this,listView,data);
 
-//            var data = TestData.CreateTestData();
-//            Adapter = new TableAdapter(this,listView,data);
+            //Adapter = new TableAdapter(this,listView,TestData.CreateSectionedTestData());
+            Adapter = new TableSectionAdapter(this,listView,TestData.CreateSectionsTestData());
 
-            var sdata = TestData.CreateSectionedTestData();
-            Adapter = new TableAdapter(this,listView,sdata);
         }
     }
 }

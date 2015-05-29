@@ -86,17 +86,17 @@ namespace Tables.Droid
                 {
                     if (vp.Kind == ViewKind.Header)
                     {
-                        var header = new TableAdapterHeader(parent.Context);
+                        var header = CreateHeader(parent);
                         view = header;
                     }
                     else if (vp.Kind == ViewKind.Footer)
                     {
-                        var footer = new TableAdapterFooter(parent.Context);
+                        var footer = CreateFooter(parent);
                         view = footer;
                     }
                     else
                     {
-                        var body = new TableAdapterCell(parent.Context);
+                        var body = CreateCell(parent);
                         view = body;
                     }
                 }
@@ -119,6 +119,21 @@ namespace Tables.Droid
                 if (view!=null) UpdateCell(vp.Section,vp.Row, view);
             }
             return view;
+        }
+
+        protected virtual View CreateHeader(ViewGroup parent)
+        {
+            return new TableAdapterHeader(parent.Context);
+        }
+
+        protected virtual View CreateFooter(ViewGroup parent)
+        {
+            return new TableAdapterFooter(parent.Context);
+        }
+
+        protected virtual View CreateCell(ViewGroup parent)
+        {
+            return new TableAdapterCell(parent.Context);
         }
 
         protected virtual void UpdateHeader(int section,View view)
