@@ -417,18 +417,13 @@ namespace Tables.Droid
         #endregion       
     }
 
-    public class TableSectionsEventArgs : EventArgs
+    public class TableSectionsEventArgs : Tables.TableSectionsEventArgs
     {
-        public TableSection Section;
-        public TableItem Item;
-
         public int RowIndex;
         public int SectionIndex;
 
-        public TableSectionsEventArgs(TableSection section,TableItem item, int sectionIndex,int rowIndex) : base()
+        public TableSectionsEventArgs(TableSection section,TableItem item, int sectionIndex,int rowIndex) : base(section,item)
         {
-            Section = section;
-            Item = item;
             RowIndex = rowIndex;
             SectionIndex = sectionIndex;
         }

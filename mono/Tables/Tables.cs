@@ -29,6 +29,18 @@ namespace Tables
 		public List<Object>SingleChoiceOptions = null;
     }
 
+    public class TableSectionsEventArgs : EventArgs
+    {
+        public TableSection Section;
+        public TableItem Item;
+
+        public TableSectionsEventArgs(TableSection section,TableItem item) : base()
+        {
+            Section = section;
+            Item = item;
+        }
+    }
+
     public class TableAdapterSectionConfig
     {
         public string Header {get;set;}
@@ -170,6 +182,7 @@ namespace Tables
 
     public interface ITableSectionAdapter
     {
+		void ReloadData();
         TableItem ItemWithIndexes(int section, int row);
         TableItem ItemWithName(string name,string section);
         TableItem ItemWithKey(string key);

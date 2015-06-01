@@ -5,16 +5,12 @@ using Foundation;
 
 namespace Tables.iOS
 {
-	public class TableSectionsEventArgs : EventArgs
+	public class TableSectionsEventArgs : Tables.TableSectionsEventArgs
 	{
-		public TableSection Section;
-		public TableItem Item;
 		public NSIndexPath IndexPath;
 
-		public TableSectionsEventArgs(TableSection section,TableItem item, NSIndexPath indexPath) : base()
+		public TableSectionsEventArgs(TableSection section,TableItem item, NSIndexPath indexPath) : base(section,item)
 		{
-			Section = section;
-			Item = item;
 			IndexPath = indexPath;
 		}
 	}
