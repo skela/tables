@@ -6,6 +6,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Android.Graphics;
 
 namespace Tables.Droid.Testing
 {
@@ -24,11 +25,11 @@ namespace Tables.Droid.Testing
             SetContentView(listView);
 
             //            var data = TestData.CreateTestData();
-            //            Adapter = new TableAdapter(this,listView,data);
+            //            var adapter = new TableAdapter(this,listView,data);
 
             //Adapter = new TableAdapter(this,listView,TestData.CreateSectionedTestData());
-            Adapter = new TableSectionAdapter(this,listView,TestData.CreateSectionsTestData());
-
+            var adapter = new TableSectionAdapter(this,listView,TestData.CreateSectionsTestData());
+            Adapter = adapter;
         }
     }
 }

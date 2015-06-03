@@ -463,6 +463,19 @@ namespace Tables.Droid
             }
         }
 
+        public TableSection[] Sections
+        {
+            set
+            {
+                sections = value;
+                ReloadData();
+            }
+            get
+            {
+                return sections;
+            }
+        }
+
         void ClickedItem(object sender, AdapterView.ItemClickEventArgs e)
         {
             if (tv == null)
@@ -552,7 +565,7 @@ namespace Tables.Droid
 
         protected override View CreateCell(ViewGroup parent)
         {
-            var cell = new TableAdapterSimpleCell(parent.Context);
+            var cell = new TableAdapterSimpleCell(parent.Context,null,Style.DefaultCellLayoutStyle,Style.DefaultTitleStyle,Style.DefaultDetailStyle);
             return cell;
         }
 

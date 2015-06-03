@@ -158,7 +158,8 @@ namespace Tables
                     {
                         Detail = "This is a test"
                     }
-                }
+                },
+                Footer = "This is a test footer"
             };
             var section2 = new TableSection("Section 2")
             {

@@ -70,6 +70,16 @@ namespace Tables.Droid
             return ViewPositionForPosition(position).Kind;
         }
 
+        public override bool AreAllItemsEnabled()
+        {
+            return false;
+        }
+
+        public override bool IsEnabled(int position)
+        {
+            return ViewKindForPosition(position) == ViewKind.Cell;
+        }
+
         public override View GetView(int position, View convertView, ViewGroup parent) 
         {
             var vp = ViewPositionForPosition(position);
@@ -121,19 +131,21 @@ namespace Tables.Droid
             return view;
         }
 
+        public TableStyle Style = new TableStyle();
+
         protected virtual View CreateHeader(ViewGroup parent)
         {
-            return new TableAdapterHeader(parent.Context);
+            return new TableAdapterHeader(parent.Context,null,Style.DefaultHeaderLayoutStyle,Style.DefaultHeaderStyle);
         }
 
         protected virtual View CreateFooter(ViewGroup parent)
         {
-            return new TableAdapterFooter(parent.Context);
+            return new TableAdapterFooter(parent.Context,null,Style.DefaultFooterLayoutStyle,Style.DefaultFooterStyle);
         }
 
         protected virtual View CreateCell(ViewGroup parent)
         {
-            return new TableAdapterCell(parent.Context);
+            return new TableAdapterCell(parent.Context, null, Style.DefaultCellLayoutStyle);
         }
 
         protected virtual void UpdateHeader(int section,View view)
@@ -161,7 +173,7 @@ namespace Tables.Droid
         {
             get
             {
-                return 3;
+                return 4;
             }
         }
 
@@ -237,7 +249,7 @@ namespace Tables.Droid
         }
 
         public override void NotifyDataSetChanged()
-        {
+        {            
             Reload();
             base.NotifyDataSetChanged();
         }

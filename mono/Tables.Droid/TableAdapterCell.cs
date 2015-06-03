@@ -47,6 +47,11 @@ namespace Tables.Droid
 
     public static class TableUtils
     {
+        public static int DefaultHeaderStyle = Android.Resource.Style.TextAppearanceDeviceDefaultMedium;
+        public static int DefaultFooterStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSmall;
+        public static int DefaultTitleStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSearchResultTitle;
+        public static int DefaultDetailStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSearchResultSubtitle;
+
         public static int GetPixelsFromDPI(Context ctx, int dpi)
         {
             int pixels = (int) TypedValue.ApplyDimension(ComplexUnitType.Dip,dpi,ctx.Resources.DisplayMetrics);
@@ -64,6 +69,17 @@ namespace Tables.Droid
         }
     }
 
+    public class TableStyle
+    {
+        public int DefaultHeaderLayoutStyle = 0;
+        public int DefaultCellLayoutStyle = 0;
+        public int DefaultFooterLayoutStyle = 0;
+        public int DefaultHeaderStyle = TableUtils.DefaultHeaderStyle;
+        public int DefaultFooterStyle = TableUtils.DefaultFooterStyle;
+        public int DefaultTitleStyle = TableUtils.DefaultTitleStyle;
+        public int DefaultDetailStyle = TableUtils.DefaultDetailStyle;
+    }
+
     public class TableAdapterCell : LinearLayout,ITableAdapterCell,ICheckable,ITextWatcher
     {
         public TextView Title { get; private set;}
@@ -78,6 +94,11 @@ namespace Tables.Droid
         }
 
         public TableAdapterCell (Context context, IAttributeSet attrs) : base (context, attrs)
+        {
+            Prepare (context);
+        }
+
+        public TableAdapterCell (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs,defStyle)
         {
             Prepare (context);
         }
@@ -298,6 +319,9 @@ namespace Tables.Droid
         public TextView Title { get; private set;}
         public TextView Detail { get; private set;}
 
+        private int titleStyle = TableUtils.DefaultTitleStyle;
+        private int detailStyle = TableUtils.DefaultDetailStyle;
+
         public TableAdapterSimpleCell(Context context) : base(context)
         {
             Prepare(context);
@@ -308,31 +332,38 @@ namespace Tables.Droid
             Prepare (context);
         }
 
+        public TableAdapterSimpleCell (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs, defStyle)
+        {
+            Prepare (context);
+        }
+
+        public TableAdapterSimpleCell (Context context, IAttributeSet attrs, int defStyle, int aTitleStyle, int aDetailStyle) : base (context, attrs, defStyle)
+        {
+            titleStyle = aTitleStyle;
+            detailStyle = aDetailStyle;
+            Prepare (context);
+        }
+
         private void Prepare(Context context)
         {
-            LinearLayout line = new LinearLayout(context);
-            {
-                line.SetVerticalGravity(GravityFlags.Center);
-                line.Orientation = Orientation.Horizontal;
-
-                Title= new TextView(Context);
-                Title.Text = "Title";
-                Title.Typeface = Android.Graphics.Typeface.DefaultBold;
-                line.AddView(Title);
-
-                View filler = new View(context);
-                filler.LayoutParameters = new LinearLayout.LayoutParams(Android.Widget.LinearLayout.LayoutParams.WrapContent, Android.Widget.LinearLayout.LayoutParams.WrapContent, 1f);
-
-                line.AddView(filler);
-            }
-            AddView(line);
+            Title = new TextView(context);
+            int pixels = TableUtils.GetPixelsFromDPI(context, 2);
+            Title.SetPadding(pixels, pixels, pixels, pixels);
+            Title.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
+            Title.SetTextAppearance(context, titleStyle);
+            Title.Text = "Title";
+            AddView(Title);
 
             Detail = new TextView(context);
             Detail.Text = "Detail";
+            pixels = TableUtils.GetPixelsFromDPI(context, 2);
+            Detail.SetPadding(pixels, pixels, pixels, pixels);
+            Detail.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
+            Detail.SetTextAppearance(context, detailStyle);
             AddView(Detail);
 
             Orientation = Orientation.Vertical;
-            int pixels = TableUtils.GetPixelsFromDPI(context, 10);
+            pixels = TableUtils.GetPixelsFromDPI(context, 10);
             SetPadding(pixels, pixels, pixels, pixels);
         }
 
@@ -343,116 +374,166 @@ namespace Tables.Droid
                 Focusable = !value;
             }
         }
+
+        public void SetTitleStyle(Context ctx,int style)
+        {
+            titleStyle = style;
+            if (Title != null)
+                Title.SetTextAppearance(ctx, titleStyle);
+        }
+
+        public void SetDetailStyle(Context ctx,int style)
+        {
+            detailStyle = style;
+            if (Detail != null)
+                Detail.SetTextAppearance(ctx, detailStyle);
+        }
     }
 
-    public class TableAdapterHeader : LinearLayout,ITableAdapterHeader
+    public class TableAdapterHF : LinearLayout
     {
-        public TextView TitleLabel { get; private set;}
+        public TextView TitleLabel { get; protected set;}
+
+        public TableAdapterHF(Context context) : base(context) 
+        {
+            Construct(context);
+        }
+
+        public TableAdapterHF (Context context, IAttributeSet attrs) : base (context, attrs)
+        {
+            Construct(context);
+        }
+
+        public TableAdapterHF (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs, defStyle) 
+        {
+            Construct(context);
+            ApplyLayoutStyle(context,defStyle);
+        }
+
+        private void Construct(Context context)
+        {
+            TitleLabel = new TextView(Context);
+            TitleLabel.Text = "Title";
+            TitleLabel.SetTextAppearance(context,textStyle);
+            TitleLabel.Gravity = GravityFlags.Left;
+            TitleLabel.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+            AddView(TitleLabel);
+
+            Focusable = false;
+            Clickable = false;
+            FocusableInTouchMode = false;
+
+            int pixels = TableUtils.GetPixelsFromDPI(context, 10);
+            SetPadding(pixels, pixels, pixels, pixels);
+        }
+
+        public int TextStyle
+        {
+            get
+            {
+                return textStyle;
+            }
+            set
+            {
+                textStyle = value;
+                if (TitleLabel != null)
+                    TitleLabel.SetTextAppearance(TitleLabel.Context, TextStyle);
+            }
+        }
+        protected int textStyle;
+
+        public string Title
+        {
+            get
+            {
+                return TitleLabel.Text;
+            }
+            set
+            {                
+                TitleLabel.Text = value;
+            }
+        }
+
+        void ApplyLayoutStyle(Context context,int defStyle)
+        {
+            if (defStyle == 0) return;
+
+            int[] attrs = {Android.Resource.Attribute.Background};
+
+            var a = context.ObtainStyledAttributes(defStyle, attrs);
+            var bg = a.GetResourceId(0, 0);
+            if (bg != 0)
+                SetBackgroundResource(bg);
+
+            a.Recycle();
+        }
+    }
+
+    public class TableAdapterHeader : TableAdapterHF,ITableAdapterHeader
+    {
+        private int kDefaultTextStyle = TableUtils.DefaultHeaderStyle;
 
         public TableAdapterHeader(Context context) : base(context)
         {
+            TextStyle = kDefaultTextStyle;
             Prepare(context);
         }
 
         public TableAdapterHeader (Context context, IAttributeSet attrs) : base (context, attrs)
         {
+            TextStyle = kDefaultTextStyle;
+            Prepare (context);
+        }
+
+        public TableAdapterHeader (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs, defStyle)
+        {
+            TextStyle = kDefaultTextStyle;
+            Prepare (context);
+        }
+
+        public TableAdapterHeader (Context context, IAttributeSet attrs, int defStyle, int textStyle) : base (context, attrs, defStyle)
+        {
+            TextStyle = textStyle;
             Prepare (context);
         }
 
         private void Prepare(Context context)
         {
-            LinearLayout line = new LinearLayout(context);
-            {
-                line.SetVerticalGravity(GravityFlags.Center);
-                line.Orientation = Orientation.Horizontal;
-                line.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.FillParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
 
-                TitleLabel= new TextView(Context);
-                TitleLabel.Text = "Title";
-                //TitleLabel.SetTextAppearance(context, Android.Resource.Style.TextAppearanceDeviceDefault);
-                TitleLabel.Typeface = Android.Graphics.Typeface.DefaultBold;
-                TitleLabel.Gravity = GravityFlags.Center;
-                TitleLabel.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.FillParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
-
-                line.AddView(TitleLabel);
-
-                int pixels = TableUtils.GetPixelsFromDPI(context, 10);
-                line.SetPadding(pixels, pixels, pixels, pixels);
-            }
-            AddView(line);
-
-            Focusable = false;
-            Clickable = false;
-            FocusableInTouchMode = false;
-            Orientation = Orientation.Vertical;
-        }
-
-        public string Title
-        {
-            get
-            {
-                return TitleLabel.Text;
-            }
-            set
-            {                
-                TitleLabel.Text = value;
-            }
         }
     }
 
-    public class TableAdapterFooter : LinearLayout,ITableAdapterFooter
+    public class TableAdapterFooter : TableAdapterHF,ITableAdapterFooter
     {
-        public TextView TitleLabel { get; private set;}
+        private int kDefaultTextStyle = TableUtils.DefaultFooterStyle;
 
         public TableAdapterFooter(Context context) : base(context)
         {
+            TextStyle = kDefaultTextStyle;
             Prepare(context);
         }
 
         public TableAdapterFooter (Context context, IAttributeSet attrs) : base (context, attrs)
         {
+            TextStyle = kDefaultTextStyle;
+            Prepare (context);
+        }
+
+        public TableAdapterFooter (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs, defStyle)
+        {
+            TextStyle = kDefaultTextStyle;
+            Prepare (context);
+        }
+
+        public TableAdapterFooter (Context context, IAttributeSet attrs, int defStyle, int textStyle) : base (context, attrs, defStyle)
+        {
+            TextStyle = textStyle;
             Prepare (context);
         }
 
         private void Prepare(Context context)
         {
-            LinearLayout line = new LinearLayout(context);
-            {
-                line.SetVerticalGravity(GravityFlags.Center);
-                line.Orientation = Orientation.Horizontal;
-
-                TitleLabel= new TextView(Context);
-                TitleLabel.Text = "Title";
-                TitleLabel.Typeface = Android.Graphics.Typeface.DefaultBold;
-                TitleLabel.TextSize = TitleLabel.TextSize - 1;
-                TitleLabel.Gravity = GravityFlags.Center;
-                line.AddView(TitleLabel);
-
-                View filler = new View(context);
-                filler.LayoutParameters = new LinearLayout.LayoutParams(Android.Widget.LinearLayout.LayoutParams.WrapContent, Android.Widget.LinearLayout.LayoutParams.WrapContent, 1f);
-
-                line.AddView(filler);
-            }
-            AddView(line);
-
-            Focusable = false;
-            Clickable = false;
-            FocusableInTouchMode = false;
-            Orientation = Orientation.Vertical;
-            int pixels = TableUtils.GetPixelsFromDPI(context, 10);
-            SetPadding(pixels, pixels, pixels, pixels);
-        }
-
-        public string Title
-        {
-            get
-            {
-                return TitleLabel.Text;
-            }
-            set
-            {                
-                TitleLabel.Text = value;
-            }
+            TitleLabel.Gravity = GravityFlags.Center;
         }
     }
 }
