@@ -687,7 +687,7 @@ namespace Tables.Droid
         }
     }
 
-    public class TableAdapterSectionSeperator : LinearLayout
+    public class TableAdapterSectionSeperator : View
     {
         public TableAdapterSectionSeperator(Context context) : base(context)
         {            
@@ -706,8 +706,7 @@ namespace Tables.Droid
         }
 
         private void Prepare(Context context)
-        {
-            LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+        {            
             Focusable = false;
             Clickable = false;
             FocusableInTouchMode = false;
@@ -720,12 +719,13 @@ namespace Tables.Droid
             int[] attrs = {Android.Resource.Attribute.Background,Android.Resource.Attribute.MinHeight};
 
             var a = context.ObtainStyledAttributes(defStyle, attrs);
+
             var bg = a.GetResourceId(0, 0);
-            if (bg != 0)
-                SetBackgroundResource(bg);
+            if (bg != 0) SetBackgroundResource(bg);
+
             var mh = a.GetDimensionPixelSize(1, 0);
-            if (mh != 0)
-                SetMinimumHeight(mh);
+            if (mh != 0) SetMinimumHeight(mh);
+
             a.Recycle();
         }
     }
