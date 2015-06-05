@@ -249,6 +249,8 @@ namespace Tables
         public string CellIdentString;
         public int CellIdentInt;
 		public double CellHeight;
+        public string CellName;
+        public string CellPrefix;
 
 		public TableItem()
 		{

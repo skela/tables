@@ -7,6 +7,8 @@ using Android.Content;
 
 namespace Tables.Droid
 {
+    
+
     public class TableSectionedAdapter : BaseAdapter
     {        
         protected LayoutInflater Inflator;
@@ -19,8 +21,9 @@ namespace Tables.Droid
         public enum ViewKind : int
         {
             Header=1,
-            Cell=2,
-            Footer=3
+            Footer=2,
+            Seperator=3,
+            Cell=4,
         }
 
         public struct ViewPosition
@@ -31,14 +34,21 @@ namespace Tables.Droid
             public int Position;
             public int Type;
             public int Layout;
+            public string Cell;
+        }
+
+        public class ViewHolder
+        {
+            public Object Holder;
+            public int Type;
+            public string Ident;
         }
 
         int RowCount = 0;
         int HeaderCount = 0;
         int FooterCount = 0;
         int SectionCount = 0;
-
-        int ViewTypes = 1;
+        int SeperatorCount = 0;
 
         List<ViewPosition> Positions = new List<ViewPosition>();
 
@@ -56,11 +66,11 @@ namespace Tables.Droid
         {
             get 
             {
-                return RowCount + HeaderCount + FooterCount;
+                return RowCount + HeaderCount + FooterCount + SeperatorCount;
             }
         }
 
-        public ViewPosition ViewPositionForPosition (int position)
+        public virtual ViewPosition ViewPositionForPosition (int position)
         {
             return Positions[position];
         }
@@ -68,6 +78,40 @@ namespace Tables.Droid
         public ViewKind ViewKindForPosition (int position)
         {
             return ViewPositionForPosition(position).Kind;
+        }
+
+        public override int GetItemViewType(int position)
+        {
+            var vp = ViewPositionForPosition(position);
+            return vp.Type;
+        }
+
+        public override int ViewTypeCount
+        {
+            get
+            {
+                return kDefaultViewTypeCount + CellHolders.Count;
+            }
+        }
+        private const int kDefaultViewTypeCount = 5;
+
+        public Dictionary<int,ViewHolder> CellHolders = new Dictionary<int,ViewHolder>();
+
+        public void RegisterCell(string cell,Object holder)
+        {
+            int type = ((int)ViewKind.Cell) + CellHolders.Count + 1;
+            var vh = new ViewHolder() { Ident = cell, Type = type, Holder = holder };
+            CellHolders.Add(type, vh);
+        }
+
+        public int GetCellTypeFromCellIdent(string cell)
+        {
+            foreach (var ch in CellHolders.Values)
+            {
+                if (ch.Ident.Equals(cell))
+                    return ch.Type;
+            }
+            return (int)ViewKind.Cell;
         }
 
         public override bool AreAllItemsEnabled()
@@ -90,7 +134,15 @@ namespace Tables.Droid
             {
                 if (vp.Layout != 0)
                 {
-                    view = Inflator.Inflate(vp.Layout,null);
+                    view = Inflator.Inflate(vp.Layout, null);
+                    ViewHolder holder = null;
+                    if (CellHolders.TryGetValue(vp.Type, out holder))
+                    {
+                        if (holder.Holder is ITableCellHolder)
+                        {
+                            (holder.Holder as ITableCellHolder).Bind(view);
+                        }
+                    }
                 }
                 else
                 {
@@ -103,6 +155,11 @@ namespace Tables.Droid
                     {
                         var footer = CreateFooter(parent);
                         view = footer;
+                    }
+                    else if (vp.Kind == ViewKind.Seperator)
+                    {
+                        var seperator = CreateSeperator(parent);
+                        view = seperator;
                     }
                     else
                     {
@@ -118,15 +175,42 @@ namespace Tables.Droid
 
             if (vp.Kind == ViewKind.Header)
             {
-                if (view!=null) UpdateHeader(vp.Section, view);
+                if (view != null)
+                    UpdateHeader(vp.Section, view);
             }
             else if (vp.Kind == ViewKind.Footer)
             {
-                if (view!=null) UpdateFooter(vp.Section, view);
+                if (view != null)
+                    UpdateFooter(vp.Section, view);
+            }
+            else if (vp.Kind == ViewKind.Seperator)
+            {
+
             }
             else
             {
-                if (view!=null) UpdateCell(vp.Section,vp.Row, view);
+                if (vp.Layout != 0)
+                {
+                    ViewHolder holder = null;
+                    if (CellHolders.TryGetValue(vp.Type, out holder))
+                    {
+                        if (holder.Holder is ITableCellHolder)
+                        {
+                            (holder.Holder as ITableCellHolder).Bind(view);
+                            UpdateHolder(vp.Section, vp.Row, holder.Holder);
+                        }
+                    }
+                    else
+                    {
+                        if (view != null)
+                            UpdateCell(vp.Section, vp.Row, view);
+                    }
+                }
+                else
+                {
+                    if (view != null)
+                        UpdateCell(vp.Section, vp.Row, view);
+                }
             }
             return view;
         }
@@ -138,14 +222,19 @@ namespace Tables.Droid
             return new TableAdapterHeader(parent.Context,null,Style.DefaultHeaderLayoutStyle,Style.DefaultHeaderStyle);
         }
 
+        protected virtual View CreateCell(ViewGroup parent)
+        {
+            return new TableAdapterCell(parent.Context, null, Style.DefaultCellLayoutStyle);
+        }
+
         protected virtual View CreateFooter(ViewGroup parent)
         {
             return new TableAdapterFooter(parent.Context,null,Style.DefaultFooterLayoutStyle,Style.DefaultFooterStyle);
         }
 
-        protected virtual View CreateCell(ViewGroup parent)
+        protected virtual View CreateSeperator(ViewGroup parent)
         {
-            return new TableAdapterCell(parent.Context, null, Style.DefaultCellLayoutStyle);
+            return new TableAdapterSectionSeperator(parent.Context, null, Style.DefaultSectionSeparatorStyle);
         }
 
         protected virtual void UpdateHeader(int section,View view)
@@ -158,23 +247,14 @@ namespace Tables.Droid
 
         }
 
+        protected virtual void UpdateHolder(int section,int row,Object holder)
+        {
+            
+        }
+
         protected virtual void UpdateFooter(int section,View view)
         {
 
-        }
-
-        public override int GetItemViewType(int position)
-        {
-            var vp = ViewPositionForPosition(position);
-            return vp.Type;
-        }
-
-        public override int ViewTypeCount
-        {
-            get
-            {
-                return 4;
-            }
         }
 
         private void Reload()
@@ -182,6 +262,7 @@ namespace Tables.Droid
             RowCount = 0;
             HeaderCount = 0;
             FooterCount = 0;
+            SeperatorCount = 0;
 
             SectionCount = NumberOfSections;
 
@@ -196,11 +277,15 @@ namespace Tables.Droid
                 var footerTitle = GetTitleForFooter(i);
                 if (footerTitle != null)
                     FooterCount++;
+
+                if (Style.DefaultSectionSeparatorStyle > 0)
+                    SeperatorCount++;
             }
 
             var p = 0;
             var headers = HeaderCount;
             var footers = FooterCount;
+            var seperators = SeperatorCount;
 
             Positions.Clear();
 
@@ -224,11 +309,11 @@ namespace Tables.Droid
                 {
                     var pos = new ViewPosition();
                     pos.Row = row;
-                    pos.Type = (int)ViewKind.Cell;
                     pos.Section = sec;
                     pos.Position = p;
                     pos.Kind = ViewKind.Cell;
-                    pos.Layout = GetLayoutForCell(row,sec);
+                    pos.Layout = GetLayoutForCell(sec,row);
+                    pos.Type = GetTypeForCell(sec, row);
                     Positions.Add(pos);
                     p++;
                 }
@@ -243,6 +328,18 @@ namespace Tables.Droid
                     pos.Layout = GetLayoutForFooter(sec);
                     Positions.Add(pos);
                     footers--;
+                    p++;
+                }
+
+                if (seperators > 0)
+                {
+                    var pos = new ViewPosition();
+                    pos.Section = sec;
+                    pos.Kind = ViewKind.Seperator;
+                    pos.Position = p;
+                    pos.Type = (int)ViewKind.Seperator;
+                    Positions.Add(pos);
+                    seperators--;
                     p++;
                 }
             }
@@ -284,9 +381,19 @@ namespace Tables.Droid
             return 0;
         }
 
-        public virtual int GetLayoutForCell(int row,int section)
+        public virtual int GetLayoutForCell(int section,int row)
         {
             return 0;
+        }
+
+        public virtual int GetTypeForCell(int section,int row)
+        {
+            return (int)ViewKind.Cell;
+        }
+
+        public virtual string GetIdentifierForCell(int section,int row)
+        {
+            return null;
         }
 
         public virtual int GetLayoutForFooter(int section)

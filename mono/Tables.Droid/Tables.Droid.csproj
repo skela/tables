@@ -70,6 +70,7 @@
     <Compile Include="TableSingleChoiceEditor.cs" />
     <Compile Include="TableEditor.cs" />
     <Compile Include="TableSectionedAdapter.cs" />
+    <Compile Include="TableSectionAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

@@ -28,6 +28,22 @@ namespace Tables.Droid
         string Title { set; get; }
     }
 
+    public interface ITableAdapterSectionCell
+    {
+        string Title { set; get; }
+        string Detail { set; get; }    
+    }
+
+    public interface ITableSectionsCell
+    {
+        void Update(TableSection tsection,TableItem titem,int section, int row);
+    }
+
+    public interface ITableCellHolder
+    {
+        void Bind(View view);
+    }
+
     public interface ITableAdapterHeader : ITableAdapterHeaderFooter
     {
         
@@ -74,6 +90,7 @@ namespace Tables.Droid
         public int DefaultHeaderLayoutStyle = 0;
         public int DefaultCellLayoutStyle = 0;
         public int DefaultFooterLayoutStyle = 0;
+        public int DefaultSectionSeparatorStyle = 0;
         public int DefaultHeaderStyle = TableUtils.DefaultHeaderStyle;
         public int DefaultFooterStyle = TableUtils.DefaultFooterStyle;
         public int DefaultTitleStyle = TableUtils.DefaultTitleStyle;
@@ -390,9 +407,112 @@ namespace Tables.Droid
         }
     }
 
+    public class TableAdapterSectionCell : LinearLayout,ITableAdapterSectionCell
+    {
+        public TextView TitleLabel { get; private set;}
+        public TextView DetailLabel { get; private set;}
+
+        private int titleStyle = TableUtils.DefaultTitleStyle;
+        private int detailStyle = TableUtils.DefaultDetailStyle;
+
+        public TableAdapterSectionCell(Context context) : base(context)
+        {
+            Prepare(context);
+        }
+
+        public TableAdapterSectionCell (Context context, IAttributeSet attrs) : base (context, attrs)
+        {
+            Prepare (context);
+        }
+
+        public TableAdapterSectionCell (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs, defStyle)
+        {
+            Prepare (context);
+        }
+
+        public TableAdapterSectionCell (Context context, IAttributeSet attrs, int defStyle, int aTitleStyle, int aDetailStyle) : base (context, attrs, defStyle)
+        {
+            titleStyle = aTitleStyle;
+            detailStyle = aDetailStyle;
+            Prepare (context);
+        }
+
+        private void Prepare(Context context)
+        {
+            TitleLabel = new TextView(context);
+            int pixels = TableUtils.GetPixelsFromDPI(context, 2);
+            TitleLabel.SetPadding(pixels, pixels, pixels, pixels);
+            TitleLabel.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
+            TitleLabel.SetTextAppearance(context, titleStyle);
+            TitleLabel.Text = "Title";
+            AddView(TitleLabel);
+
+            DetailLabel = new TextView(context);
+            DetailLabel.Text = "Detail";
+            pixels = TableUtils.GetPixelsFromDPI(context, 2);
+            DetailLabel.SetPadding(pixels, pixels, pixels, pixels);
+            DetailLabel.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
+            DetailLabel.SetTextAppearance(context, detailStyle);
+            AddView(DetailLabel);
+
+            Orientation = Orientation.Vertical;
+            pixels = TableUtils.GetPixelsFromDPI(context, 10);
+            SetPadding(pixels, pixels, pixels, pixels);
+        }
+
+        public bool Editable 
+        {
+            set
+            {
+                Focusable = !value;
+            }
+        }
+
+        public virtual string Title
+        {
+            get
+            {
+                return TitleLabel.Text;
+            }
+            set
+            {                
+                TitleLabel.Text = value;
+                TitleLabel.Visibility = value == null || value.Length == 0 ? ViewStates.Gone : ViewStates.Visible;
+            }
+        }
+
+        public virtual string Detail
+        {
+            get
+            {
+                return DetailLabel.Text;
+            }
+            set
+            {                
+                DetailLabel.Text = value;
+                DetailLabel.Visibility = value == null || value.Length == 0 ? ViewStates.Gone : ViewStates.Visible;
+            }
+        }
+
+        public void SetTitleStyle(Context ctx,int style)
+        {
+            titleStyle = style;
+            if (TitleLabel != null)
+                TitleLabel.SetTextAppearance(ctx, titleStyle);
+        }
+
+        public void SetDetailStyle(Context ctx,int style)
+        {
+            detailStyle = style;
+            if (DetailLabel != null)
+                DetailLabel.SetTextAppearance(ctx, detailStyle);
+        }
+    }
+
     public class TableAdapterHF : LinearLayout
     {
         public TextView TitleLabel { get; protected set;}
+        public View Separator  { get; protected set;}
 
         public TableAdapterHF(Context context) : base(context) 
         {
@@ -412,19 +532,38 @@ namespace Tables.Droid
 
         private void Construct(Context context)
         {
-            TitleLabel = new TextView(Context);
+            Orientation = Orientation.Vertical;
+
+            Separator = new View(context);
+            Separator.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, 1);
+            Separator.SetBackgroundColor(Android.Graphics.Color.DimGray);
+            var isFooter = IsFooter;
+            if (!isFooter)
+                AddView(Separator);
+
+            TitleLabel = new TextView(context);
             TitleLabel.Text = "Title";
             TitleLabel.SetTextAppearance(context,textStyle);
             TitleLabel.Gravity = GravityFlags.Left;
             TitleLabel.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
             AddView(TitleLabel);
+            if (isFooter)
+                AddView(Separator);
 
             Focusable = false;
             Clickable = false;
             FocusableInTouchMode = false;
 
             int pixels = TableUtils.GetPixelsFromDPI(context, 10);
-            SetPadding(pixels, pixels, pixels, pixels);
+            TitleLabel.SetPadding(pixels, pixels, pixels, pixels);
+        }
+
+        protected virtual bool IsFooter
+        {
+            get
+            {
+                return false;
+            }
         }
 
         public int TextStyle
@@ -442,7 +581,7 @@ namespace Tables.Droid
         }
         protected int textStyle;
 
-        public string Title
+        public virtual string Title
         {
             get
             {
@@ -451,6 +590,7 @@ namespace Tables.Droid
             set
             {                
                 TitleLabel.Text = value;
+                TitleLabel.Visibility = value == null || value.Length == 0 ? ViewStates.Gone : ViewStates.Visible;
             }
         }
 
@@ -458,13 +598,15 @@ namespace Tables.Droid
         {
             if (defStyle == 0) return;
 
-            int[] attrs = {Android.Resource.Attribute.Background};
+            int[] attrs = {Android.Resource.Attribute.Background,Android.Resource.Attribute.MinHeight};
 
             var a = context.ObtainStyledAttributes(defStyle, attrs);
             var bg = a.GetResourceId(0, 0);
             if (bg != 0)
                 SetBackgroundResource(bg);
-
+            var mh = a.GetDimensionPixelSize(1, 0);
+            if (mh != 0)
+                SetMinimumHeight(mh);
             a.Recycle();
         }
     }
@@ -534,6 +676,57 @@ namespace Tables.Droid
         private void Prepare(Context context)
         {
             TitleLabel.Gravity = GravityFlags.Center;
+        }
+
+        protected override bool IsFooter
+        {
+            get
+            {
+                return true;
+            }
+        }
+    }
+
+    public class TableAdapterSectionSeperator : LinearLayout
+    {
+        public TableAdapterSectionSeperator(Context context) : base(context)
+        {            
+            Prepare(context);
+        }
+
+        public TableAdapterSectionSeperator (Context context, IAttributeSet attrs) : base (context, attrs)
+        {            
+            Prepare (context);
+        }
+
+        public TableAdapterSectionSeperator (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs, defStyle)
+        {            
+            Prepare (context);
+            ApplyStyle(context,defStyle);
+        }
+
+        private void Prepare(Context context)
+        {
+            LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
+            Focusable = false;
+            Clickable = false;
+            FocusableInTouchMode = false;
+        }
+
+        void ApplyStyle(Context context,int defStyle)
+        {
+            if (defStyle == 0) return;
+
+            int[] attrs = {Android.Resource.Attribute.Background,Android.Resource.Attribute.MinHeight};
+
+            var a = context.ObtainStyledAttributes(defStyle, attrs);
+            var bg = a.GetResourceId(0, 0);
+            if (bg != 0)
+                SetBackgroundResource(bg);
+            var mh = a.GetDimensionPixelSize(1, 0);
+            if (mh != 0)
+                SetMinimumHeight(mh);
+            a.Recycle();
         }
     }
 }
