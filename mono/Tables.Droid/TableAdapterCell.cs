@@ -105,6 +105,9 @@ namespace Tables.Droid
         public CheckBox Switch { get; private set;}
         public EditText Edit { get; private set;}
 
+        private int titleStyle = TableUtils.DefaultTitleStyle;
+        private int detailStyle = TableUtils.DefaultDetailStyle;
+
         public TableAdapterCell(Context context) : base(context)
         {
             Prepare(context);
@@ -115,8 +118,10 @@ namespace Tables.Droid
             Prepare (context);
         }
 
-        public TableAdapterCell (Context context, IAttributeSet attrs, int defStyle) : base (context, attrs,defStyle)
+        public TableAdapterCell (Context context, IAttributeSet attrs, int defStyle, int aTitleStyle, int aDetailStyle) : base (context, attrs,defStyle)
         {
+            titleStyle = aTitleStyle;
+            detailStyle = aDetailStyle;
             Prepare (context);
         }
 
@@ -129,7 +134,7 @@ namespace Tables.Droid
 
                 Title= new TextView(Context);
                 Title.Text = "Title";
-                Title.Typeface = Android.Graphics.Typeface.DefaultBold;
+                Title.SetTextAppearance(context, titleStyle);
                 line.AddView(Title);
 
                 View filler = new View(context);
@@ -141,6 +146,7 @@ namespace Tables.Droid
                 Detail.Text = "Detail";
                 Detail.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
                 Detail.SetMinimumHeight(TableUtils.GetPixelsFromDPI(context,40));
+                Detail.SetTextAppearance(context, detailStyle);
                 line.AddView(Detail);
 
                 Switch = new CheckBox(context);
@@ -152,11 +158,13 @@ namespace Tables.Droid
 
             Blurb = new TextView(context);
             Blurb.Text = "Blurb";
+            Blurb.SetTextAppearance(context, detailStyle);
             AddView(Blurb);
 
             Edit = TableUtils.CreateEditableTextField(context);
             Edit.Text = "Edit";
             Edit.Visibility = ViewStates.Gone;
+            Edit.SetTextAppearance(context, detailStyle);
             Edit.AddTextChangedListener(this);
             AddView(Edit);
 

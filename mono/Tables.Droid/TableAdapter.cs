@@ -122,7 +122,13 @@ namespace Tables.Droid
         {
             if (tv == null)
                 return;
-            var vp = ViewPositionForPosition(e.Position);
+            var list = (e.Parent as ListView);
+            int pos = e.Position;
+            if (list!=null && list.HeaderViewsCount > 0)
+                pos -= list.HeaderViewsCount;
+            if (pos < 0) return;
+
+            var vp = ViewPositionForPosition(pos);
             if (vp.Kind == ViewKind.Cell)
             {
                 RowSelected(vp.Row, vp.Section);

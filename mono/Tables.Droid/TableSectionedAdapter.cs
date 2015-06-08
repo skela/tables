@@ -7,8 +7,6 @@ using Android.Content;
 
 namespace Tables.Droid
 {
-    
-
     public class TableSectionedAdapter : BaseAdapter
     {        
         protected LayoutInflater Inflator;
@@ -224,7 +222,7 @@ namespace Tables.Droid
 
         protected virtual View CreateCell(ViewGroup parent)
         {
-            return new TableAdapterCell(parent.Context, null, Style.DefaultCellLayoutStyle);
+            return new TableAdapterCell(parent.Context, null, Style.DefaultCellLayoutStyle,Style.DefaultTitleStyle,Style.DefaultDetailStyle);
         }
 
         protected virtual View CreateFooter(ViewGroup parent)
