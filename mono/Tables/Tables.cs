@@ -199,6 +199,11 @@ namespace Tables
         public string CellIdentString;
         public int CellIdentInt;
 
+        public TableSection()
+        {
+            
+        }
+
 		public TableSection(string name)
 		{
 			Name = name;
