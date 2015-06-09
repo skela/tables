@@ -501,20 +501,6 @@ namespace Tables.Droid
                 DetailLabel.Visibility = value == null || value.Length == 0 ? ViewStates.Gone : ViewStates.Visible;
             }
         }
-
-        public void SetTitleStyle(Context ctx,int style)
-        {
-            titleStyle = style;
-            if (TitleLabel != null)
-                TitleLabel.SetTextAppearance(ctx, titleStyle);
-        }
-
-        public void SetDetailStyle(Context ctx,int style)
-        {
-            detailStyle = style;
-            if (DetailLabel != null)
-                DetailLabel.SetTextAppearance(ctx, detailStyle);
-        }
     }
 
     public class TableAdapterHF : LinearLayout

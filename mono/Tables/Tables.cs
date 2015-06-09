@@ -246,11 +246,13 @@ namespace Tables
         public object Object;
         public bool Checked;
         public int Badge;
+        public int Integer;
 
 		public object AttributedText;
 		public object AttributedDetail;
         public string ImageName;
         public int ImageResource;
+
         public string CellIdentString;
         public int CellIdentInt;
 		public double CellHeight;
