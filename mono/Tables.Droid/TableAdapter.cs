@@ -9,10 +9,17 @@ using Android.App;
 using Android.Text;
 using Android.Text.Method;
 using Android.Views.InputMethods;
+using System.Collections.Generic;
+using Android.OS;
 
 namespace Tables.Droid
 {
-    public class TableAdapter : TableSectionedAdapter,ITableAdapter
+    public interface EditorListeners : SingleChoiceEditorListener,TimeEditorListener
+    {
+
+    }
+
+    public class TableAdapter : TableSectionedAdapter,ITableAdapter,EditorListeners
     {
         public TableAdapter(Context ctx,ListView table=null,Object data=null,ITableAdapterRowConfigurator settings=null) : base(ctx)
         {
@@ -251,12 +258,9 @@ namespace Tables.Droid
 
                         DateTime v = (DateTime)value;
 
-                        var newFragment = new TableTimeEditor(v, rowType, delegate(DateTime changedDate)
-                        {
-                            td.SetValue(changedDate, row, section);
-                            ReloadData();
-                            ChangedValue(name, value, changedDate);
-                        });
+                        var newFragment = TimeEditor.CreateFragment(this, v, rowType);
+                        newFragment.Arguments.PutInt("row", row);
+                        newFragment.Arguments.PutInt("section", section);
 
                         newFragment.Show(frag, "datePicker");
                     }
@@ -265,39 +269,45 @@ namespace Tables.Droid
 
                 case TableRowType.SingleChoiceList:
                 {
-                    var actSC = tv.Context as Activity;
-                    var dnameSC = td.DisplayName(RowConfigurator, row, section);
-                    var options = settings.SingleChoiceOptions;
-
-                    var singleChoiceAdapter = new TableSingleChoiceEditor(actSC, settings, options, value);
-
-                    int selectedItemIndex = -1;
-                    if (options != null && value != null)
+                    if (tv.Context is Activity)
                     {
-                        selectedItemIndex = options.IndexOf(value);
+                        var fr = tv.Context as Activity;
+                        var frag = fr.FragmentManager;
+
+                        var dnameSC = td.DisplayName(RowConfigurator, row, section);
+                        var options = settings.SingleChoiceOptions;
+
+                        var newFragment = SingleChoiceEditor.CreateFragment(this, dnameSC, options, value);
+                        newFragment.Arguments.PutInt("row",row);
+                        newFragment.Arguments.PutInt("section",section);
+
+                        newFragment.Show(frag, "singleChoicePicker");
                     }
-
-                    //ContextThemeWrapper wrapper = new ContextThemeWrapper(actSC, Android.Resource.Style.ThemeDialog);
-                    //AlertDialog.Builder alert = new AlertDialog.Builder(wrapper);
-                    var alert = new AlertDialog.Builder(actSC);
-                    alert.SetTitle(dnameSC);
-                    alert.SetSingleChoiceItems(singleChoiceAdapter, selectedItemIndex, delegate(object sender, DialogClickEventArgs e)
-                    {
-                        if (e != null)
-                        {
-                            var index = e.Which;
-                            object theChoice = null;
-                            if (options != null)
-                                theChoice = options[index];
-                            td.SetValue(theChoice, row, section);
-                            ReloadData();
-                            ChangedValue(name, value, theChoice);
-                        }
-                    });
-                    alert.Show();
                 }
                 break;
             }
+        }
+
+        public void ChangedDate(TimeEditor fragment,DateTime changedDate)
+        {
+            var row = fragment.Arguments.GetInt("row", -1);
+            var section = fragment.Arguments.GetInt("section", -1);
+            var rowName = td.GetName(row,section);
+            var oldValue = td.GetValue(row,section);
+            td.SetValue(changedDate, row, section);
+            ReloadData();
+            ChangedValue(rowName, oldValue, changedDate);
+        }
+
+        public void ChangedSingleChoiceValue(SingleChoiceEditor fragment,object changedValue)
+        {
+            var row = fragment.Arguments.GetInt("row", -1);
+            var section = fragment.Arguments.GetInt("section", -1);
+            var rowName = td.GetName(row,section);
+            var oldValue = td.GetValue(row,section);
+            td.SetValue(changedValue, row, section);
+            ReloadData();
+            ChangedValue(rowName, oldValue, changedValue);
         }
 
         private void ChangedValue(string rowName,object oldValue,object newValue)
@@ -308,7 +318,7 @@ namespace Tables.Droid
         }
 
         public virtual void UpdateView(ITableAdapterCell c,int section,int row)
-        {            
+        {
             var name = td.GetName(row, section);
             var rowType = td.RowType(RowConfigurator,row,section);
             var value = td.GetValue(row, section);

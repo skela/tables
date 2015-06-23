@@ -4,11 +4,28 @@ using Android.Content;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Text;
+using Android.Widget;
+using Android.App;
 
 namespace Tables.Droid
 {
     public static class TableEditor
     {
+        public static BaseAdapter AdapterForActivity(Activity activity)
+        {
+            var type = activity.GetType();
+            var res = type.GetProperty("adapter");
+            if (res == null)
+                res = type.GetProperty("Adapter");
+            if (res != null)
+            {
+                var val = res.GetValue(activity);
+                if (val is BaseAdapter)
+                    return val as BaseAdapter;
+            }
+            return null;
+        }
+
         public static void CloseKeyboard(Context context,View view)
         {
             InputMethodManager inputManager = (InputMethodManager)context.GetSystemService(Context.InputMethodService);

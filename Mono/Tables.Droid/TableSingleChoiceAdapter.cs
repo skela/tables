@@ -7,18 +7,18 @@ using Android.Views;
 
 namespace Tables.Droid
 {
-    public class TableSingleChoiceEditor : BaseAdapter
+    public class TableSingleChoiceAdapter : BaseAdapter
     {
-        private List<Object> options;
+        private IList<object> options;
 
-        public TableSingleChoiceEditor(Context ctx, TableAdapterRowConfig config, List<object> options, object value)
+        public TableSingleChoiceAdapter(Context ctx, IList<object> options)
         {
             this.options = options;
         }
 
-        public TableSingleChoiceEditor(Context ctx, List<object> options)
+        public TableSingleChoiceAdapter(Context ctx, IList<string> options)
         {
-            this.options = options;
+            this.options = options as IList<object>;
         }
 
         #region BaseAdapter
@@ -79,16 +79,16 @@ namespace Tables.Droid
         #endregion   
     }
 
-    public class TableMultiChoiceEditor : BaseAdapter
+    public class TableMultiChoiceAdapter : BaseAdapter
     {
         private List<Object> options;
 
-        public TableMultiChoiceEditor(Context ctx, TableAdapterRowConfig config, List<Object> options)
+        public TableMultiChoiceAdapter(Context ctx, TableAdapterRowConfig config, List<Object> options)
         {
             this.options = options;
         }
 
-        public TableMultiChoiceEditor(Context ctx, List<Object> options)
+        public TableMultiChoiceAdapter(Context ctx, List<Object> options)
         {
             this.options = options;
         }

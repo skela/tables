@@ -54,9 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="TableAdapter.cs" />
     <Compile Include="TableAdapterCell.cs" />
-    <Compile Include="TableTimeEditor.cs" />
     <Compile Include="..\Tables\TableSource.cs">
       <Link>Tables\TableSource.cs</Link>
     </Compile>
@@ -67,10 +65,13 @@
       <Link>Tables\Tables.cs</Link>
     </Compile>
     <Compile Include="TableItemsAdapter.cs" />
-    <Compile Include="TableSingleChoiceEditor.cs" />
     <Compile Include="TableEditor.cs" />
     <Compile Include="TableSectionedAdapter.cs" />
     <Compile Include="TableSectionAdapter.cs" />
+    <Compile Include="TableSingleChoiceAdapter.cs" />
+    <Compile Include="TableAdapter.cs" />
+    <Compile Include="SingleChoiceEditor.cs" />
+    <Compile Include="TimeEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
