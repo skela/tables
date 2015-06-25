@@ -272,6 +272,11 @@ namespace Tables.Droid
             Prepare (context);
         }
 
+        public TableAdapterSingleChoiceCell (Context context, IAttributeSet attrs,int defStyle) : base (context, attrs, defStyle)
+        {
+            Prepare (context);
+        }
+
         private void Prepare(Context context)
         {
             LinearLayout line = new LinearLayout(context);
