@@ -11,12 +11,27 @@ namespace Tables.Droid
     {
         private IList<object> options;
 
+        public TableSingleChoiceAdapter()
+        {
+            
+        }
+
         public TableSingleChoiceAdapter(Context ctx, IList<object> options)
         {
             this.options = options;
         }
 
         public TableSingleChoiceAdapter(Context ctx, IList<string> options)
+        {
+            this.options = options as IList<object>;
+        }
+
+        public void SetOptions(IList<object> options)
+        {
+            this.options = options;
+        }
+
+        public void SetOptions(IList<string> options)
         {
             this.options = options as IList<object>;
         }

@@ -12,6 +12,11 @@ namespace Tables.Droid
         void ChangedSingleChoiceValue(SingleChoiceEditor fragment,object changedValue);
     }
 
+    public interface SingleChoiceItemAdapterCreator
+    {
+        TableSingleChoiceAdapter CreateSingleChoiceAdapter(SingleChoiceEditor fragment);
+    }
+
     public class SingleChoiceEditor : DialogFragment
     {
         static IList<object>Choices;
@@ -82,12 +87,26 @@ namespace Tables.Droid
             }
         }
 
+        SingleChoiceItemAdapterCreator Creator
+        {
+            get
+            {
+                SingleChoiceItemAdapterCreator creator = null;
+                if (Activity is SingleChoiceItemAdapterCreator)
+                {
+                    creator = Activity as SingleChoiceItemAdapterCreator;
+                }
+                return creator;
+            }
+        }
+
         public override Dialog OnCreateDialog(Android.OS.Bundle savedInstanceState)
         {
             var title = Arguments.GetString("title");
             isStatic = Arguments.GetBoolean("static", false);
 
             int selectedItemIndex = -1;
+            var creator = Creator;
             TableSingleChoiceAdapter adapter = null;
             if (!isStatic)
             {                
@@ -105,15 +124,25 @@ namespace Tables.Droid
                 {
                     selectedItemIndex = choices.IndexOf(chosen);
                 }
-                adapter = new TableSingleChoiceAdapter(Activity,choices);
+                if (creator != null)
+                    adapter = creator.CreateSingleChoiceAdapter(this);
+                if (adapter != null)
+                    adapter.SetOptions(choices);
+                if (adapter==null)
+                    adapter = new TableSingleChoiceAdapter(Activity,choices);
             }
             else
-            {                
+            {
                 if (Choices != null && Chosen != null)
                 {
                     selectedItemIndex = Choices.IndexOf(Chosen);
                 }
-                adapter = new TableSingleChoiceAdapter(Activity,Choices);
+                if (creator != null)
+                    adapter = creator.CreateSingleChoiceAdapter(this);
+                if (adapter != null)
+                    adapter.SetOptions(Choices);
+                if (adapter==null)
+                    adapter = new TableSingleChoiceAdapter(Activity,Choices);                
             }
 
             var alert = new AlertDialog.Builder(Activity);
