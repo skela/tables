@@ -101,22 +101,22 @@ namespace Tables.Droid
 
         public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
-            var item = ItemWithIndexes(section,row); 
+            var item = ItemWithIndexes(section,row);
+            var sec = GetSection(section);
             if (item.Selector != null)
-            {
-                var sec = GetSection(section);
-                item.Selector (this, new TableSectionsEventArgs (sec, item, section, row));
-            }
+                item.Selector(this, new TableSectionsEventArgs(sec, item, section, row));
+            else if (sec.Selector != null)
+                sec.Selector(this, new TableSectionsEventArgs(sec, item, section, row));            
         }
 
         public virtual void RowLongSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
-            var item = ItemWithIndexes(section,row); 
+            var item = ItemWithIndexes(section,row);
+            var sec = GetSection(section);
             if (item.DeleteSelector != null)
-            {
-                var sec = GetSection(section);
-                item.DeleteSelector (this, new TableSectionsEventArgs (sec, item, section, row));
-            }
+                item.DeleteSelector(this, new TableSectionsEventArgs(sec, item, section, row));            
+            else if (sec.DeleteSelector != null)
+                sec.DeleteSelector(this, new TableSectionsEventArgs(sec, item, section, row));            
         }
 
         public override int NumberOfSections

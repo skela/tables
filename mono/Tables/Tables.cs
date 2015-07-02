@@ -196,6 +196,10 @@ namespace Tables
         public object Object;
 		public string Footer;
 
+        public EventHandler Selector;
+        public EventHandler DeleteSelector;
+        public string DeleteTitle;
+
         public string CellIdentString;
         public int CellIdentInt;
 
