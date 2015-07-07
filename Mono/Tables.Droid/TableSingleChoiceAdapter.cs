@@ -9,7 +9,8 @@ namespace Tables.Droid
 {
     public class TableSingleChoiceAdapter : BaseAdapter
     {
-        private IList<object> options;
+        private IList<object> objects;
+        private IList<Item> items;
 
         public TableSingleChoiceAdapter()
         {
@@ -18,22 +19,32 @@ namespace Tables.Droid
 
         public TableSingleChoiceAdapter(Context ctx, IList<object> options)
         {
-            this.options = options;
+            SetOptions(options);
         }
 
         public TableSingleChoiceAdapter(Context ctx, IList<string> options)
         {
-            this.options = options as IList<object>;
+            SetOptions(options);
         }
 
-        public void SetOptions(IList<object> options)
+        public TableSingleChoiceAdapter(Context ctx, IList<Item> options)
         {
-            this.options = options;
+            SetItems(options);
         }
 
-        public void SetOptions(IList<string> options)
+        public void SetOptions(IList<object> optns)
         {
-            this.options = options as IList<object>;
+            this.objects = optns;
+        }
+
+        public void SetOptions(IList<string> optns)
+        {
+            this.objects = optns as IList<object>;
+        }
+
+        public void SetItems(IList<Item> optns)
+        {
+            this.items = optns;
         }
 
         #region BaseAdapter
@@ -74,10 +85,15 @@ namespace Tables.Droid
         public virtual void UpdateView(ITableAdapterSingleChoiceCell cell, int row, int section)
         {
             string returnValue = null;
-            if (options != null)
+            if (objects != null)
             {
-                var anObject = options [row];
+                var anObject = objects [row];
                 returnValue = anObject.ToString ();
+            }
+            if (items != null)
+            {
+                var anItem = items[row];
+                returnValue = anItem.ToString ();
             }
 
             cell.Text = returnValue;
@@ -87,7 +103,9 @@ namespace Tables.Droid
         {
             get
             {
-                return options == null ? 0 : options.Count;
+                if (items != null)
+                    return items.Count;
+                return objects == null ? 0 : objects.Count;
             }
         }
 

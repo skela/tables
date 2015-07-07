@@ -277,7 +277,7 @@ namespace Tables.Droid
                         var dnameSC = td.DisplayName(RowConfigurator, row, section);
                         var options = settings.SingleChoiceOptions;
 
-                        var newFragment = SingleChoiceEditor.CreateFragment(this, dnameSC, options, value);
+                        var newFragment = SingleChoiceEditor.CreateFragmentWithObjects(this, dnameSC, options, value);
                         newFragment.Arguments.PutInt("row",row);
                         newFragment.Arguments.PutInt("section",section);
 
