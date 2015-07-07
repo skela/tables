@@ -28,8 +28,9 @@ namespace Tables.Droid.Testing
             //            var adapter = new TableAdapter(this,listView,data);
 
             //Adapter = new TableAdapter(this,listView,TestData.CreateSectionedTestData());
-            var adapter = new TableSectionAdapter(this,listView,TestData.CreateSectionsTestData());
+            var adapter = new TableSectionAdapter(this,TestData.CreateSectionsTestData());
             Adapter = adapter;
+            listView.Adapter = Adapter;
         }
     }
 }

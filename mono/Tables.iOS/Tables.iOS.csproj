@@ -11,8 +11,6 @@
     <AssemblyName>Tables.iOS</AssemblyName>
     <TargetFrameworkIdentifier>Xamarin.iOS</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,9 +35,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
+    <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Tables\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,7 +50,15 @@
     <Compile Include="TableItemsAdapter.cs" />
     <Compile Include="TableSingleChoiceEditor.cs" />
     <Compile Include="TableSectionsViewController.cs" />
+    <Compile Include="..\Tables\TableSource.cs">
+      <Link>Tables\TableSource.cs</Link>
+    </Compile>
+    <Compile Include="..\Tables\TableUtils.cs">
+      <Link>Tables\TableUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\Tables\Tables.cs">
+      <Link>Tables\Tables.cs</Link>
+    </Compile>
   </ItemGroup>
-  <Import Project="..\Tables\Tables.projitems" Label="Shared" Condition="Exists('..\Tables\Tables.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
