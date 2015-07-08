@@ -64,10 +64,14 @@ namespace Tables.Droid
 
             int hour = value.Hour;
             int minute = value.Minute;
+            int year = value.Year;
+            int month = value.Month-1;
+            int day = value.Day;
+
             if (mode == TableRowType.Time)
                 return new TimePickerDialog(Activity, ChangedTime, hour, minute, true);
             else if (mode == TableRowType.Date)
-                return new DatePickerDialog(Activity, ChangedDate, value.Year, value.Month, value.Day);
+                return new DatePickerDialog(Activity, ChangedDate, year, month, day);
             else
                 return new TimePickerDialog(Activity, ChangedTimeForDateTimePicker, hour, minute, true);
         }
