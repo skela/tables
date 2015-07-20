@@ -199,6 +199,7 @@ namespace Tables
         public EventHandler Selector;
         public EventHandler DeleteSelector;
         public string DeleteTitle;
+		public EventHandler ValueChanged;
 
         public string CellIdentString;
         public int CellIdentInt;
@@ -262,6 +263,8 @@ namespace Tables
 		public double CellHeight;
         public string CellName;
         public string CellPrefix;
+
+		public EventHandler ValueChanged;
 
 		public TableItem()
 		{

@@ -20,6 +20,11 @@ namespace Tables.iOS
 		void Update(TableSection section,TableItem item,NSIndexPath indexPath);
 	}
 
+	public interface ITableSectionsValueCell : ITableSectionsCell
+	{
+		EventHandler ValueChanged { get; set; }
+	}
+
     public class TableSectionsViewController : UITableViewController, ITableSectionAdapter
 	{
 		public virtual TableSection[] Sections { get; set; }
@@ -161,9 +166,19 @@ namespace Tables.iOS
 			if (ident == null)
 				ident = "TableSectionsVCCell";
 
+			EventHandler valueChanged = null;
+			if (section.ValueChanged != null)
+				valueChanged = section.ValueChanged;
+			if (item.ValueChanged != null)
+				valueChanged = item.ValueChanged;
+
 			UITableViewCell cell = tableView.DequeueReusableCell (ident);
 			if (cell == null)
 				cell = new UITableViewCell (DefaultCellStyle, ident);
+
+			var valCell = cell as ITableSectionsValueCell;
+			if (valCell != null) 
+				valCell.ValueChanged = null;
 
 			var tscell = cell as ITableSectionsCell;
 			if (tscell != null)
@@ -184,7 +199,40 @@ namespace Tables.iOS
 				cell.Accessory = CanSelectRow (tableView, indexPath) ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
 
 			}
+
+			if (valCell != null && valueChanged != null)
+			{
+				valCell.ValueChanged = CellValueChanged;
+			}
+
 			return cell;
+		}
+
+		private void CellValueChanged(object sender,EventArgs e)
+		{
+			if (sender is UIView)
+			{
+				var sw = sender as UIView;
+				var super = sw.Superview;
+				if (super is UITableViewCell)
+				{
+					var indexPath = TableView.IndexPathForCell (super as UITableViewCell);
+					if (indexPath != null)
+					{
+						var section = SectionAtIndexPath (indexPath);
+						var item = ItemAtIndexPath (indexPath);
+
+						EventHandler valueChanged = null;
+						if (section.ValueChanged != null)
+							valueChanged = section.ValueChanged;
+						if (item.ValueChanged != null)
+							valueChanged = item.ValueChanged;
+
+						if (valueChanged!=null)
+							valueChanged (sender, new TableSectionsEventArgs (section, item, indexPath));
+					}
+				}
+			}
 		}
 	}
 }
