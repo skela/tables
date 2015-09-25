@@ -115,8 +115,9 @@ namespace Tables.iOS
 
 		public virtual bool CanSelectRow(UITableView tableView,NSIndexPath indexPath)
 		{
+			var section = SectionAtIndexPath (indexPath);
 			var item = ItemAtIndexPath (indexPath);
-			if (item.Selector != null)
+			if (item.Selector != null || section.Selector!=null)
 				return true;
 			return false;
 		}
@@ -136,11 +137,15 @@ namespace Tables.iOS
 			if (!CanSelectRow (tableView, indexPath))
 				return;
 				
+			var section = SectionAtIndexPath (indexPath);
 			var item = ItemAtIndexPath (indexPath);
 			if (item.Selector != null)
-			{
-				var section = SectionAtIndexPath (indexPath);
+			{				
 				item.Selector (this, new TableSectionsEventArgs (section, item, indexPath));
+			}
+			else if (section.Selector!=null)
+			{
+				section.Selector (this, new TableSectionsEventArgs (section, item, indexPath));
 			}
 		}
 
