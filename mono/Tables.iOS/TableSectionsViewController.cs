@@ -201,8 +201,27 @@ namespace Tables.iOS
 				else
 					cell.DetailTextLabel.Text = item.Detail;
 				cell.ImageView.Image = item.ImageName != null ? UIImage.FromBundle (item.ImageName) : null;
-				cell.Accessory = CanSelectRow (tableView, indexPath) ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
 
+				if (CanSelectRow (tableView, indexPath))
+				{
+					var checkable = false;
+					if (section.Checkable)
+						checkable = true;
+					if (item.Checkable)
+						checkable = true;
+					if (checkable)
+					{
+						cell.Accessory = item.Checked ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
+					}
+					else
+					{
+						cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+					}
+				}
+				else
+				{
+					cell.Accessory = UITableViewCellAccessory.None;
+				}
 			}
 
 			if (valCell != null && valueChanged != null)

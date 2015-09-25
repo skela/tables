@@ -204,6 +204,8 @@ namespace Tables
         public string CellIdentString;
         public int CellIdentInt;
 
+		public bool Checkable;
+
         public TableSection()
         {
             
@@ -252,6 +254,8 @@ namespace Tables
         public bool Checked;
         public int Badge;
         public int Integer;
+
+		public bool Checkable;
 
 		public object AttributedText;
 		public object AttributedDetail;
