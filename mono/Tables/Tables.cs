@@ -187,6 +187,7 @@ namespace Tables
         TableItem ItemWithIndexes(int section, int row);
         TableItem ItemWithName(string name,string section);
         TableItem ItemWithKey(string key);
+		TableSection SectionWithKey(string key);
     }
 
     public class TableSection
@@ -195,6 +196,7 @@ namespace Tables
         public string Name;
         public object Object;
 		public string Footer;
+		public string Key;
 
         public EventHandler Selector;
         public EventHandler DeleteSelector;

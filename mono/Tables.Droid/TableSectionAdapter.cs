@@ -167,6 +167,16 @@ namespace Tables.Droid
             return null;
         }
 
+        public virtual TableSection SectionWithKey(string key)
+        {
+            foreach (var sec in sections)
+            {                               
+                if (sec.Key!=null && sec.Key.Equals(key))
+                    return sec;
+            }
+            return null;
+        }
+
         public override int NumberOfRowsForSection(int section)
         {
             var sec = GetSection(section);
@@ -219,10 +229,22 @@ namespace Tables.Droid
         {
             if (view is ITableAdapterSectionCell)
             {
+                var s = GetSection(section);
                 var e = ItemWithIndexes(section,row); 
                 var c = view as ITableAdapterSectionCell;
                 c.Title = e.Text;
                 c.Detail = e.Detail;
+
+                var checkable = false;
+                if (s.Checkable)
+                    checkable = true;
+                if (e.Checkable)
+                    checkable = true;
+
+                if (checkable)
+                {
+                    c.Detail = e.Checked ? "✓" : "";
+                }
             }
             if (view is ITableSectionsCell)
             {

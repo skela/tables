@@ -62,6 +62,16 @@ namespace Tables.iOS
             return null;
         }
 
+		public virtual TableSection SectionWithKey(string key)
+		{
+			foreach (var sec in Sections)
+			{               				
+				if (sec.Key!=null && sec.Key.Equals(key))
+					return sec;
+			}
+			return null;
+		}
+
 		public virtual TableSection SectionAtIndexPath(NSIndexPath indexPath)
 		{
 			return Sections [indexPath.Section];
