@@ -33,6 +33,8 @@
 
 - (void)update:(NSDictionary*)d
 {
+    self.name = [TableUtils getString:d forKey:@"name" fallback:self.name];
+    self.name = [TableUtils getString:d forKey:@"text" fallback:self.name];
     self.cellIdent = [TableUtils getString:d forKey:@"cellIdent" fallback:self.cellIdent];
 }
 
@@ -58,6 +60,7 @@
     self.selector = [TableUtils getString:d forKey:@"selector" fallback:self.selector];
     self.deleteSelector = [TableUtils getString:d forKey:@"delete" fallback:self.deleteSelector];
     self.key = [TableUtils getString:d forKey:@"key" fallback:self.key];
+    self.cellIdent = [TableUtils getString:d forKey:@"cellIdent" fallback:self.cellIdent];
 }
 
 @end
