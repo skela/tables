@@ -224,6 +224,12 @@ namespace Tables
 			ItemArray = items;
 		}
 
+		public TableSection(string name,List<TableItem> list)
+		{
+			Name = name;
+			Items = list;
+		}
+
 		public TableItem[] ItemArray
 		{
 			set
