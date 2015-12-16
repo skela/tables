@@ -11,7 +11,7 @@
 @implementation MenuTableViewController
 @synthesize sections;
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskAll;
 }
