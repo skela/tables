@@ -65,20 +65,27 @@ namespace Tables.Droid
             }
         }
 
-        void ClickedItem(object sender, AdapterView.ItemClickEventArgs e)
+        public ViewPosition? ViewPositionForAdapterClick(AdapterView.ItemClickEventArgs e)
         {
-            if (tv == null)
-                return;
             var list = (e.Parent as ListView);
             int pos = e.Position;
             if (list!=null && list.HeaderViewsCount > 0)
                 pos -= list.HeaderViewsCount;
-            if (pos < 0) return;
-
+            if (pos < 0) return null;
             var vp = ViewPositionForPosition(pos);
-            if (vp.Kind == ViewKind.Cell)
+            return vp;
+        }
+
+        public void ClickedItem(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            if (tv == null)
+                return;
+            
+            var vp = ViewPositionForAdapterClick(e);
+
+            if (vp!=null && vp.Value.Kind == ViewKind.Cell)
             {
-                RowSelected(vp.Row, vp.Section);
+                RowSelected(vp.Value.Row, vp.Value.Section);
             }
         }
 
