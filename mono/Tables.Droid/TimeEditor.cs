@@ -19,7 +19,6 @@ namespace Tables.Droid
     {
         private DateTime value;
         private TableRowType mode;
-        private bool hasShownHack = false;
 
         public TimeEditor() : base()
         {
