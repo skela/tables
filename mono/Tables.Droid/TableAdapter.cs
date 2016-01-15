@@ -288,7 +288,7 @@ namespace Tables.Droid
             }
         }
 
-        public void ChangedDate(TimeEditor fragment,DateTime changedDate)
+        public void ChangedDate(Android.App.DialogFragment fragment,DateTime changedDate)
         {
             var row = fragment.Arguments.GetInt("row", -1);
             var section = fragment.Arguments.GetInt("section", -1);
