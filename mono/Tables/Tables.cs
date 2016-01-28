@@ -213,6 +213,11 @@ namespace Tables
             
         }
 
+		public TableSection(TableItem[] items)
+		{			
+			ItemArray = items;
+		}
+
 		public TableSection(string name)
 		{
 			Name = name;
