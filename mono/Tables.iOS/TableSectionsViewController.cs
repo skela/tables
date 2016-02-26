@@ -112,6 +112,9 @@ namespace Tables.iOS
 			var item = ItemAtIndexPath (indexPath);
 			if (item.DeleteSelector != null)
 				return true;
+			var section = SectionAtIndexPath (indexPath);
+			if (section.DeleteSelector != null)
+				return true;
 			return false;
 		}
 
@@ -120,6 +123,9 @@ namespace Tables.iOS
 			var item = ItemAtIndexPath (indexPath);
 			if (item.DeleteTitle != null)
 				return item.DeleteTitle;
+			var section = SectionAtIndexPath (indexPath);
+			if (section.DeleteTitle != null)
+				return section.DeleteTitle;
 			return "Delete";
 		}
 
@@ -136,9 +142,12 @@ namespace Tables.iOS
 		{
 			var section = SectionAtIndexPath (indexPath);
 			var item = ItemAtIndexPath (indexPath);
-			if (editingStyle == UITableViewCellEditingStyle.Delete && item.DeleteSelector!=null)
+			if (editingStyle == UITableViewCellEditingStyle.Delete)
 			{
-				item.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));
+				if (item.DeleteSelector!=null)
+					item.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));
+				if (section.DeleteSelector!=null)
+					section.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));
 			}
 		}
 
@@ -240,6 +249,12 @@ namespace Tables.iOS
 			}
 
 			return cell;
+		}
+
+		[Foundation.Export("scrollViewDidScroll:")]
+		public virtual void Scrolled (UIScrollView scrollView)
+		{
+
 		}
 
 		private void CellValueChanged(object sender,EventArgs e)
