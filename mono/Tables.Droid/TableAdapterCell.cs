@@ -5,6 +5,7 @@ using Android.Content;
 using Android.Util;
 using Android.Views;
 using Android.Text;
+using Android.Support.V7.Widget;
 
 namespace Tables.Droid
 {
@@ -65,8 +66,8 @@ namespace Tables.Droid
     {
         public static int DefaultHeaderStyle = Android.Resource.Style.TextAppearanceDeviceDefaultMedium;
         public static int DefaultFooterStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSmall;
-        public static int DefaultTitleStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSearchResultTitle;
-        public static int DefaultDetailStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSearchResultSubtitle;
+        public static int DefaultTitleStyle = Android.Resource.Style.TextAppearanceDeviceDefaultMedium;
+        public static int DefaultDetailStyle = Android.Resource.Style.TextAppearanceDeviceDefaultSmall;
 
         public static int GetPixelsFromDPI(Context ctx, int dpi)
         {

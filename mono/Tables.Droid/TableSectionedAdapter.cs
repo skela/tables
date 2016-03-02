@@ -36,8 +36,8 @@ namespace Tables.Droid
         }
 
         public class ViewHolder
-        {
-            public Object Holder;
+        {            
+            public object Holder;
             public int Type;
             public string Ident;
         }
@@ -95,7 +95,7 @@ namespace Tables.Droid
 
         public Dictionary<int,ViewHolder> CellHolders = new Dictionary<int,ViewHolder>();
 
-        public void RegisterCell(string cell,Object holder)
+        public void RegisterCell(string cell,object holder)
         {
             int type = ((int)ViewKind.Cell) + CellHolders.Count + 1;
             var vh = new ViewHolder() { Ident = cell, Type = type, Holder = holder };
@@ -129,11 +129,11 @@ namespace Tables.Droid
             View view = null;
 
             if (convertView == null) 
-            {
+            {                
                 if (vp.Layout != 0)
                 {
-                    view = Inflator.Inflate(vp.Layout, null);
                     ViewHolder holder = null;
+                    view = Inflator.Inflate(vp.Layout, null);
                     if (CellHolders.TryGetValue(vp.Type, out holder))
                     {
                         if (holder.Holder is ITableCellHolder)
@@ -245,9 +245,14 @@ namespace Tables.Droid
 
         }
 
-        protected virtual void UpdateHolder(int section,int row,Object holder)
+        protected virtual void UpdateHolder(int section,int row,object holder)
         {
             
+        }
+
+        protected virtual void UpdateHolder(int section,int row,Java.Lang.Object holder)
+        {
+
         }
 
         protected virtual void UpdateFooter(int section,View view)

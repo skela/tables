@@ -262,7 +262,18 @@ namespace Tables.Droid
             }            
         }
 
-        protected override void UpdateHolder(int section,int row,Object holder)
+        protected override void UpdateHolder(int section,int row,object holder)
+        {
+            if (holder is ITableSectionsCell)
+            {
+                var s = GetSection(section);
+                var e = ItemWithIndexes(section,row); 
+                var c = holder as ITableSectionsCell;
+                c.Update(s, e, section, row);
+            }  
+        }
+
+        protected override void UpdateHolder(int section,int row,Java.Lang.Object holder)
         {
             if (holder is ITableSectionsCell)
             {

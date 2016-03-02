@@ -206,6 +206,10 @@ namespace Tables
         public string CellIdentString;
         public int CellIdentInt;
 
+        public int HeaderLayout; public string HeaderIdentifier;
+        public int FooterLayout; public string FooterIdentifier;
+        public int DividerLayout; public string DividerIdentifier;
+
 		public bool Checkable;
 
         public TableSection()
