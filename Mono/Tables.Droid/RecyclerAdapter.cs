@@ -10,18 +10,31 @@ using Android.Content.Res;
 
 namespace Tables.Droid
 {
-    public interface RecyclerAdapterDelegate
+    public interface IRecyclerAdapterDelegate
     {
         string Identifier {get;}
+        int Layout { get; }
         int ViewType { get; set;}
-        int ViewLayout { get; }
         RecyclerView.ViewHolder CreateViewHolder(View view,Action<int>clicked);
         View CreateView(ViewGroup parent);
     }
 
-    public interface RecyclerAdapterHolder
+    public interface IRecyclerAdapterHolder
     {
         void Update(TableSection tsection,TableItem item,int section, int row);
+    }
+
+    public abstract class RecyclerAdapterDelegate : IRecyclerAdapterDelegate
+    {
+        public virtual string Identifier { get { return null; } }
+
+        public virtual int Layout { get { return 0; } }
+
+        public virtual int ViewType { get; set;}
+
+        public virtual RecyclerView.ViewHolder CreateViewHolder(View view,Action<int>clicked) { return null; }
+
+        public virtual View CreateView(ViewGroup parent) { return null; }
     }
 
     public class RecyclerAdapter : RecyclerBaseAdapter,ITableSectionAdapter
@@ -46,8 +59,6 @@ namespace Tables.Droid
                 if (tv != null)
                 {
                     tv.SetAdapter(null);
-//                    tv.ItemClick -= ClickedItem;
-//                    tv.ItemLongClick -= LongClickedItem;
                 }
                 tv = value;
                 if (tv != null)
@@ -58,8 +69,6 @@ namespace Tables.Droid
                         tv.SetLayoutManager(layout);
                     }
                     tv.SetAdapter(this);
-//                    tv.ItemClick += ClickedItem;
-//                    tv.ItemLongClick += LongClickedItem;
                 }
             }
         }
@@ -81,14 +90,14 @@ namespace Tables.Droid
         {
             var delegates = DelegatesForViewKind(viewType);
 
-            RecyclerAdapterDelegate delg = null;
+            IRecyclerAdapterDelegate delg = null;
 
             if (delegates.TryGetValue(viewType, out delg))
             {
                 View itemView = null;
-                if (delg.ViewLayout != 0)
+                if (delg.Layout != 0)
                 {
-                    itemView = LayoutInflater.From(parent.Context).Inflate(delg.ViewLayout, parent, false);
+                    itemView = LayoutInflater.From(parent.Context).Inflate(delg.Layout, parent, false);
                 }
                 else
                 {
@@ -120,7 +129,7 @@ namespace Tables.Droid
                 row = section.Items[pos.Row];
             }
 
-            var vh = holder as RecyclerAdapterHolder;
+            var vh = holder as IRecyclerAdapterHolder;
             vh?.Update(section, row, pos.Section, pos.Row);
         }
 
@@ -337,12 +346,12 @@ namespace Tables.Droid
         protected List<ViewPosition> Positions = new List<ViewPosition>();
         protected Dictionary<int,ViewPosition> ViewTypes = new Dictionary<int,ViewPosition>();
 
-        protected Dictionary<int,RecyclerAdapterDelegate> CellDelegates = new Dictionary<int,RecyclerAdapterDelegate>();
-        protected Dictionary<int,RecyclerAdapterDelegate> HeaderDelegates = new Dictionary<int,RecyclerAdapterDelegate>();
-        protected Dictionary<int,RecyclerAdapterDelegate> FooterDelegates = new Dictionary<int,RecyclerAdapterDelegate>();
-        protected Dictionary<int,RecyclerAdapterDelegate> DividerDelegates = new Dictionary<int,RecyclerAdapterDelegate>();
+        protected Dictionary<int,IRecyclerAdapterDelegate> CellDelegates = new Dictionary<int,IRecyclerAdapterDelegate>();
+        protected Dictionary<int,IRecyclerAdapterDelegate> HeaderDelegates = new Dictionary<int,IRecyclerAdapterDelegate>();
+        protected Dictionary<int,IRecyclerAdapterDelegate> FooterDelegates = new Dictionary<int,IRecyclerAdapterDelegate>();
+        protected Dictionary<int,IRecyclerAdapterDelegate> DividerDelegates = new Dictionary<int,IRecyclerAdapterDelegate>();
 
-        protected Dictionary<int,RecyclerAdapterDelegate> DelegatesForViewKind(int viewType)
+        protected Dictionary<int,IRecyclerAdapterDelegate> DelegatesForViewKind(int viewType)
         {
             var vp = ViewTypes[viewType];
             switch (vp.Kind)
@@ -359,28 +368,28 @@ namespace Tables.Droid
             return null;
         }
 
-        public void RegisterCell(RecyclerAdapterDelegate deleg)
+        public void RegisterCell(IRecyclerAdapterDelegate deleg)
         {
             int type = ((int)Tables.Droid.RecyclerAdapter.ViewKind.Cell) + CellDelegates.Count + 1;
             deleg.ViewType = type;
             CellDelegates.Add(type, deleg);
         }
 
-        public void RegisterHeader(RecyclerAdapterDelegate deleg)
+        public void RegisterHeader(IRecyclerAdapterDelegate deleg)
         {
             int type = ((int)Tables.Droid.RecyclerAdapter.ViewKind.Header) + HeaderDelegates.Count + 1;
             deleg.ViewType = type;
             HeaderDelegates.Add(type, deleg);
         }
 
-        public void RegisterFooter(RecyclerAdapterDelegate deleg)
+        public void RegisterFooter(IRecyclerAdapterDelegate deleg)
         {
             int type = ((int)Tables.Droid.RecyclerAdapter.ViewKind.Footer) + FooterDelegates.Count + 1;
             deleg.ViewType = type;
             FooterDelegates.Add(type, deleg);
         }
 
-        public void RegisterDivider(RecyclerAdapterDelegate deleg)
+        public void RegisterDivider(IRecyclerAdapterDelegate deleg)
         {
             int type = ((int)Tables.Droid.RecyclerAdapter.ViewKind.Divider) + DividerDelegates.Count + 1;
             deleg.ViewType = type;
@@ -725,7 +734,7 @@ namespace Tables.Droid
         }
     }
 
-    public class TableAdapterBaseHolder : RecyclerView.ViewHolder,RecyclerAdapterHolder
+    public class TableAdapterBaseHolder : RecyclerView.ViewHolder,IRecyclerAdapterHolder
     {
         public TableAdapterBaseHolder(View v) : base(v)
         {
