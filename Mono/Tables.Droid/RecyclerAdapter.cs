@@ -682,7 +682,6 @@ namespace Tables.Droid
 
             var tparams = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
             tparams.SetMargins(0, pixels, 0, pixels);
-            //Title.SetPadding(pixels, pixels, pixels, pixels);
             Title.LayoutParameters = tparams;
             Title.SetTextAppearance(context, titleStyle);
             Title.Text = "Title";
@@ -694,7 +693,6 @@ namespace Tables.Droid
 
             var lparams = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
             lparams.SetMargins(0, pixels, 0, pixels);
-            //Detail.SetPadding(pixels, pixels, pixels, pixels);
             Detail.LayoutParameters = lparams;
             Detail.SetTextAppearance(context, detailStyle);
             AddView(Detail);
@@ -774,6 +772,8 @@ namespace Tables.Droid
         {
             Title.Text = item.Text;
             Detail.Text = item.Detail;
+
+            Detail.Visibility = Detail.Text == null || Detail.Text.Length == 0 ? ViewStates.Gone : ViewStates.Visible;
         }
     }
 
