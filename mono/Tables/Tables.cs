@@ -250,6 +250,13 @@ namespace Tables
 			}
 		}
 
+        public void AddItem(TableItem item)
+        {
+            if (Items == null)
+                Items = new List<TableItem>();
+            Items.Add(item);
+        }
+
         public int ItemCount
         {
             get
