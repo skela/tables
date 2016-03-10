@@ -211,6 +211,7 @@ namespace Tables
         public int DividerLayout; public string DividerIdentifier;
 
 		public bool Checkable;
+		public bool HideIfEmpty;
 
         public TableSection()
         {

@@ -207,12 +207,16 @@ namespace Tables.Droid
         public override string GetTitleForHeader(int section)
         {
             var sec = GetSection(section);
+            if (sec != null && sec.HideIfEmpty && sec.ItemCount == 0)
+                return null;
             return sec == null ? null : sec.Name;
         }
 
         public override string GetTitleForFooter(int section)
         {
             var sec = GetSection(section);
+            if (sec != null && sec.HideIfEmpty && sec.ItemCount == 0)
+                return null;           
             return sec == null ? null : sec.Footer;
         }
 

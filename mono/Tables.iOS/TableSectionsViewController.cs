@@ -99,12 +99,18 @@ namespace Tables.iOS
 
 		public override string TitleForHeader (UITableView tableView, nint section)
 		{
-			return Sections [section].Name;
+			var sec = Sections [section];
+			if (sec.HideIfEmpty && sec.ItemCount == 0)
+				return null;
+			return sec.Name;
 		}
 
 		public override string TitleForFooter (UITableView tableView, nint section)
 		{
-			return Sections [section].Footer;
+			var sec = Sections [section];
+			if (sec.HideIfEmpty && sec.ItemCount == 0)
+				return null;
+			return sec.Footer;
 		}
 
 		public override bool CanEditRow (UITableView tableView, NSIndexPath indexPath)

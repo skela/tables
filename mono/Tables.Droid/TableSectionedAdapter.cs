@@ -271,17 +271,19 @@ namespace Tables.Droid
 
             for (int i = 0; i < SectionCount; i++)
             {
-                RowCount += NumberOfRowsForSection(i);
+                int rows = NumberOfRowsForSection(i);
+
+                RowCount += rows;
 
                 var headerTitle = GetTitleForHeader(i);
                 if (headerTitle != null)
-                    HeaderCount++;
+                    HeaderCount++;                
 
                 var footerTitle = GetTitleForFooter(i);
                 if (footerTitle != null)
                     FooterCount++;
 
-                if (Style.DefaultSectionSeparatorStyle > 0)
+                if (Style.DefaultSectionSeparatorStyle > 0 && (rows>0 || headerTitle!=null || footerTitle!=null))
                     SeperatorCount++;
             }
 
@@ -293,7 +295,8 @@ namespace Tables.Droid
             Positions.Clear();
 
             for(int sec=0; sec<SectionCount; sec++)
-            {
+            {    
+                var addedSomething = false;
                 if (headers > 0 && GetTitleForHeader(sec)!=null)
                 {
                     var pos = new ViewPosition();
@@ -306,6 +309,7 @@ namespace Tables.Droid
 
                     headers--;
                     p++;
+                    addedSomething = true;
                 }
 
                 for (int row = 0; row < NumberOfRowsForSection(sec); row++)
@@ -319,6 +323,7 @@ namespace Tables.Droid
                     pos.Type = GetTypeForCell(sec, row);
                     Positions.Add(pos);
                     p++;
+                    addedSomething = true;
                 }
 
                 if (footers > 0 && GetTitleForFooter(sec)!=null)
@@ -332,9 +337,10 @@ namespace Tables.Droid
                     Positions.Add(pos);
                     footers--;
                     p++;
+                    addedSomething = true;
                 }
 
-                if (seperators > 0)
+                if (seperators > 0 && addedSomething)
                 {
                     var pos = new ViewPosition();
                     pos.Section = sec;
