@@ -18,52 +18,6 @@ namespace Tables.Droid
         TableSingleChoiceAdapter CreateSingleChoiceAdapter(SingleChoiceEditor fragment);
     }
 
-    public class Item : object,IEquatable<Item>
-    {
-        public string Title;
-        public string Detail;
-        public object Object;
-        public int Integer;
-        public float Float;
-        public double Double;
-        public DateTime? DateTime;
-
-        public string Key;
-        public bool Selected;
-
-        public Item (string val=null,bool selected=false,int aux=0) : base()
-        {
-            Selected = selected;
-            Val = val;
-            Integer = aux;
-        }
-
-        public bool Equals(Item other)
-        {
-            if (other == null) 
-                return false;
-
-            return String.Equals(this.Title, other.Title);
-        }
-
-        public string Val
-        {
-            get
-            {
-                return Title;
-            }
-            set
-            {
-                Title = value;
-            }
-        }
-
-        public override string ToString()
-        {
-            return Title;
-        }
-    }
-
     public class SingleChoiceEditor : DialogFragment
     {
         private bool isStatic;
