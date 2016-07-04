@@ -48,6 +48,8 @@ namespace Tables.iOS
 
         public virtual TableItem ItemWithIndexes(int section, int row)
         {
+        	if (section == -1 || row == -1)
+        		return null;
             return Sections [section].Items [row];
         }
 
@@ -74,6 +76,7 @@ namespace Tables.iOS
 
 		public virtual TableSection SectionAtIndexPath(NSIndexPath indexPath)
 		{
+			if (indexPath.Section == -1) return null;
 			return Sections [indexPath.Section];
 		}
 
@@ -127,10 +130,10 @@ namespace Tables.iOS
 		public override string TitleForDeleteConfirmation (UITableView tableView, NSIndexPath indexPath)
 		{
 			var item = ItemAtIndexPath (indexPath);
-			if (item.DeleteTitle != null)
+			if (item != null && item.DeleteTitle != null)
 				return item.DeleteTitle;
 			var section = SectionAtIndexPath (indexPath);
-			if (section.DeleteTitle != null)
+			if (section != null && section.DeleteTitle != null)
 				return section.DeleteTitle;
 			return "Delete";
 		}
@@ -153,7 +156,7 @@ namespace Tables.iOS
 				if (item.DeleteSelector!=null)
 					item.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));
 				if (section.DeleteSelector!=null)
-					section.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));
+					section.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));				
 			}
 		}
 
