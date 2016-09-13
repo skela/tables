@@ -1,15 +1,20 @@
 package com.davincium.tables;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.davincium.tables.interfaces.FragmentContainer;
 import com.davincium.tables.interfaces.IRecyclerAdapterDelegate;
 import com.davincium.tables.interfaces.IRecyclerAdapterHolder;
 import com.davincium.tables.interfaces.ITableSectionAdapter;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 public class RecyclerAdapter extends RecyclerBaseAdapter implements ITableSectionAdapter
@@ -125,33 +130,22 @@ public class RecyclerAdapter extends RecyclerBaseAdapter implements ITableSectio
         {
             TableSection section = getSection(vp.Section);
             TableItem item = section.items[vp.Row];
-            // TODO: Need to figure out how to enter user code from here
-//            if (item.Selector != null)
-//            {
-//                item.Selector(this, new TableSectionsEventArgs(section, item, vp.Section, vp.Row));
-//            }
-//            else if (section.Selector != null)
-//            {
-//                section.Selector(this, new TableSectionsEventArgs(section, item, vp.Section, vp.Row));
-//            }
 
-            /*
-
-            public class ReflectionExample {
-    private static class A {
-        public void foo() {
-            System.out.println("fooing A now");
+            if (item.selector!=null)
+            {
+                executeMethod(item.selector,section,item,vp.Section,vp.Row);
+            }
+            else if (section.selector!=null)
+            {
+                executeMethod(section.selector,section,item,vp.Section,vp.Row);
+            }
         }
     }
 
-    public static void main(String[] args) throws SecurityException, NoSuchMethodException, IllegalArgumentException,
-            IllegalAccessException, InvocationTargetException {
-        Method method = A.class.getMethod("foo");
-        method.invoke(new A());
-    }
-}
-             */
-        }
+    void executeMethod(String selector,TableSection sec,TableItem item,int section,int row)
+    {
+        Context ctx = tv.getContext();
+        TableUtils.executeMethod(ctx,selector,sec,item,section,row);
     }
 
     @Override
