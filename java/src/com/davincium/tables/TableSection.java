@@ -23,16 +23,27 @@ public class TableSection
     public int headerLayout;
     public int dividerLayout;
 
+    public TableSection()
+    {
+
+    }
+
+    public TableSection(String name)
+    {
+        this.name = name;
+    }
+
     public int count()
     {
         if (items!=null) return items.length;
         return 0;
     }
 
-    public void addItem(TableItem item)
+    public TableItem addItem(TableItem item)
     {
         List<TableItem>list = items != null ? new ArrayList<TableItem>(Arrays.asList(items)) : new ArrayList<TableItem>();
         list.add(item);
         items = list.toArray(new TableItem[list.size()]);
+        return item;
     }
 }
