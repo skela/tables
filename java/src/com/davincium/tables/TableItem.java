@@ -5,6 +5,7 @@ public class TableItem
     public String text;
     public String detail;
     public String selector;
+    public boolean checked;
 
     public String key;
     public String cellIdentString;
@@ -33,5 +34,15 @@ public class TableItem
         text = name;
         detail = det;
         selector = method;
+    }
+
+    public TableItem setKey(String key)
+    {
+        this.key = key; return this;
+    }
+
+    public TableItem setObject(Object obj)
+    {
+        this.object = obj; return this;
     }
 }
