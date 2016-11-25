@@ -1,6 +1,7 @@
 package com.davincium.tables;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
@@ -16,6 +17,13 @@ import java.lang.reflect.Method;
 
 public class TableUtils
 {
+    static Context appContext;
+
+    public static void setup(Application app)
+    {
+        appContext = app.getApplicationContext();
+    }
+
     public static int DefaultHeaderStyle = android.R.style.TextAppearance_DeviceDefault_Medium;
     public static int DefaultFooterStyle = android.R.style.TextAppearance_DeviceDefault_Small;
     public static int DefaultTitleStyle = android.R.style.TextAppearance_DeviceDefault_Medium;
@@ -25,6 +33,11 @@ public class TableUtils
     {
         int pixels = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,dpi,ctx.getResources().getDisplayMetrics());
         return pixels;
+    }
+
+    public static String getString(int rid)
+    {
+        return appContext.getString(rid);
     }
 
     public static EditText createEditableTextField(Context ctx)

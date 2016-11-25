@@ -8,6 +8,7 @@ import com.davincium.tables.holders.TableAdapterCellHolder;
 import com.davincium.tables.holders.TableAdapterDividerHolder;
 import com.davincium.tables.holders.TableAdapterFooterHolder;
 import com.davincium.tables.holders.TableAdapterHeaderHolder;
+import com.davincium.tables.interfaces.CellChecker;
 import com.davincium.tables.interfaces.CellClicker;
 import com.davincium.tables.interfaces.IRecyclerAdapterDelegate;
 import com.davincium.tables.views.TableAdapterFooter;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class RecyclerBaseAdapter extends RecyclerView.Adapter implements CellClicker
+public abstract class RecyclerBaseAdapter extends RecyclerView.Adapter implements CellClicker,CellChecker
 {
     static class ViewKind
     {
@@ -192,6 +193,11 @@ public abstract class RecyclerBaseAdapter extends RecyclerView.Adapter implement
     }
 
     public void clickedCell(int position)
+    {
+
+    }
+
+    public void cellChecked(int position,boolean checked)
     {
 
     }

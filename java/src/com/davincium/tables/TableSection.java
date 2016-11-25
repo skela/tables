@@ -23,9 +23,17 @@ public class TableSection
     public int headerLayout;
     public int dividerLayout;
 
+    public String checkedChanged;
+    public boolean checkable;
+
     public TableSection()
     {
 
+    }
+
+    public TableSection(int name)
+    {
+        this.name = TableUtils.getString(name);
     }
 
     public TableSection(String name)
@@ -45,5 +53,10 @@ public class TableSection
         list.add(item);
         items = list.toArray(new TableItem[list.size()]);
         return item;
+    }
+
+    public TableSection setFooter(int footer)
+    {
+        this.footer = TableUtils.getString(footer); return this;
     }
 }

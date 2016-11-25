@@ -2,8 +2,10 @@ package com.davincium.tables.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.davincium.tables.TableUtils;
@@ -13,6 +15,7 @@ public class TableAdapterRecyclerCell extends LinearLayout implements ITableAdap
 {
     private TextView title;
     private TextView detail;
+    private Switch checkbox;
 
     private int titleStyle = TableUtils.DefaultTitleStyle;
     private int detailStyle = TableUtils.DefaultDetailStyle;
@@ -53,27 +56,37 @@ public class TableAdapterRecyclerCell extends LinearLayout implements ITableAdap
         setBackgroundResource(backgroundResource);
         typedArray.recycle();
 
-        title = new TextView(context);
+        LinearLayout container = new LinearLayout(context);
+        container.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f));
+        container.setOrientation(LinearLayout.VERTICAL);
+
         int pixels = TableUtils.getPixelsFromDPI(context, 2);
+
+        title = new TextView(context);
+        title.setText("Title");
 
         LayoutParams tparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);
         tparams.setMargins(0, pixels, 0, pixels);
         title.setLayoutParams(tparams);
         title.setTextAppearance(context, titleStyle);
-        title.setText("Title");
-        addView(title);
+        container.addView(title);
 
         detail = new TextView(context);
         detail.setText("Detail");
-        pixels = TableUtils.getPixelsFromDPI(context, 2);
 
         LayoutParams lparams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 1f);
         lparams.setMargins(0, pixels, 0, pixels);
         detail.setLayoutParams(lparams);
         detail.setTextAppearance(context, detailStyle);
-        addView(detail);
+        container.addView(detail);
 
-        setOrientation(LinearLayout.VERTICAL);
+        addView(container);
+
+        checkbox = new Switch(context);
+        checkbox.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0f));
+        addView(checkbox);
+
+        setOrientation(LinearLayout.HORIZONTAL);
         pixels = TableUtils.getPixelsFromDPI(context, 10);
         setPadding(pixels, pixels, pixels, pixels);
     }
@@ -88,6 +101,11 @@ public class TableAdapterRecyclerCell extends LinearLayout implements ITableAdap
         return detail;
     }
 
+    public Switch getSwitch()
+    {
+        return checkbox;
+    }
+
     public void setEditable(boolean editable)
     {
         setFocusable(!editable);
@@ -100,7 +118,7 @@ public class TableAdapterRecyclerCell extends LinearLayout implements ITableAdap
             title.setTextAppearance(ctx, titleStyle);
     }
 
-    public void SetDetailStyle(Context ctx,int style)
+    public void setDetailStyle(Context ctx,int style)
     {
         detailStyle = style;
         if (detail != null)

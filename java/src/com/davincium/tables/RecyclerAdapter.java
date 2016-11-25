@@ -15,6 +15,7 @@ import com.davincium.tables.interfaces.IRecyclerAdapterHolder;
 import com.davincium.tables.interfaces.ITableSectionAdapter;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 public class RecyclerAdapter extends RecyclerBaseAdapter implements ITableSectionAdapter
@@ -68,6 +69,13 @@ public class RecyclerAdapter extends RecyclerBaseAdapter implements ITableSectio
     {
         sections = ts;
         reloadData();
+    }
+
+    public void setSections(List<TableSection> list)
+    {
+        TableSection[] arr = new TableSection[list.size()];
+        arr = list.toArray(arr);
+        setSections(arr);
     }
 
     @Override
@@ -138,6 +146,27 @@ public class RecyclerAdapter extends RecyclerBaseAdapter implements ITableSectio
             else if (section.selector!=null)
             {
                 executeMethod(section.selector,section,item,vp.Section,vp.Row);
+            }
+        }
+    }
+
+    @Override
+    public void cellChecked(int position,boolean checked)
+    {
+        ViewPosition vp = positions.get(position);
+        if (vp.Kind == ViewKind.Cell)
+        {
+            TableSection section = getSection(vp.Section);
+            TableItem item = section.items[vp.Row];
+            item.checked = checked;
+
+            if (item.checkedChanged!=null)
+            {
+                executeMethod(item.checkedChanged,section,item,vp.Section,vp.Row);
+            }
+            else if (section.checkedChanged!=null)
+            {
+                executeMethod(section.checkedChanged,section,item,vp.Section,vp.Row);
             }
         }
     }
