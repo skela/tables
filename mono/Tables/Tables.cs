@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
 
+#if __IOS__
+using UIKit;
+#endif
+
 namespace Tables
 {
     public interface ITableAdapter
@@ -199,8 +203,6 @@ namespace Tables
 		public string Key;
 
         public EventHandler Selector;
-        public EventHandler DeleteSelector;
-        public string DeleteTitle;
 		public EventHandler ValueChanged;
 
         public string CellIdentString;
@@ -265,6 +267,33 @@ namespace Tables
                 return Items != null ? Items.Count : 0;
             }
         }
+        
+        public TableAction Delete = new TableAction();		
+		
+		// Legacy
+		public EventHandler DeleteSelector
+		{
+			get
+			{
+				return Delete.Action;
+			}
+			set
+			{
+				Delete.Action = value;
+			}
+		}
+		
+		public string DeleteTitle
+		{
+			get
+			{
+				return Delete.Title;
+			}
+			set
+			{
+				Delete.Title = value;
+			}
+		}		
     }
 
     public class TableItem
@@ -272,9 +301,7 @@ namespace Tables
         public string Text;
         public string Detail;
         public string Key;
-        public EventHandler Selector;
-        public EventHandler DeleteSelector;
-		public string DeleteTitle;
+        public EventHandler Selector;        
         public object Object;
         public bool Checked;
         public int Badge;
@@ -304,5 +331,52 @@ namespace Tables
 		{
 			Text = text;
 		}
+		
+		public List<TableAction> Actions = new List<TableAction>();
+		public TableAction Delete = new TableAction();		
+		
+		// Legacy
+		public EventHandler DeleteSelector
+		{
+			get
+			{
+				return Delete.Action;
+			}
+			set
+			{
+				Delete.Action = value;
+			}
+		}
+		
+		public string DeleteTitle
+		{
+			get
+			{
+				return Delete.Title;
+			}
+			set
+			{
+				Delete.Title = value;
+			}
+		}		
     }
+    
+    public class TableAction
+    {
+    	public string Title;
+    	public EventHandler Action;
+    	
+    	#if __IOS__
+    	public TableActionIOS IOS = new TableActionIOS();
+    	#endif
+    }
+    
+    #if __IOS__
+    public class TableActionIOS
+    {
+    	public UITableViewRowActionStyle Style = UITableViewRowActionStyle.Normal;
+    	public UIColor BackgroundColor = null;
+    	public UIVisualEffect BackgroundEffect = null;    	
+    }
+    #endif
 }

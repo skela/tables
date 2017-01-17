@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using UIKit;
 using Foundation;
@@ -146,7 +147,12 @@ namespace Tables.iOS
 				return true;
 			return false;
 		}
-
+		
+		public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			return UITableViewCellEditingStyle.Delete;
+		}
+		
 		public override void CommitEditingStyle (UITableView tableView, UITableViewCellEditingStyle editingStyle, NSIndexPath indexPath)
 		{
 			var section = SectionAtIndexPath (indexPath);
@@ -154,12 +160,59 @@ namespace Tables.iOS
 			if (editingStyle == UITableViewCellEditingStyle.Delete)
 			{
 				if (item.DeleteSelector!=null)
-					item.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));
-				if (section.DeleteSelector!=null)
-					section.DeleteSelector (this, new TableSectionsEventArgs (section, item, indexPath));				
+					ExecuteRowAction(item.DeleteSelector, section, item, indexPath);
+				else if (section.DeleteSelector!=null)
+					ExecuteRowAction(section.DeleteSelector,section, item,indexPath);
 			}
 		}
-
+		
+		protected virtual void ExecuteRowAction(EventHandler action,TableSection section,TableItem item,NSIndexPath indexPath)
+		{
+			action (this, new TableSectionsEventArgs (section, item, indexPath));
+		}
+		
+		protected virtual Action<UITableViewRowAction,NSIndexPath>CreateRowAction(TableAction action)
+		{
+			return delegate(UITableViewRowAction ract, NSIndexPath ip)
+			{
+				var section = SectionAtIndexPath (ip);
+				var item = ItemAtIndexPath (ip);
+				ExecuteRowAction(action.Action,section,item,ip);
+			};
+		}
+		
+		public override UITableViewRowAction[] EditActionsForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			var section = SectionAtIndexPath (indexPath);
+			var item = ItemAtIndexPath (indexPath);
+			if (item.Actions!=null && item.Actions.Count > 0)
+			{
+				var actions = new List<UITableViewRowAction>();
+				foreach (var action in item.Actions)
+				{
+					var ios = action.IOS;
+					var ra = UITableViewRowAction.Create(ios.Style,action.Title,CreateRowAction(action));
+					if (ios.BackgroundColor!=null)
+						ra.BackgroundColor = ios.BackgroundColor;
+					if (ios.BackgroundEffect!=null)
+						ra.BackgroundEffect = ios.BackgroundEffect;
+					actions.Add(ra);
+				}
+				return actions.ToArray();
+			}
+			else
+			{
+				TableAction action = null;
+				if (item.DeleteSelector!=null)
+					action = item.Delete;
+				if (action==null && section.DeleteSelector!=null)				
+					action = section.Delete;
+				if (action!=null)
+					return new UITableViewRowAction[]{ UITableViewRowAction.Create(UITableViewRowActionStyle.Destructive,action.Title,CreateRowAction(action)) };
+				return null;
+			}
+		}
+		
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
 			if (!CanSelectRow (tableView, indexPath))
