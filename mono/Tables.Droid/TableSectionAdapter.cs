@@ -105,11 +105,20 @@ namespace Tables.Droid
                 RowLongSelected(vp.Row, vp.Section);
             }
         }
-
+		
+		protected virtual void WillSelectItem(TableItem item,TableSection section)
+		{
+		
+		}
+		
         public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
             var item = ItemWithIndexes(section,row);
             var sec = GetSection(section);
+            
+            if (item.Selector!=null || sec.Selector!=null)
+            	WillSelectItem(item,sec);
+            
             if (item.Selector != null)
                 item.Selector(this, new TableSectionsEventArgs(sec, item, section, row));
             else if (sec.Selector != null)

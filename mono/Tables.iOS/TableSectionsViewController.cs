@@ -167,7 +167,7 @@ namespace Tables.iOS
 		}
 		
 		protected virtual void ExecuteRowAction(EventHandler action,TableSection section,TableItem item,NSIndexPath indexPath)
-		{
+		{			
 			action (this, new TableSectionsEventArgs (section, item, indexPath));
 		}
 		
@@ -177,6 +177,7 @@ namespace Tables.iOS
 			{
 				var section = SectionAtIndexPath (ip);
 				var item = ItemAtIndexPath (ip);
+				WillExecuteItemRowAction(action,item,section);
 				ExecuteRowAction(action.Action,section,item,ip);
 			};
 		}
@@ -213,6 +214,16 @@ namespace Tables.iOS
 			}
 		}
 		
+		protected virtual void WillExecuteItemRowAction(TableAction action,TableItem item,TableSection section)
+		{
+		
+		}
+		
+		protected virtual void WillSelectItem(TableItem item,TableSection section)
+		{
+		
+		}
+		
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
 			if (!CanSelectRow (tableView, indexPath))
@@ -220,6 +231,7 @@ namespace Tables.iOS
 				
 			var section = SectionAtIndexPath (indexPath);
 			var item = ItemAtIndexPath (indexPath);
+			WillSelectItem(item,section);
 			if (item.Selector != null)
 			{				
 				item.Selector (this, new TableSectionsEventArgs (section, item, indexPath));
