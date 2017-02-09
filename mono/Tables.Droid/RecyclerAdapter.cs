@@ -132,7 +132,12 @@ namespace Tables.Droid
             var vh = holder as IRecyclerAdapterHolder;
             vh?.Update(section, row, pos.Section, pos.Row);
         }
-
+		
+		protected virtual void WillSelectItem(TableItem item,TableSection section)
+		{
+		
+		}
+		
         protected override void ClickedCell(int position)
         {            
             var vp = Positions[position];
@@ -140,6 +145,10 @@ namespace Tables.Droid
             {
                 var section = GetSection(vp.Section);
                 var item = section.Items[vp.Row];
+                
+                if (item.Selector!=null || section.Selector!=null)
+            		WillSelectItem(item,section);
+                
                 if (item.Selector != null)
                 {
                     item.Selector(this, new TableSectionsEventArgs(section, item, vp.Section, vp.Row));

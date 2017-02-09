@@ -141,7 +141,12 @@ namespace Tables.Droid
                 RowSelected(vp.Row, vp.Section);
             }
         }
-
+		
+		protected virtual void WillSelectRowWithConfig(TableAdapterRowConfig config)
+		{
+		
+		}
+		
         public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
             var name = td.GetName(row,section);
@@ -157,6 +162,7 @@ namespace Tables.Droid
             TableAdapterRowConfig settings = td.RowSetting(RowConfigurator,name,section);
             if (settings != null)
             {
+            	WillSelectRowWithConfig(settings);
                 if (settings.Clicked != null)
                 {
                     settings.Clicked(this, null);

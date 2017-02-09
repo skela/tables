@@ -300,7 +300,12 @@ namespace Tables.iOS
 
             return cell;
         }
-
+		
+		protected virtual void WillSelectRowWithConfig(TableAdapterRowConfig config)
+		{
+		
+		}
+		
         [Export ("tableView:didSelectRowAtIndexPath:")]
         public void RowSelected (UITableView tableView, NSIndexPath indexPath)
         {
@@ -317,6 +322,7 @@ namespace Tables.iOS
             TableAdapterRowConfig config = td.RowSetting(RowConfigurator,name,indexPath.Section);
 			if (config != null)
             {
+            	WillSelectRowWithConfig(config);
 				if (config.Clicked != null)
                 {
 					config.Clicked(this, null);
