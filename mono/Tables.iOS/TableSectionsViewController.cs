@@ -96,7 +96,7 @@ namespace Tables.iOS
 			return Sections == null ? 0 : Sections.Length;
 		}
 
-		public override nint RowsInSection (UITableView tableview, nint section)
+		public override nint RowsInSection (UITableView tableView, nint section)
 		{
 			return Sections [section].Items == null ? 0 : Sections [section].Items.Count;
 		}
