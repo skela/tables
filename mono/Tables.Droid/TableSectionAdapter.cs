@@ -111,6 +111,11 @@ namespace Tables.Droid
 		
 		}
 		
+		protected virtual void WillLongSelectItem(TableItem item,TableSection section)
+		{
+		
+		}
+		
         public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
             var item = ItemWithIndexes(section,row);
@@ -129,6 +134,10 @@ namespace Tables.Droid
         {
             var item = ItemWithIndexes(section,row);
             var sec = GetSection(section);
+            
+            if (item.DeleteSelector!=null || sec.DeleteSelector!=null)
+            	WillLongSelectItem(item,sec);
+            
             if (item.DeleteSelector != null)
                 item.DeleteSelector(this, new TableSectionsEventArgs(sec, item, section, row));            
             else if (sec.DeleteSelector != null)
