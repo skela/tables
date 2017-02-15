@@ -224,6 +224,11 @@ namespace Tables.iOS
 		
 		}
 		
+		protected virtual void WillChangeItemValue(object sender,TableItem item,TableSection section)
+		{
+		
+		}
+		
 		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 		{
 			if (!CanSelectRow (tableView, indexPath))
@@ -352,7 +357,10 @@ namespace Tables.iOS
 							valueChanged = item.ValueChanged;
 
 						if (valueChanged!=null)
+						{
+							WillChangeItemValue(sender,item,section);
 							valueChanged (sender, new TableSectionsEventArgs (section, item, indexPath));
+						}
 					}
 				}
 			}
