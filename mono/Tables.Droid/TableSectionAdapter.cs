@@ -1,7 +1,10 @@
 ﻿using System;
+
 using Android.Content;
 using Android.Widget;
 using Android.Views;
+using Android.App;
+using System.Collections.Generic;
 
 namespace Tables.Droid
 {
@@ -116,6 +119,11 @@ namespace Tables.Droid
 		
 		}
 		
+		protected virtual void WillExecuteItemRowAction(TableAction action,TableItem item,TableSection section)
+		{
+		
+		}
+				
         public virtual void RowSelected (int row,int section,AdapterView.ItemClickEventArgs ea = null)
         {
             var item = ItemWithIndexes(section,row);
@@ -135,15 +143,80 @@ namespace Tables.Droid
             var item = ItemWithIndexes(section,row);
             var sec = GetSection(section);
             
-            if (item.DeleteSelector!=null || sec.DeleteSelector!=null)
-            	WillLongSelectItem(item,sec);
+            var actions = new List<TableAction>();
+            if (item.Actions.Count > 0)
+            	actions.AddRange(item.Actions);
+            else if (item.Delete.Action!=null)
+            	actions.Add(item.Delete);
             
-            if (item.DeleteSelector != null)
-                item.DeleteSelector(this, new TableSectionsEventArgs(sec, item, section, row));            
-            else if (sec.DeleteSelector != null)
-                sec.DeleteSelector(this, new TableSectionsEventArgs(sec, item, section, row));            
+            if (actions.Count == 0)
+        	{
+        		if (sec.Actions.Count > 0)
+        			actions.AddRange(sec.Actions);
+        		else if (sec.Delete.Action!=null)
+        			actions.Add(sec.Delete);
+        	}
+            
+            if (actions.Count > 0)
+            {
+            	WillLongSelectItem(item,sec);
+            	
+            	var cancel = CancelAction;
+            	if (cancel!=null)
+            		actions.Add(cancel);
+            	
+            	ShowActions(actions,new TableSectionsEventArgs(sec, item, section, row));
+            }
         }
-
+		
+		protected virtual TableAction CancelAction
+		{
+			get
+			{
+				return new TableAction() { Title = "Cancel" };
+			}
+		}
+		
+		public class TableActionAlert
+		{
+			AlertDialog.Builder Builder;
+			List<TableAction>Actions;
+			TableSectionsEventArgs Args;
+			
+			public TableActionAlert(TableSectionAdapter sender,Context context,List<TableAction>actions,TableSectionsEventArgs args)
+			{
+				Actions = actions;
+				Args = args;
+				
+				var titles = new List<string>();
+				foreach (var act in Actions)
+					titles.Add(act.Title);
+				
+				Builder = new AlertDialog.Builder(context);
+        		Builder.SetItems(titles.ToArray(),delegate(object send, DialogClickEventArgs e)
+                {
+                    var i = e.Which;
+                    var btn = Actions[i];
+                    if (btn.Action!=null)
+                    {
+                    	sender.WillExecuteItemRowAction(btn,args.Item,args.Section);
+                    	btn.Action(sender,Args);
+                    }
+                });
+			}
+			
+			public void Show()
+			{
+				Builder.Show();
+			}
+		}
+		
+		protected virtual void ShowActions(List<TableAction>actions,TableSectionsEventArgs args)
+        {
+        	var alert = new TableActionAlert(this,ListView.Context,actions,args);        	
+        	alert.Show();
+        }
+		
         public override int NumberOfSections
         {
             get

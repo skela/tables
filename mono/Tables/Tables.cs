@@ -268,6 +268,7 @@ namespace Tables
             }
         }
         
+        public List<TableAction> Actions = new List<TableAction>();
         public TableAction Delete = new TableAction();		
 		
 		// Legacy
