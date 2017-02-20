@@ -251,6 +251,8 @@ namespace Tables.iOS
                             tf.Enabled = editable;
                             tf.Text = vs;
                             tf.SecureTextEntry = c.SecureTextEditing;
+                        	tf.ReturnKeyType = TableEditor.ConvertReturnKeyType(c.ReturnKeyType);
+                        	tf.KeyboardType = TableEditor.ConvertKeyboardType(c.KeyboardType);
                             (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath = indexPath;
                             cell.DetailTextLabel.Text = "";
                         }
@@ -500,11 +502,15 @@ namespace Tables.iOS
 		{
 			UIApplication.SharedApplication.KeyWindow.EndEditing(true);
 		}
-
+		
+		public EventHandler TextChanged;
+		
 		void TextFieldChanged(UITextField tf)
 		{		
 			NSIndexPath indexPath = (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath;
 			td.SetValue (tf.Text, indexPath.Row, indexPath.Section);
+			if (TextChanged!=null)
+				TextChanged(tf,null);
 		}
 
 		[Export ("textFieldShouldReturn:")]

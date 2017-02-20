@@ -30,7 +30,23 @@ namespace Tables
 		EmailAddress,
 		DecimalPad,
 	}
-
+	
+	public enum ReturnKeyType
+	{
+		Default,
+		Go,
+		Google,
+		Join,
+		Next,
+		Route,
+		Search,
+		Send,
+		Yahoo,
+		Done,
+		EmergencyCall,
+		Continue
+	}
+	
 	public enum CapitalizationType
 	{
 		Ignore,

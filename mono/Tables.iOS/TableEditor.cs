@@ -39,7 +39,27 @@ namespace Tables.iOS
 			else
 				NavigationController.PopViewController (true);
 		}
-
+		
+		static public UIReturnKeyType ConvertReturnKeyType(Tables.ReturnKeyType type)
+		{
+			switch (type)
+			{
+				case ReturnKeyType.Default: return UIReturnKeyType.Default;
+				case ReturnKeyType.Go: return UIReturnKeyType.Go;
+				case ReturnKeyType.Google: return UIReturnKeyType.Google;
+				case ReturnKeyType.Join: return UIReturnKeyType.Join;
+				case ReturnKeyType.Next: return UIReturnKeyType.Next;
+				case ReturnKeyType.Route: return UIReturnKeyType.Route;
+				case ReturnKeyType.Search: return UIReturnKeyType.Search;
+				case ReturnKeyType.Send: return UIReturnKeyType.Send;
+				case ReturnKeyType.Yahoo: return UIReturnKeyType.Yahoo;
+				case ReturnKeyType.Done: return UIReturnKeyType.Done;
+				case ReturnKeyType.EmergencyCall: return UIReturnKeyType.EmergencyCall;
+				case ReturnKeyType.Continue: return UIReturnKeyType.Continue;
+			}
+			return UIReturnKeyType.Default;
+		}
+		
 		static public UIKeyboardType ConvertKeyboardType(Tables.KeyboardType kbType)
 		{
 			switch (kbType)

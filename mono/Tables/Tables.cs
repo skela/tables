@@ -30,6 +30,7 @@ namespace Tables
 		public KeyboardType KeyboardType = KeyboardType.Ignore;
 		public CorrectionType CorrectionType = CorrectionType.Ignore;
 		public CapitalizationType CapitalizationType = CapitalizationType.Ignore;
+		public ReturnKeyType ReturnKeyType = ReturnKeyType.Default;
 		public List<Object>SingleChoiceOptions = null;
     }
 
