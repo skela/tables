@@ -29,7 +29,9 @@ namespace Tables.iOS
     public class TableSectionsViewController : UITableViewController, ITableSectionAdapter
 	{
 		public virtual TableSection[] Sections { get; set; }
-
+		
+		public virtual string DefaultDeleteButtonTitle { get { return "Delete"; } }
+		
 		public TableSectionsViewController (UITableViewStyle style) : base(style)
 		{
 
@@ -87,8 +89,21 @@ namespace Tables.iOS
 		}
 
 		public virtual void ReloadData()
-		{
+		{			
 			TableView.ReloadData ();
+		}
+
+		public virtual void RemovedItem(EventArgs ea)
+		{
+			var e = ea as TableSectionsEventArgs;
+			if (e == null || e.IndexPath==null)
+			{
+				ReloadData();
+			}
+			else
+			{
+				TableView.DeleteRows(new NSIndexPath[] { e.IndexPath }, UITableViewRowAnimation.Fade);
+			}
 		}
 
 		public override nint NumberOfSections (UITableView tableView)
@@ -136,7 +151,7 @@ namespace Tables.iOS
 			var section = SectionAtIndexPath (indexPath);
 			if (section != null && section.DeleteTitle != null)
 				return section.DeleteTitle;
-			return "Delete";
+			return DefaultDeleteButtonTitle;
 		}
 
 		public virtual bool CanSelectRow(UITableView tableView,NSIndexPath indexPath)
@@ -167,7 +182,7 @@ namespace Tables.iOS
 		}
 		
 		protected virtual void ExecuteRowAction(EventHandler action,TableSection section,TableItem item,NSIndexPath indexPath)
-		{			
+		{
 			action (this, new TableSectionsEventArgs (section, item, indexPath));
 		}
 		
@@ -186,6 +201,7 @@ namespace Tables.iOS
 		{
 			var section = SectionAtIndexPath (indexPath);
 			var item = ItemAtIndexPath (indexPath);
+			if (item == null || section == null) return new UITableViewRowAction[]{};
 			if (item.Actions!=null && item.Actions.Count > 0)
 			{
 				var actions = new List<UITableViewRowAction>();

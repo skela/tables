@@ -410,10 +410,15 @@ namespace Tables.Droid
             return 0;
         }
 
-        public void ReloadData()
+        public virtual void ReloadData()
         {                        
             NotifyDataSetChanged();
         }
+
+		public virtual void RemovedItem(EventArgs ea)
+		{
+			ReloadData();
+		}
 
         #endregion
     }

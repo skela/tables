@@ -189,6 +189,7 @@ namespace Tables
     public interface ITableSectionAdapter
     {
 		void ReloadData();
+		void RemovedItem(EventArgs ea);
         TableItem ItemWithIndexes(int section, int row);
         TableItem ItemWithName(string name,string section);
         TableItem ItemWithKey(string key);

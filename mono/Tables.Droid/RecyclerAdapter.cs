@@ -657,6 +657,11 @@ namespace Tables.Droid
             Reload();
             NotifyDataSetChanged();
         }
+
+		public virtual void RemovedItem(EventArgs ea)
+		{
+			ReloadData();
+		}
     }
 
     public class TableAdapterRecyclerCell : LinearLayout,ITableAdapterSimpleCell
