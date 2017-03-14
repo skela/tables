@@ -147,18 +147,43 @@ namespace Tables.iOS
 			{
 
 			}
+		}
 
-			public override void LayoutSubviews ()
+		public class TableAdapterTextFieldCell : TableAdapterCell
+		{
+			public UILabel Name = new UILabel();
+			public UITextField Field = new UITextField(new CGRect(0, 0, 160, 44));
+
+			public TableAdapterTextFieldCell(UITableViewCellStyle style, string ident) : base(style, ident)
 			{
-				base.LayoutSubviews ();
+				Name.TextColor = TextLabel.TextColor;
+				Name.Font = TextLabel.Font;
+				ContentView.AddSubview(Name);
 
-				if (AccessoryView is UITextField)
-				{
-					TextLabel.SizeToFit ();
-					var w = Bounds.Width;
-					var x = TextLabel.Frame.X + TextLabel.Frame.Width + 10;
-					AccessoryView.Frame = new CGRect (x, 0, w - x - 10, 44);
-				}
+				Field.UserInteractionEnabled = true;
+				Field.BorderStyle = UITextBorderStyle.None;
+				Field.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+				Field.Font = TableAdapter.detailFont;
+				Field.TextColor = UIColor.DarkGray;
+				Field.TextAlignment = UITextAlignment.Right;
+				ContentView.AddSubview(Field);
+			}
+
+			public override void LayoutSubviews()
+			{
+				base.LayoutSubviews();
+
+				var xt = TextLabel.Frame.X;
+
+				Name.SizeToFit();
+
+				Name.Frame = new CGRect(xt,0,Name.Frame.Width,44);
+
+				var w = Bounds.Width - xt + 10;
+
+				var x = Name.Frame.X + Name.Frame.Width + 10;
+
+				Field.Frame = new CGRect(x,0,w - x - 10,44);
 			}
 		}
 
@@ -169,19 +194,18 @@ namespace Tables.iOS
             var editable = td.Editable(RowConfigurator,indexPath.Row,indexPath.Section);
             var rowType = td.RowType(RowConfigurator,indexPath.Row,indexPath.Section);
             var value = td.GetValue(indexPath.Row, indexPath.Section);
+			var c = td.RowSetting(RowConfigurator, name, indexPath.Section);
 
 			TableAdapterCell cell = tableView.DequeueReusableCell(name) as TableAdapterCell;
             if (cell == null )
             {
-				cell = new TableAdapterCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
+				cell = c != null && c.InlineTextEditing ? new TableAdapterTextFieldCell(UITableViewCellStyle.Value1, name) : new TableAdapterCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
 				cell.Accessory = UITableViewCellAccessory.None;
-				//cell = new TableAdapterCell(UITableViewCellStyle.Subtitle,name);
 
 				switch (rowType)
 				{
 					case TableRowType.Checkbox:
-					{
-                        var c = td.RowSetting(RowConfigurator,name,indexPath.Section);
+					{                        
 						if (c == null || !c.SimpleCheckbox)
 						{
 							var sw = new UISwitch();
@@ -191,27 +215,19 @@ namespace Tables.iOS
 					} break;
 					
 					case TableRowType.Text:
-					{
-                        var c = td.RowSetting(RowConfigurator,name,indexPath.Section);
+					{                        
 						if (c != null && c.InlineTextEditing)
 						{
-							var tf = new UITextField (new CGRect (0, 0, 160, 44));
-							tf.UserInteractionEnabled = true;
-							tf.BorderStyle = UITextBorderStyle.None;
-							tf.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
-							tf.Font = detailFont;
-							tf.TextColor = DetailTextColor;
-							tf.TextAlignment = UITextAlignment.Right;
-							tf.WeakDelegate = this;
+							var tfcell = cell as TableAdapterTextFieldCell;
+							tfcell.Field.WeakDelegate = this;
 
 							var inp = new TableAdapterInlineTextInputAccessoryView (c, (float)tableView.Frame.Width);
 							inp.PreviousButton.TouchUpInside += ClickedPrevious;
 							inp.NextButton.TouchUpInside += ClickedNext;
 							inp.DismissButton.TouchUpInside += ClickedDismiss;
 
-							tf.InputAccessoryView = inp;
-							TableEditor.ConfigureTextControl (c, tf);
-							cell.AccessoryView = tf;
+							tfcell.Field.InputAccessoryView = inp;
+							TableEditor.ConfigureTextControl(c, tfcell.Field);						
 						}
 						else
 						{
@@ -243,18 +259,19 @@ namespace Tables.iOS
             {
                 case TableRowType.Text:
                     {
-                        var vs = value as string;
-                        var c = td.RowSetting(RowConfigurator, name,indexPath.Section);
+                        var vs = value as string;                        
                         if (c != null && c.InlineTextEditing)
                         {
-                            var tf = (cell.AccessoryView as UITextField);
+							var tfcell = cell as TableAdapterTextFieldCell;
+							tfcell.TextLabel.Text = null;
+							tfcell.Name.Text = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
+							var tf = tfcell.Field;
                             tf.Enabled = editable;
                             tf.Text = vs;
                             tf.SecureTextEntry = c.SecureTextEditing;
                         	tf.ReturnKeyType = TableEditor.ConvertReturnKeyType(c.ReturnKeyType);
                         	tf.KeyboardType = TableEditor.ConvertKeyboardType(c.KeyboardType);
-                            (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath = indexPath;
-                            cell.DetailTextLabel.Text = "";
+                            (tf.InputAccessoryView as TableAdapterInlineTextInputAccessoryView).IndexPath = indexPath;                            
                         }
                         else
                         {
@@ -265,8 +282,7 @@ namespace Tables.iOS
                 break;
                 case TableRowType.Blurb:
                     {
-                        var vs = value as string;
-                        var c = td.RowSetting(RowConfigurator, name,indexPath.Section);
+                        var vs = value as string;                        
                         cell.DetailTextLabel.Text = c != null && c.SecureTextEditing ? TextHelper.ScrambledText(vs) : vs;
                         cell.Accessory = editable ? UITableViewCellAccessory.DisclosureIndicator : UITableViewCellAccessory.None;
                     }
@@ -282,9 +298,8 @@ namespace Tables.iOS
 				break;
                 case TableRowType.Checkbox:
                     {
-                        cell.DetailTextLabel.Text = "";
-                        var s = td.RowSetting(RowConfigurator, name,indexPath.Section);
-                        if (s != null && s.SimpleCheckbox)
+                        cell.DetailTextLabel.Text = "";                        
+                        if (c != null && c.SimpleCheckbox)
                             cell.Accessory = ((bool)value) ? UITableViewCellAccessory.Checkmark : UITableViewCellAccessory.None;
                         else
                             (cell.AccessoryView as UISwitch).On = (bool)value;
@@ -350,8 +365,8 @@ namespace Tables.iOS
 
 						if (config != null && config.InlineTextEditing && rowType==TableRowType.Text)
 						{
-							var cell = tableView.CellAt (indexPath);
-							var tf = (cell.AccessoryView as UITextField);
+							var cell = tableView.CellAt(indexPath) as TableAdapterTextFieldCell;
+							var tf = cell.Field;
 							tf.BecomeFirstResponder ();
 						}
 						else
