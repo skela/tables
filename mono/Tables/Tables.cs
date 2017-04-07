@@ -270,6 +270,14 @@ namespace Tables
             }
         }
         
+        public void Clear()
+        {
+        	if (Items!=null)
+        	{
+        		Items.Clear();
+        	}
+        }
+        
         public List<TableAction> Actions = new List<TableAction>();
         public TableAction Delete = new TableAction();		
 		
