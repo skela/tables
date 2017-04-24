@@ -293,8 +293,11 @@ namespace Tables.iOS
 
 			UITableViewCell cell = tableView.DequeueReusableCell (ident);
 			if (cell == null)
+			{
 				cell = new UITableViewCell (DefaultCellStyle, ident);
-
+				DefaultCellCreated(cell);
+			}
+			
 			var valCell = cell as ITableSectionsValueCell;
 			if (valCell != null) 
 				valCell.ValueChanged = null;
@@ -344,6 +347,11 @@ namespace Tables.iOS
 			}
 
 			return cell;
+		}
+
+		protected virtual void DefaultCellCreated(UITableViewCell cell)
+		{
+		
 		}
 
 		[Foundation.Export("scrollViewDidScroll:")]

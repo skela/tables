@@ -9,6 +9,10 @@ namespace Tables.iOS
 {
 	public class TableEditor : UIViewController
     {
+    	public UIColor DetailTextColor = UIColor.DarkGray;
+		public UIColor TextColor = UIColor.Black;
+		public UIColor BackgroundColor = UIColor.White;
+    
 		public TableEditor() : base()
 		{
 			HidesBottomBarWhenPushed = true;

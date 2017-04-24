@@ -31,7 +31,7 @@ namespace Tables.iOS
         {
             base.ViewDidLoad();
 
-			View.BackgroundColor = UIColor.White;
+			View.BackgroundColor = BackgroundColor;
 
             if (NavigationItem != null)
             {
@@ -41,7 +41,7 @@ namespace Tables.iOS
 
 			picker = new UIPickerView (View.Bounds);
             picker.AutoresizingMask = UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleWidth;
-			picker.WeakDelegate = this;
+            picker.WeakDelegate = this;			
 			picker.DataSource = this;
 			View.AddSubview (picker);
         }
@@ -98,23 +98,61 @@ namespace Tables.iOS
 		{
 			return options == null ? 0 : options.Count;
 		}
-
+		
 		#endregion
 
 		#region Delegate
-
-		[Export ("pickerView:titleForRow:forComponent:")]
-		public string TitleForRowAndComponent(UIPickerView pickerView,int row,int component)
+		
+		[Export("pickerView:titleForRow:forComponent:")]
+		public string GetTitle(UIPickerView pickerView,nint row,nint component)
 		{
 			string returnValue = null;
 			if (options != null)
 			{
-				var anObject = options [row];
+				var anObject = options [(int)row];
 				returnValue = anObject.ToString ();
 			}
 			return returnValue;
 		}
-
+		
+		[Export("pickerView:widthForComponent:")]
+		public nfloat GetComponentWidth (UIPickerView picker, nint component)
+		{
+			return View.Bounds.Width;
+		}
+		
+		[Export("pickerView:rowHeightForComponent:")]
+		public nfloat GetRowHeight (UIPickerView picker, nint component)
+		{
+			return 40;
+		}
+		
+		[Export("pickerView:viewForRow:forComponent:reusingView:")]
+		public UIView GetView (UIPickerView picker, nint row, nint component, UIView view)
+		{
+			if (view!=null)
+			{
+				var lab = view as UILabel;
+				lab.Text = GetTitle(picker,row,component);				
+				return view;
+			}
+			
+			var rect = new CGRect(0f,0f,GetComponentWidth(picker,component)-4,GetRowHeight(picker,component));
+			
+			var label = new UILabel(rect)
+			{
+				Text = GetTitle(picker,row,component),				
+				MinimumFontSize = 10,
+				AdjustsFontSizeToFitWidth = true,
+				TextAlignment = UITextAlignment.Center,
+				TextColor = TextColor,
+				Opaque = false,
+				BackgroundColor = UIColor.Clear
+			};
+			
+			return label;
+		}
+		
 		#endregion
     }
 }

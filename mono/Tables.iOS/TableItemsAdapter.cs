@@ -60,7 +60,12 @@ namespace Tables.iOS
 			if (tv != null)
 				tv.ReloadData();
 		}
-
+		
+		protected virtual void CellCreated(UITableViewCell cell)
+		{
+		
+		}
+		
 		[Export ("numberOfSectionsInTableView:")]
 		public int NumberOfSections (UITableView tableView)
 		{
@@ -81,6 +86,7 @@ namespace Tables.iOS
 			{
 				cell = new UITableViewCell(UITableViewCellStyle.Subtitle,"ItemsTableAdapterCell");
 				cell.SelectionStyle = UITableViewCellSelectionStyle.Default;
+				CellCreated(cell);
 			}
 
 			Object obj = td.GetValue (indexPath.Row, indexPath.Section);

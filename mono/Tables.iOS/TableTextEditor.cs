@@ -19,7 +19,7 @@ namespace Tables.iOS
 		private UIKeyboardType keyboardType;
 		public bool ShouldAdjustTextContentInset;
         private bool secureTextEntry=false;
-
+		
 		public TableTextEditor(TableRowType rowType,string title,string value,TextChangedDelegate delg)
         {
             this.Title = title;
@@ -66,7 +66,10 @@ namespace Tables.iOS
 
 			if (rowType == TableRowType.Blurb)
 			{
+				View.BackgroundColor = BackgroundColor;
 				textView = new UITextView (View.Bounds);
+				textView.TextColor = TextColor;
+				textView.BackgroundColor = BackgroundColor;
 				textView.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
                 textView.SecureTextEntry = SecureTextEntry;
 				textView.Text = value;
@@ -78,8 +81,10 @@ namespace Tables.iOS
 			}
 			else if (rowType == TableRowType.Text)
 			{
-				View.BackgroundColor = UIColor.White;
+				View.BackgroundColor = BackgroundColor;
 				textField = new UITextField (new CGRect (10, 10, View.Bounds.Size.Width - 20, 44));
+				textField.TextColor = TextColor;
+				textField.BackgroundColor = BackgroundColor;
 				textField.BorderStyle = UITextBorderStyle.Line;
 				textField.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
 				textField.Text = value;

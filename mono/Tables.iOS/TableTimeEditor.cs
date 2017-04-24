@@ -5,14 +5,14 @@ using Foundation;
 namespace Tables.iOS
 {
     public delegate void DateChangedDelegate(DateTime changedDate);
-
+	
 	public class TableTimeEditor : TableEditor
     {
         private DateTime value;
         private UIDatePicker picker;
         private DateChangedDelegate dateChanged;
         private UIDatePickerMode mode;
-
+		
         public TableTimeEditor(string title,DateTime value,UIDatePickerMode mode,DateChangedDelegate delg)
         {
             this.Title = title;
@@ -25,7 +25,7 @@ namespace Tables.iOS
         {
             base.ViewDidLoad();
 
-            View.BackgroundColor = UIColor.White;
+            View.BackgroundColor = BackgroundColor;
 
             if (NavigationItem != null)
             {
@@ -33,6 +33,7 @@ namespace Tables.iOS
                 NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Done, ClickedDone);
             }
             picker = new UIDatePicker(View.Bounds);
+            picker.SetValueForKey(TextColor,new NSString("textColor"));
             picker.Center = View.Center;
             picker.Mode = mode;
 			picker.Date = (NSDate)value;
@@ -56,5 +57,5 @@ namespace Tables.iOS
 				dateChanged((DateTime)picker.Date);
 			CloseViewController ();            
         }
-    }
+    }    
 }

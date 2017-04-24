@@ -31,7 +31,7 @@ namespace Tables
 		public CorrectionType CorrectionType = CorrectionType.Ignore;
 		public CapitalizationType CapitalizationType = CapitalizationType.Ignore;
 		public ReturnKeyType ReturnKeyType = ReturnKeyType.Default;
-		public List<Object>SingleChoiceOptions = null;
+		public List<Object>SingleChoiceOptions = null;		
     }
 
     public class TableSectionsEventArgs : EventArgs

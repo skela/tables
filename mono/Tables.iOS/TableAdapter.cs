@@ -17,7 +17,9 @@ namespace Tables.iOS
 
 		public bool ShouldAdjustTextContentInset=true;
 		public UIColor DetailTextColor = UIColor.DarkGray;
-
+		public UIColor TextColor = UIColor.Black;
+		public UIColor BackgroundColor = UIColor.White;
+		
         public TableAdapter(UITableView table=null,Object data=null,ITableAdapterRowConfigurator configs=null) : base()
         {
             td = new TableSource();
@@ -201,11 +203,13 @@ namespace Tables.iOS
             {
 				cell = c != null && c.InlineTextEditing ? new TableAdapterTextFieldCell(UITableViewCellStyle.Value1, name) : new TableAdapterCell(rowType==TableRowType.Blurb?UITableViewCellStyle.Subtitle:UITableViewCellStyle.Value1,name);
 				cell.Accessory = UITableViewCellAccessory.None;
-
+				cell.BackgroundColor = BackgroundColor;
+				cell.TextLabel.TextColor = TextColor;
+				
 				switch (rowType)
 				{
 					case TableRowType.Checkbox:
-					{                        
+					{
 						if (c == null || !c.SimpleCheckbox)
 						{
 							var sw = new UISwitch();
@@ -215,19 +219,21 @@ namespace Tables.iOS
 					} break;
 					
 					case TableRowType.Text:
-					{                        
+					{
 						if (c != null && c.InlineTextEditing)
 						{
 							var tfcell = cell as TableAdapterTextFieldCell;
-							tfcell.Field.WeakDelegate = this;
-
+							tfcell.Field.WeakDelegate = this;							
+							tfcell.Name.TextColor = TextColor;
+							tfcell.Field.TextColor = DetailTextColor;
+							
 							var inp = new TableAdapterInlineTextInputAccessoryView (c, (float)tableView.Frame.Width);
 							inp.PreviousButton.TouchUpInside += ClickedPrevious;
 							inp.NextButton.TouchUpInside += ClickedNext;
 							inp.DismissButton.TouchUpInside += ClickedDismiss;
 
 							tfcell.Field.InputAccessoryView = inp;
-							TableEditor.ConfigureTextControl(c, tfcell.Field);						
+							TableEditor.ConfigureTextControl(c, tfcell.Field);
 						}
 						else
 						{
@@ -236,8 +242,8 @@ namespace Tables.iOS
 					} break;
 
 					case TableRowType.Blurb:
-					{
-						cell.TextLabel.Font = titleFont;
+					{						
+						cell.TextLabel.Font = titleFont;						
 						cell.DetailTextLabel.Lines = 0;
 						cell.DetailTextLabel.Font = detailFont;
 						cell.DetailTextLabel.ClipsToBounds = true;
@@ -246,7 +252,7 @@ namespace Tables.iOS
 					} break;
 
 					default:
-					{
+					{						
 						cell.DetailTextLabel.TextColor = DetailTextColor;
 					} break;
 				}
@@ -262,6 +268,8 @@ namespace Tables.iOS
                         var vs = value as string;                        
                         if (c != null && c.InlineTextEditing)
                         {
+                        	cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+                        
 							var tfcell = cell as TableAdapterTextFieldCell;
 							tfcell.TextLabel.Text = null;
 							tfcell.Name.Text = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
@@ -376,7 +384,12 @@ namespace Tables.iOS
 							{
 								td.SetValue (changedString, indexPath.Row, indexPath.Section);
 								ReloadData ();
-							});
+							})
+							{
+								BackgroundColor = BackgroundColor,
+								TextColor = TextColor,
+								DetailTextColor = DetailTextColor
+							};
 							textEditor.ShouldAdjustTextContentInset = ShouldAdjustTextContentInset;
 							textEditor.Configure (config);
 
@@ -397,7 +410,12 @@ namespace Tables.iOS
 						{
 							td.SetValue (changedChoice, indexPath.Row, indexPath.Section);
 							ReloadData ();
-						});
+						})
+						{
+							BackgroundColor = BackgroundColor,
+							TextColor = TextColor,
+							DetailTextColor = DetailTextColor
+						};
 
 						if (sclvc.NavigationController == null)
 							sclvc.PresentViewController (new UINavigationController (singleChoiceEditor), true, null);
@@ -412,7 +430,7 @@ namespace Tables.iOS
                     var dvc = FirstAvailableViewController;
                     if (dvc != null)
                     {
-                        DateTime str = (DateTime)value;
+                        var str = (DateTime)value;
                         var dname = td.DisplayName(RowConfigurator, indexPath.Row, indexPath.Section);
                         UIDatePickerMode mode = UIDatePickerMode.DateAndTime;
                         if (rowType == TableRowType.Date)
@@ -424,7 +442,12 @@ namespace Tables.iOS
 						{
 							td.SetValue (changedDate, indexPath.Row, indexPath.Section);
 							ReloadData ();
-						});
+						})
+						{
+							BackgroundColor = BackgroundColor,
+							TextColor = TextColor,
+							DetailTextColor = DetailTextColor
+						};
 						if (dvc.NavigationController == null)
 							dvc.PresentViewController(new UINavigationController(dateEditor), true, null);
 						else
