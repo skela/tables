@@ -84,6 +84,11 @@ namespace Tables.Droid
             et.SetMinimumHeight(TableUtils.GetPixelsFromDPI(ctx,40));
             return et;
         }
+        
+        public static void SetTextAppearance(TextView tv,int style)
+        {
+        	tv.SetTextAppearance(tv.Context,style);
+        }
     }
 
     public class TableStyle
@@ -134,11 +139,11 @@ namespace Tables.Droid
                 line.Orientation = Orientation.Horizontal;
 
                 Title= new TextView(Context);
-                Title.Text = "Title";
-                Title.SetTextAppearance(context, titleStyle);
+                Title.Text = "Title";                
+                TableUtils.SetTextAppearance(Title, titleStyle);
                 line.AddView(Title);
 
-                View filler = new View(context);
+                var filler = new View(context);
                 filler.LayoutParameters = new LinearLayout.LayoutParams(Android.Widget.LinearLayout.LayoutParams.WrapContent, Android.Widget.LinearLayout.LayoutParams.WrapContent, 1f);
 
                 line.AddView(filler);
@@ -147,7 +152,7 @@ namespace Tables.Droid
                 Detail.Text = "Detail";
                 Detail.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
                 Detail.SetMinimumHeight(TableUtils.GetPixelsFromDPI(context,40));
-                Detail.SetTextAppearance(context, detailStyle);
+                TableUtils.SetTextAppearance(Detail, detailStyle);
                 line.AddView(Detail);
 
                 Switch = new CheckBox(context);
@@ -159,13 +164,13 @@ namespace Tables.Droid
 
             Blurb = new TextView(context);
             Blurb.Text = "Blurb";
-            Blurb.SetTextAppearance(context, detailStyle);
+            TableUtils.SetTextAppearance(Blurb,detailStyle);
             AddView(Blurb);
 
             Edit = TableUtils.CreateEditableTextField(context);
             Edit.Text = "Edit";
             Edit.Visibility = ViewStates.Gone;
-            Edit.SetTextAppearance(context, detailStyle);
+            TableUtils.SetTextAppearance(Edit, detailStyle);
             Edit.AddTextChangedListener(this);
             AddView(Edit);
 
@@ -381,7 +386,7 @@ namespace Tables.Droid
             int pixels = TableUtils.GetPixelsFromDPI(context, 2);
             Title.SetPadding(pixels, pixels, pixels, pixels);
             Title.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
-            Title.SetTextAppearance(context, titleStyle);
+            TableUtils.SetTextAppearance(Title, titleStyle);
             Title.Text = "Title";
             AddView(Title);
 
@@ -390,7 +395,7 @@ namespace Tables.Droid
             pixels = TableUtils.GetPixelsFromDPI(context, 2);
             Detail.SetPadding(pixels, pixels, pixels, pixels);
             Detail.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
-            Detail.SetTextAppearance(context, detailStyle);
+            TableUtils.SetTextAppearance(Detail, detailStyle);
             AddView(Detail);
 
             Orientation = Orientation.Vertical;
@@ -410,14 +415,14 @@ namespace Tables.Droid
         {
             titleStyle = style;
             if (Title != null)
-                Title.SetTextAppearance(ctx, titleStyle);
+                TableUtils.SetTextAppearance(Title, titleStyle);
         }
 
         public void SetDetailStyle(Context ctx,int style)
         {
             detailStyle = style;
             if (Detail != null)
-                Detail.SetTextAppearance(ctx, detailStyle);
+                TableUtils.SetTextAppearance(Detail, detailStyle);
         }
     }
 
@@ -457,7 +462,7 @@ namespace Tables.Droid
             int pixels = TableUtils.GetPixelsFromDPI(context, 2);
             TitleLabel.SetPadding(pixels, pixels, pixels, pixels);
             TitleLabel.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
-            TitleLabel.SetTextAppearance(context, titleStyle);
+            TableUtils.SetTextAppearance(TitleLabel, titleStyle);
             TitleLabel.Text = "Title";
             AddView(TitleLabel);
 
@@ -466,7 +471,7 @@ namespace Tables.Droid
             pixels = TableUtils.GetPixelsFromDPI(context, 2);
             DetailLabel.SetPadding(pixels, pixels, pixels, pixels);
             DetailLabel.LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.WrapContent, 1f);
-            DetailLabel.SetTextAppearance(context, detailStyle);
+            TableUtils.SetTextAppearance(DetailLabel, detailStyle);
             AddView(DetailLabel);
 
             Orientation = Orientation.Vertical;
@@ -543,7 +548,7 @@ namespace Tables.Droid
 
             TitleLabel = new TextView(context);
             TitleLabel.Text = "Title";
-            TitleLabel.SetTextAppearance(context,textStyle);
+            TableUtils.SetTextAppearance(TitleLabel,textStyle);
             TitleLabel.Gravity = GravityFlags.Left;
             TitleLabel.LayoutParameters = new ViewGroup.LayoutParams(Android.Widget.LinearLayout.LayoutParams.MatchParent, Android.Widget.LinearLayout.LayoutParams.WrapContent);
             AddView(TitleLabel);
@@ -576,7 +581,7 @@ namespace Tables.Droid
             {
                 textStyle = value;
                 if (TitleLabel != null)
-                    TitleLabel.SetTextAppearance(TitleLabel.Context, TextStyle);
+                    TableUtils.SetTextAppearance(TitleLabel, TextStyle);
             }
         }
         protected int textStyle;
