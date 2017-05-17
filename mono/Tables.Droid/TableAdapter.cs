@@ -248,7 +248,10 @@ namespace Tables.Droid
                             {
 
                             });
-                            builder.Show();
+
+							var dialog = builder.Create();							
+							dialog.Window.SetSoftInputMode(SoftInput.StateVisible);
+							dialog.Show();
                         }
                 }
                 break;
