@@ -17,6 +17,7 @@ namespace Tables.iOS
 		private UITextAutocapitalizationType capitalizationType=UITextAutocapitalizationType.Sentences;
 		private UITextAutocorrectionType correctionType;
 		private UIKeyboardType keyboardType;
+		private UIKeyboardAppearance keyboardAppearance = UIKeyboardAppearance.Default;
 		public bool ShouldAdjustTextContentInset;
         private bool secureTextEntry=false;
 		
@@ -76,6 +77,7 @@ namespace Tables.iOS
 				textView.AutocapitalizationType = capitalizationType;
 				textView.AutocorrectionType = correctionType;
 				textView.KeyboardType = keyboardType;
+				textView.KeyboardAppearance = keyboardAppearance;
 				textView.Font = UIFont.SystemFontOfSize (14);
 				View.AddSubview (textView);
 			}
@@ -91,6 +93,7 @@ namespace Tables.iOS
                 textField.SecureTextEntry = SecureTextEntry;
 				textField.AutocapitalizationType = capitalizationType;
 				textField.AutocorrectionType = correctionType;
+				textField.KeyboardAppearance = keyboardAppearance;
 				textField.KeyboardType = keyboardType;
 				textField.ShouldReturn = ClickedReturn;
 				View.AddSubview (textField);
@@ -197,6 +200,20 @@ namespace Tables.iOS
 				keyboardType = value;
 				if (text != null)
 					text.KeyboardType = keyboardType;
+			}
+		}
+
+		public UIKeyboardAppearance KeyboardAppearance
+		{
+			get
+			{
+				return keyboardAppearance;
+			}
+			set
+			{
+				keyboardAppearance = value;
+				if (text != null)
+					text.KeyboardAppearance = keyboardAppearance;
 			}
 		}
 

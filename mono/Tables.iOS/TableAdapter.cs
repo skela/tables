@@ -19,7 +19,8 @@ namespace Tables.iOS
 		public UIColor DetailTextColor = UIColor.DarkGray;
 		public UIColor TextColor = UIColor.Black;
 		public UIColor BackgroundColor = UIColor.White;
-		
+		public UIKeyboardAppearance KeyboardAppearance = UIKeyboardAppearance.Default;
+
         public TableAdapter(UITableView table=null,Object data=null,ITableAdapterRowConfigurator configs=null) : base()
         {
             td = new TableSource();
@@ -388,7 +389,8 @@ namespace Tables.iOS
 							{
 								BackgroundColor = BackgroundColor,
 								TextColor = TextColor,
-								DetailTextColor = DetailTextColor
+								DetailTextColor = DetailTextColor,
+								KeyboardAppearance = KeyboardAppearance
 							};
 							textEditor.ShouldAdjustTextContentInset = ShouldAdjustTextContentInset;
 							textEditor.Configure (config);
