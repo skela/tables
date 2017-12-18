@@ -37,6 +37,15 @@ namespace Tables.iOS
 
 		}
 
+		public override void ViewDidLoad()
+		{
+			base.ViewDidLoad();
+
+			TableView.EstimatedRowHeight = 0;
+			TableView.EstimatedSectionFooterHeight = 0;
+			TableView.EstimatedSectionHeaderHeight = 0;
+		}
+
 		public virtual TableItem ItemWithName(string name,string section)
 		{
 			foreach (var sec in Sections)
