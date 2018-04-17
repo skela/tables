@@ -369,7 +369,12 @@ namespace Tables
 			{
 				Delete.Title = value;
 			}
-		}		
+		}
+
+        public void SetDetail(string txt)
+        {
+            Detail = txt;
+        }
     }
     
     public class TableAction
